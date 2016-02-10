@@ -1,10 +1,10 @@
-Sworarfe Andufotions
+Swotarfe Andufotions
 ====================
 
 Solutions of exercises provided in the book
 
 ```shell
-enc=frrnq://uuu.agq.sncll.cbs/~zangcpac/qd/asppclr/glbcv.frkj
+encr=frrnq://uuu.agq.sncll.cbs/~zangcpac/qd/asppclr/glbcv.frkj
 echo "$encr" | tr '[a-z]' '[c-za-b]'
 ```
 
