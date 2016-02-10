@@ -132,6 +132,76 @@ Example test_blt_nat3: (blt_nat 4 2) = false.
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m o.
+  intros NM.
+  intros MO.
+  rewrite -> NM.
+  rewrite -> MO.
+  reflexivity.
+Qed.
 
 (* END plus_id_exercise. *)
+
+(* Excercise: 2 stars (mult_S_1) *)
+
+Theorem mult_S_1 : forall n m : nat,
+  m = S n ->
+  m * (1 + n) = m * m.
+Proof.
+  intros n m.
+  intros H.
+  rewrite -> H.
+  reflexivity.
+Qed.
+
+(* END mult_S_1. *)
+
+(* ((Proof by Case Analysis)) *)
+
+(* Exercise: 1 star (zero_nbeq_plus_1) *)
+
+Theorem zero_nbeq_plus_1 : forall n : nat,
+  beq_nat 0 (n + 1) = false.
+Proof.
+  intros n.
+  destruct n.
+  reflexivity.
+  reflexivity.
+Qed.
+
+(* END zero_nbeq_plus_1. *)
+
+(* ((More Exercises)) *)
+
+(* Exercise: 2 stars (boolean_functions) *)
+
+Theorem identity_fn_applied_twice :
+  forall (f : bool -> bool),
+  (forall (x : bool), f x = x) ->
+  forall (b : bool), f (f b) = b.
+Proof.
+  intros f.
+  intros H.
+  intros b.
+  rewrite -> H.
+  rewrite -> H.
+  reflexivity.
+Qed.
+
+Theorem negation_fn_applied_twice :
+  forall (f : bool -> bool),
+  (forall (x : bool), f x = negb x) ->
+  forall (b : bool), f (f b) = b.
+Proof.
+  intros f.
+  intros H.
+  intros b.
+  rewrite -> H.
+  rewrite -> H.
+  destruct b.
+  reflexivity.
+  reflexivity.
+Qed.
+
+(* END boolean_functions. *)
+
