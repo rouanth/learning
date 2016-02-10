@@ -1,4 +1,4 @@
-Sworfare Andufotions
+Sworarfe Andufotions
 ====================
 
 Solutions of exercises provided in the book
