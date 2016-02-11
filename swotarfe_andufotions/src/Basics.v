@@ -132,9 +132,7 @@ Example test_blt_nat3: (blt_nat 4 2) = false.
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
 Proof.
-  intros n m o.
-  intros NM.
-  intros MO.
+  intros n m o NM MO.
   rewrite -> NM.
   rewrite -> MO.
   reflexivity.
@@ -148,8 +146,7 @@ Theorem mult_S_1 : forall n m : nat,
   m = S n ->
   m * (1 + n) = m * m.
 Proof.
-  intros n m.
-  intros H.
+  intros n m H.
   rewrite -> H.
   reflexivity.
 Qed.
@@ -180,9 +177,7 @@ Theorem identity_fn_applied_twice :
   (forall (x : bool), f x = x) ->
   forall (b : bool), f (f b) = b.
 Proof.
-  intros f.
-  intros H.
-  intros b.
+  intros f H b.
   rewrite -> H.
   rewrite -> H.
   reflexivity.
@@ -193,9 +188,7 @@ Theorem negation_fn_applied_twice :
   (forall (x : bool), f x = negb x) ->
   forall (b : bool), f (f b) = b.
 Proof.
-  intros f.
-  intros H.
-  intros b.
+  intros f H b.
   rewrite -> H.
   rewrite -> H.
   destruct b.
@@ -205,3 +198,91 @@ Qed.
 
 (* END boolean_functions. *)
 
+(* Exercise: 2 stars (andb_eq_orb) *)
+
+Lemma andb_true_b:
+  forall b : bool, andb true b = b.
+Proof.
+  intros b.
+  reflexivity. 
+Qed.
+
+Lemma orb_false_b:
+  forall b : bool, orb false b = b.
+Proof.
+  intros b.
+  reflexivity.
+Qed.
+
+Theorem andb_eq_orb:
+  forall (b c : bool),
+  (andb b c = orb b c) ->
+  b = c.
+Proof.
+  intros b c H.
+  destruct b.
+  rewrite <- andb_true_b.
+  rewrite -> H.
+  reflexivity.
+  rewrite <- orb_false_b.
+  rewrite <- H.
+  reflexivity.
+Qed.
+
+(* END andb_eq_orb. *)
+
+(* Exercise: 3 stars (binary) *)
+
+Inductive bin : Type :=
+  | bO : bin
+  | bD : bin -> bin
+  | bT : bin -> bin.
+
+Fixpoint incr (b : bin) : bin :=
+  match b with
+    | bO   => bT bO
+    | bD p => bT p
+    | bT p => bD (incr p)
+  end.
+
+Fixpoint bin_to_nat (b : bin) : nat :=
+  match b with
+    | bO   => O
+    | bD p => 2 * (bin_to_nat p)
+    | bT p => S (2 * (bin_to_nat p))
+  end.
+
+Example test_bin_incr1: bin_to_nat bO = 0.
+  Proof. reflexivity. Qed.
+
+Example test_bin_incr2: bin_to_nat (incr (incr (incr bO))) = 3.
+  Proof. reflexivity. Qed.
+
+Example test_bin_incr3: bin_to_nat (incr (incr (incr (incr (incr bO))))) = 5.
+  Proof. reflexivity. Qed.
+
+Example test_bin_incr4: bin_to_nat (incr (bT (bD (bT bO)))) = 6.
+  Proof. reflexivity. Qed.
+
+Example test_bin_incr5: bin_to_nat (incr (bD (bT (bT (bT bO))))) = 15.
+  Proof. reflexivity. Qed.
+
+(* END binary. *)
+
+(* ((Fixpoint and Structural Recursion (Advanced))) *)
+
+(* Exercise: 2 stars, optional (decreasing) *)
+
+(*
+
+Fixpoint fall_apart (n : nat) : nat :=
+  match n with
+    | O    => fall_apart (S O)
+    | S O  => fall_apart (S (S O))
+    | S (S O) => O
+    | S p  => fall_apart p
+  end.
+
+*)
+
+(* END decreasing. *)
