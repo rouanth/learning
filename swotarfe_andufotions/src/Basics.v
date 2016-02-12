@@ -248,8 +248,8 @@ Fixpoint incr (b : bin) : bin :=
 Fixpoint bin_to_nat (b : bin) : nat :=
   match b with
     | bO   => O
-    | bD p => 2 * (bin_to_nat p)
-    | bT p => S (2 * (bin_to_nat p))
+    | bD p => bin_to_nat p + bin_to_nat p
+    | bT p => S (bin_to_nat p + bin_to_nat p)
   end.
 
 Example test_bin_incr1: bin_to_nat bO = 0.
