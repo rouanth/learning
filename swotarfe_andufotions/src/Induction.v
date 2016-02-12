@@ -122,3 +122,102 @@ Proof.
 Qed.
 
 (* END basic_induction. *)
+
+Fixpoint double (n : nat) :=
+  match n with
+    | O    => O
+    | S n' => S (S (double n'))
+  end.
+
+(* Exercies: 2 starts (double_plus) *)
+
+Lemma double_plus : forall n, double n = n + n.
+Proof.
+  intros n.
+  induction n as [|n'].
+  Case "n = 0".
+    reflexivity.
+  Case "n = S n'".
+    rewrite <- plus_n_Sm.
+    simpl.
+    rewrite <- IHn'.
+    reflexivity.
+Qed.
+
+(* END double_plus. *)
+
+(* Exercise: 1 start (destruct_induction) *)
+
+(* `induction` is useful when dealing with inductive types: after proving the
+* induction base, user is provided with a statement which assumes the
+* correctness of the initial statement for a case of the previous inductive
+* step. *)
+
+(* END destruct_induction *)
+
+(* Exercise: 4 stars (mult_comm) *)
+
+Theorem plus_swap : forall n m p : nat,
+   n + (m + p) = m + (n + p).
+Proof.
+   intros n m p.
+   assert (H1: m + (n + p) = n + p + m).
+     rewrite -> plus_comm.
+     reflexivity.
+   rewrite -> H1.
+   assert (H2: m + p = p + m).
+     rewrite -> plus_comm.
+     reflexivity.
+   rewrite -> H2.
+   rewrite -> plus_assoc.
+   reflexivity.
+Qed.
+
+Theorem mult_n_Sm : forall n m : nat,
+  n * S m = n + n * m.
+Proof.
+  intros n m.
+  induction n as [|n'].
+  reflexivity.
+  simpl.
+  rewrite -> IHn'.
+  rewrite -> plus_swap.
+  reflexivity.
+Qed.
+
+Theorem mult_comm : forall m n : nat,
+  m * n = n * m.
+Proof.
+  intros m n.
+  induction m as [|m'].
+  Case "m = 0".
+    rewrite -> mult_0_r.
+    reflexivity.
+  Case "m = S m'".
+    simpl.
+    rewrite -> IHm'.
+    rewrite -> mult_n_Sm.
+    reflexivity.
+Qed.
+
+(* END mult_comm. *)
+
+(* Exercise: 2 stars, optional (evenb_n__oddb_Sn) *)
+
+Theorem evenb_n__oddb_Sn : forall n : nat,
+  evenb n = negb (evenb (S n)).
+Proof.
+  intros n.
+  induction n as [|n'].
+  Case "n = 0".
+    reflexivity.
+  Case "n = S n'".
+    simpl.
+    rewrite -> IHn'.
+    rewrite -> negation_fn_applied_twice.
+    reflexivity.
+    SCase "negb x = negb x".
+      reflexivity.
+Qed.
+
+(* END evenb_n__oddb_Sn. *)
