@@ -286,3 +286,4 @@ Fixpoint fall_apart (n : nat) : nat :=
 *)
 
 (* END decreasing. *)
+
