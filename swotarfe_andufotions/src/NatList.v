@@ -153,5 +153,120 @@ Proof. reflexivity. Qed.
 
 Definition add (v : nat) (s : bag) : bag := cons v s.
 
+Example test_add1: count 1 (add 1 (1 :: 4 :: 1 :: nil)%list) = 3.
+Proof. reflexivity. Qed.
+
+Example test_add2: count 5 (add 1 (1 :: 4 :: 1 :: nil)%list) = 0.
+Proof. reflexivity. Qed.
+
+Definition member (v : nat) (s : bag) : bool :=
+  match count v s with
+    | O => false
+    | _ => true
+  end.
+
+Example test_member1 : member 1 (1 :: 4 :: 1 :: nil)%list = true.
+Proof. reflexivity. Qed.
+
+Example test_member2 : member 2 (1 :: 4 :: 1 :: nil)%list = false.
+Proof. reflexivity. Qed.
+
 (* END bag_functions. *)
+
+(* Exercise: 3 stars, optional (bag_more_functions) *)
+
+Fixpoint remove_one (v : nat) (s : bag) : bag :=
+  match s with
+    | nil => nil
+    | cons h t => match beq_nat h v with
+                    | true  => t
+                    | false => cons h (remove_one v t)
+                  end
+  end.
+
+Example test_remove_one1:
+  count 5 (remove_one 5 (2 :: 1 :: 5 :: 4 :: 1 :: nil)%list) = 0.
+Proof. reflexivity. Qed.
+
+Example test_remove_one2:
+  count 5 (remove_one 5 (2 :: 1 :: 4 :: 1 :: nil)%list) = 0.
+Proof. reflexivity. Qed.
+
+Example test_remove_one3:
+  count 4 (remove_one 5 (2 :: 1 :: 4 :: 5 :: 1 :: 4 :: nil)%list) = 2.
+Proof. reflexivity. Qed.
+
+Example test_remove_one4:
+  count 5 (remove_one 5 (2 :: 1 :: 5 :: 4 :: 5 :: 1 :: 4 :: nil)%list) = 1.
+Proof. reflexivity. Qed.
+
+Fixpoint remove_all (v:nat) (s:bag) : bag :=
+  match s with
+    | nil => nil
+    | cons h t => match beq_nat v h with
+                    | true => remove_all v t
+                    | false => cons h (remove_all v t)
+                  end
+  end.
+
+Example test_remove_all1:
+  count 5 (remove_all 5 (2 :: 1 :: 5 :: 4 :: 1 :: nil)%list) = 0.
+Proof. reflexivity. Qed.
+
+Example test_remove_all2:
+  count 5 (remove_all 5 (2 :: 1 :: 4 :: 1 :: nil)%list) = 0.
+Proof. reflexivity. Qed.
+
+Example test_remove_all3:
+  count 4 (remove_all 5 (2 :: 1 :: 4 :: 5 :: 1 :: 4 :: nil)%list) = 2.
+Proof. reflexivity. Qed.
+
+Example test_remove_all4:
+  count 5 (remove_all 5 (2 :: 1 :: 5 :: 4 :: 5 :: 1 :: 4 :: 5 :: 1 :: 4
+  :: nil)%list) = 0.
+Proof. reflexivity. Qed.
+
+Fixpoint subset (s1 : bag) (s2 : bag) : bool :=
+  match s1 with
+    | nil => true
+    | cons h t => match ble_nat (count h s1) (count h s2) with
+                    | false => false
+                    | true  => subset t s2
+                  end
+  end.
+
+Example test_subset1 :
+  subset (1 :: 2 :: nil)%list (2 :: 1 :: 4 :: 1 :: nil)%list = true.
+Proof. reflexivity. Qed.
+
+Example test_subset2 :
+  subset (1 :: 2 :: 2 :: nil)%list (2 :: 1 :: 4 :: 1 :: nil)%list = false.
+Proof. reflexivity. Qed.
+
+(* END bag_more_functions. *)
+
+(* Exercise: 3 stars (bag_theorem) *)
+
+Theorem bag_add_incr_count :
+  forall (b : bag), forall (n : nat), count n (add n b) = 1 + count n b.
+Proof.
+  intros b n.
+  simpl.
+  rewrite <- beq_nat_refl.
+  reflexivity.
+Qed.
+
+Theorem bag_add_n_not_incr_count_m :
+  forall (b : bag), forall (n m : nat),
+  (beq_nat m n = false) ->
+  count n (add m b) = count n b.
+Proof.
+  intros b n m H.
+  simpl.
+  rewrite -> H.
+  reflexivity.
+Qed.
+
+(* END bag_theorem. *)
+
 
