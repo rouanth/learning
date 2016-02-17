@@ -269,4 +269,56 @@ Qed.
 
 (* END bag_theorem. *)
 
+Fixpoint snoc (l : list nat) (v : nat) : list nat :=
+  match l with
+    | nil => (v :: nil)%list
+    | (h :: t)%list => (h :: (snoc t v))%list
+  end.
+
+Fixpoint rev (l : list nat) : list nat :=
+  match l with
+    | nil => nil
+    | (h :: t)%list => snoc (rev t) h
+  end.
+
+(* Exercise: 3 stars (list_exercises) *)
+
+Theorem app_nil_end : forall l : list nat,
+  app l nil = l.
+Proof.
+  intros l.
+  induction l as [|v l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = v :: l'".
+    simpl.
+    rewrite -> IHl'.
+    reflexivity.
+Qed.
+
+Theorem rev_involutive : forall l : list nat,
+  rev (rev l) = l.
+Proof.
+  intros l.
+  induction l as [|v l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = v :: l'".
+    simpl.
+    assert (forall z : list nat, forall m : nat,
+            rev (snoc z m) = (m :: rev z)%list).
+    SCase "proving rev (snoc l v) = v :: rev l".
+      intros z m.
+      induction z as [|m' z'].
+      SSCase "z = nil".
+        reflexivity.
+      SSCase "z = m' :: z'".
+        simpl.
+        rewrite -> IHz'.
+        reflexivity.
+    rewrite -> H.
+    rewrite -> IHl'.
+    reflexivity.
+
+(* END list_exercises. *)
 
