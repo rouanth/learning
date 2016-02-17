@@ -407,3 +407,22 @@ Qed.
 
 (* END list_exercises. *)
 
+(* Exercise: 4 stars, advanced (rev_injective) *)
+
+Theorem rev_injective : forall l1 l2 : list nat,
+  rev l1 = rev l2 -> l1 = l2.
+Proof.
+  intros l1 l2.
+  intros H.
+  rewrite <- rev_involutive.
+  replace l1 with (rev (rev l1)).
+  Case "rev (rev l1) = rev (rev l2)".
+    rewrite <- H.
+    reflexivity.
+  Case "l1 = rev (rev l1)".
+    rewrite -> rev_involutive.
+    reflexivity.
+Qed.
+
+(* END rev_injective. *)
+
