@@ -319,6 +319,91 @@ Proof.
     rewrite -> H.
     rewrite -> IHl'.
     reflexivity.
+Qed.
+
+Theorem app_assoc : forall l1 l2 l3 : list nat,
+  app l1 (app l2 l3) = app (app l1 l2) l3.
+Proof.
+  intros l1 l2 l3.
+  induction l1 as [|m l1'].
+  Case "l1 = nil".
+    reflexivity.
+  Case "l1 = m :: l1'".
+    simpl.
+    rewrite -> IHl1'.
+    reflexivity.
+Qed.
+
+Theorem app_assoc4 : forall l1 l2 l3 l4 : list nat,
+  app l1 (app l2 (app l3 l4)) = app (app (app l1 l2) l3) l4.
+Proof.
+  intros l1 l2 l3 l4.
+  rewrite -> app_assoc.
+  rewrite -> app_assoc.
+  reflexivity.
+Qed.
+
+Theorem snoc_append : forall (l : list nat) (n : nat),
+  snoc l n = app l (n :: nil)%list.
+Proof.
+  intros l n.
+  induction l as [|m l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = m :: l'".
+    simpl.
+    rewrite <- IHl'.
+    reflexivity.
+Qed.
+
+Theorem rev_reverses : forall (l : list nat) (n : nat),
+  rev (l ++ n :: nil)%list = (n :: rev l)%list.
+Proof.
+  intros l n.
+  induction l as [|m l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = m :: l'".
+    simpl.
+    rewrite -> snoc_append.
+    rewrite -> snoc_append.
+    rewrite -> IHl'.
+    reflexivity.
+Qed.
+
+Theorem distr_rev : forall l1 l2 : list nat,
+  rev (app l1 l2) = app (rev l2) (rev l1).
+Proof.
+  intros l1 l2.
+  induction l1 as [|m l1'].
+  Case "l1 = nil".
+    rewrite -> app_nil_end.
+    reflexivity.
+  Case "l1 = m :: l1'".
+    simpl.
+    rewrite -> snoc_append.
+    rewrite -> snoc_append.
+    rewrite -> IHl1'.
+    rewrite <- app_assoc.
+    reflexivity.
+Qed.
+
+Theorem nonzeros_app : forall l1 l2 : list nat,
+  nonzeros (l1 ++ l2)%list = (nonzeros l1 ++ nonzeros l2)%list.
+Proof.
+  intros l1 l2.
+  induction l1 as [|m l1'].
+  Case "l1 = nil".
+    reflexivity.
+  Case "l1 = m : l1'".
+    simpl.
+    rewrite -> IHl1'.
+    destruct m.
+    SCase "m = 0".
+      reflexivity.
+    SCase "m = S m'".
+      reflexivity.
+Qed.
 
 (* END list_exercises. *)
 
