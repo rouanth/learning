@@ -269,6 +269,8 @@ Qed.
 
 (* END bag_theorem. *)
 
+(* ((Induction on Lists)) *)
+
 Fixpoint snoc (l : list nat) (v : nat) : list nat :=
   match l with
     | nil => (v :: nil)%list
@@ -280,6 +282,8 @@ Fixpoint rev (l : list nat) : list nat :=
     | nil => nil
     | (h :: t)%list => snoc (rev t) h
   end.
+
+(* ((List Exercises, Part 1)) *)
 
 (* Exercise: 3 stars (list_exercises) *)
 
@@ -407,6 +411,133 @@ Qed.
 
 (* END list_exercises. *)
 
+(* Exercise: 2 stars (beq_natlist) *)
+
+Fixpoint beq_natlist (l1 l2 : list nat) : bool :=
+  match (l1, l2) with
+    | (nil, nil) => true
+    | (cons h t, nil) => false
+    | (nil, cons h t) => false
+    | (cons h1 t1, cons h2 t2) => match beq_nat h1 h2 with
+                                    | true => beq_natlist t1 t2
+                                    | false => false
+                                  end
+  end.
+
+Example test_beq_natlist1 : beq_natlist nil nil = true.
+Proof. reflexivity. Qed.
+
+Example test_beq_natlist2 :
+  beq_natlist (1 :: 2 :: 3 :: nil)%list (1 :: 2 :: 3 :: nil)%list = true.
+Proof. reflexivity. Qed.
+
+Example test_beq_natlist3 :
+  beq_natlist (1 :: 2 :: 3 :: nil)%list (1 :: 2 :: 4 :: nil)%list = false.
+Proof. reflexivity. Qed.
+
+Theorem beq_natlist_refl : forall l : list nat,
+  true = beq_natlist l l.
+Proof.
+  intros l.
+  induction l as [|m l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = m :: l'".
+    simpl.
+    rewrite <- beq_nat_refl.
+    rewrite <- IHl'.
+    reflexivity.
+Qed.
+
+(* END beq_natlist. *)
+
+(* ((List Exercises, Part 2)) *)
+
+(* Exercise: 2 stars (list_design) *)
+
+Theorem cons_snoc_app : forall (l1 l2 : list nat) (n m : nat),
+  (snoc l1 n ++ snoc l2 m)%list = (l1 ++ (n :: l2) ++ (m :: nil))%list.
+Proof.
+  intros l1 l2 n m.
+  replace (n :: l2)%list with (n :: nil ++ l2)%list.
+  rewrite -> app_assoc.
+  replace (l1 ++ n :: nil ++ l2)%list with ((l1 ++ n :: nil) ++ l2)%list.
+  replace (l1 ++ n :: nil)%list with (snoc l1 n).
+  rewrite <- app_assoc.
+  rewrite <- snoc_append.
+  reflexivity.
+  Case "snoc l1 n = (l1 ++ n :: nil)".
+    rewrite <- snoc_append.
+    reflexivity.
+  Case "(l1 ++ [n]) ++ l2 = l1 ++ [n] ++ l2".
+    rewrite <- app_assoc.
+    reflexivity.
+  Case "(n :: nil ++ l2)%list = (n :: l2)%list".
+    reflexivity.
+Qed.
+
+(* END list_design. *)
+
+(* Exercise: 3 stars, advanced (bag_proofs) *)
+
+Theorem count_member_nonzero : forall (s : bag),
+  ble_nat 1 (count 1 (1 :: s)%list) = true.
+Proof. reflexivity. Qed.
+
+Theorem remove_decreases_count : forall (s : bag),
+  ble_nat (count 0 (remove_one 0 s)) (count 0 s) = true.
+Proof.
+  intros s.
+  induction s as [|n s'].
+  Case "s = []".
+    reflexivity.
+  Case "s = n :: s'".
+    destruct n.
+    SCase "n = 0".
+      simpl.
+      assert (forall n : nat, ble_nat n (S n) = true).
+      SSCase "ble_nat n (S n) = true".
+        intros n.
+        induction n as [|n'].
+        SSSCase "n = 0".
+          reflexivity.
+        SSSCase "n = S n'".
+          simpl.
+          rewrite <- IHn'.
+          reflexivity.
+      rewrite -> H.
+      reflexivity.
+    SCase "n = S n'".
+      simpl.
+      rewrite -> IHs'.
+      reflexivity.
+Qed.
+
+(* END bag_proofs. *)
+
+(* Exercise: 3 stars, optional (bag_count_sum) *)
+
+Theorem bag_count_sum : forall (s d : bag) (n : nat),
+  ble_nat (count n s) (count n (bag_sum s d)) = true.
+Proof.
+  intros s d n.
+  induction s as [|m s'].
+  Case "s = nil".
+    reflexivity.
+  Case "s = m :: s'".
+    simpl.
+    destruct (beq_nat m n).
+    SCase "m = n".
+      simpl.
+      rewrite -> IHs'.
+      reflexivity.
+    SCase "m != n".
+      rewrite -> IHs'.
+      reflexivity.
+Qed.
+
+(* END bag_count_sum. *)
+
 (* Exercise: 4 stars, advanced (rev_injective) *)
 
 Theorem rev_injective : forall l1 l2 : list nat,
@@ -425,4 +556,91 @@ Proof.
 Qed.
 
 (* END rev_injective. *)
+
+(* ((Options)) *)
+
+Definition option_elim (n : nat) (o : option nat) : nat :=
+  match o with
+    | None => n
+    | Some z => z
+  end.
+
+(* Exercise: 2 stars (hd_opt) *)
+
+Definition hd_opt (l : list nat) : option nat :=
+  match l with
+    | nil => None
+    | cons h t => Some h
+  end.
+
+Example test_hd_opt1 : hd_opt nil = None.
+Proof. reflexivity. Qed.
+
+Example test_hd_opt2 : hd_opt (1 :: nil)%list = Some 1.
+Proof. reflexivity. Qed.
+
+Example test_hd_opt3 : hd_opt (5 :: 6 :: nil)%list = Some 5.
+Proof. reflexivity. Qed.
+
+(* END hd_opt *)
+
+(* Exercise: 1 star, optional (option_elim_hd) *)
+
+Theorem option_elim_hd : forall (l : list nat) (default : nat),
+  hd default l = option_elim default (hd_opt l).
+Proof.
+  induction l as [|n l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = n l'".
+    reflexivity.
+Qed.
+
+(* END option_elim_hd. *)
+
+Module Dictionary.
+
+Inductive dictionary : Type :=
+  | empty : dictionary
+  | record : nat -> nat -> dictionary -> dictionary.
+
+Definition insert (key value : nat) (d : dictionary) :
+  dictionary := (record key value d).
+
+Fixpoint find (key : nat) (d : dictionary) : option nat :=
+  match d with
+    | empty => None
+    | record key' val d' => if beq_nat key key'
+                               then (Some val)
+                               else (find key d')
+  end.
+
+(* Exercise: 1 star (dictionary_invariant1) *)
+
+Theorem dictionary_invariant1 : forall (d : dictionary) (k v : nat),
+  (find k (insert k v d)) = Some v.
+Proof.
+  intros d k v.
+  simpl.
+  rewrite <- beq_nat_refl.
+  reflexivity.
+Qed.
+
+(* END dictionary_invariant1. *)
+
+(* Exercise: 1 star (dictionary_invariant1) *)
+
+Theorem dictionary_invariant2 : forall (d : dictionary) (m n o : nat),
+  beq_nat m n = false -> find m d = find m (insert n o d).
+Proof.
+  intros d m n o.
+  intros H.
+  simpl.
+  rewrite -> H.
+  reflexivity.
+Qed.
+
+(* END dictionary_invariant1. *)
+
+End Dictionary.
 
