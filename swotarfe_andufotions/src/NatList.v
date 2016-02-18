@@ -644,3 +644,4 @@ Qed.
 
 End Dictionary.
 
+End NatList.
