@@ -157,3 +157,34 @@ Example test_hd_opt2 :
 Proof. reflexivity. Qed.
 
 (* END hd_opt_poly. *)
+
+(* ((Functions as Data)) *)
+
+Definition prod_curry { X Y Z : Type }
+  (f : X * Y -> Z) (x : X) (y : Y) : Z := f (x, y).
+
+(* Exercise: 2 stars, advanced (currying) *)
+
+Definition prod_uncurry { X Y Z : Type }
+  (f : X -> Y -> Z) (p : X * Y) : Z :=
+  match p with (x, y) => f x y end.
+
+Theorem uncurry_curry : forall (X Y Z : Type) (f : X -> Y -> Z) x y,
+  prod_curry (prod_uncurry f) x y = f x y.
+Proof.
+  intros X Y Z f x y.
+  replace (prod_curry (prod_uncurry f) x y) with ((prod_uncurry f) (x, y)).
+    reflexivity.
+    reflexivity.
+Qed.
+
+Theorem curry_uncurry : forall (X Y Z : Type) (f : (X * Y) -> Z) (p : X * Y),
+  prod_uncurry (prod_curry f) p = f p.
+Proof.
+  intros X Y Z f p.
+  destruct p.
+  reflexivity.
+Proof.
+
+(* END currying. *)
+
