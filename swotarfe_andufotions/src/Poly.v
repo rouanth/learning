@@ -184,7 +184,7 @@ Proof.
   intros X Y Z f p.
   destruct p.
   reflexivity.
-Proof.
+Qed.
 
 (* END currying. *)
 
@@ -373,3 +373,88 @@ Proof.
 Qed.
 
 (* END fold_map. *)
+
+Fixpoint index { X : Type } (n : nat) (l : list X) : option X :=
+  match l with
+    | nil => None
+    | cons h t => if beq_nat n 0 then Some h else index (pred n) t
+  end.
+
+(* Exercise: 2 stars, advanced (index_informal) *)
+
+(* Performing an induction over the given list, we have the following cases.
+* If the list is empty, the case is trivial: no elements are present, and the
+* function returns None.
+* If the list is non-empty, then its length is not zero; thus the index in the
+* remaining list can't be zero, and the inductive step applies. *)
+
+(* END index_informal. *)
+
+Module Church.
+
+Definition nat := forall X : Type, (X -> X) -> X -> X.
+
+Definition zero : nat := fun (X : Type) (f : X -> X) (x : X) => x.
+
+Definition one : nat := fun (X : Type) (f : X -> X) (x : X) => f x.
+
+Definition two : nat := fun (X : Type) (f : X -> X) (x : X) => f (f x).
+
+Definition three : nat := fun (X : Type) (f : X -> X) (x : X) => f (f (f x)).
+
+(* Exercise: 4 stars, advanced (church_numerals) *)
+
+Definition succ (n : nat) : nat :=
+  fun (X : Type) (f : X -> X) (x : X) => f (n X f x).
+
+Example succ_1 : succ zero = one.
+Proof. reflexivity. Qed.
+
+Example succ_2 : succ one = two.
+Proof. reflexivity. Qed.
+
+Example succ_3 : succ two = three.
+Proof. reflexivity. Qed.
+
+Definition plus (n m : nat) : nat :=
+  fun (X : Type) (f : X -> X) (x : X) => m X f (n X f x).
+
+Example plus_1 : plus zero one = one.
+Proof. reflexivity. Qed.
+
+Example plus_2 : plus two three = plus three two.
+Proof. reflexivity. Qed.
+
+Example plus_3 : plus (plus two two) three = plus one (plus three three).
+Proof. reflexivity. Qed.
+
+Definition mult (n m : nat) : nat :=
+  fun (X : Type) (f : X -> X) (x : X) => m X (n X f) x.
+
+Example mult_1 : mult one one = one.
+Proof. reflexivity. Qed.
+
+Example mult_2 : mult zero (plus three three) = zero.
+Proof. reflexivity. Qed.
+
+Example mult_3 : mult two three = plus three three.
+Proof. reflexivity. Qed.
+
+(*
+Definition exp (n m : nat) : nat :=
+  fun (X : Type) (f : X -> X) (x : X) => m X (mult ) one.
+
+Example exp_1 : exp two two = plus two two.
+Proof. reflexivity. Qed.
+
+Example exp_2 : exp three two = plus (mult two (mult two two)) one.
+Proof. reflexivity. Qed.
+
+Example exp_3 : exp three zero = one.
+Proof. reflexivity. Qed.
+*)
+
+(* END church_numerals. *)
+
+End Church.
+
