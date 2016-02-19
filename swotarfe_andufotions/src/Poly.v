@@ -188,3 +188,120 @@ Proof.
 
 (* END currying. *)
 
+Fixpoint filter {X : Type} (f : X -> bool) (l : list X) : list X :=
+  match l with
+    | nil => nil
+    | cons h t => if f h then cons h (filter f t) else filter f t
+  end.
+
+(* Exercise: 2 stars (filter_even_gt7) *)
+
+Definition filter_even_gt7_1 (l : list nat) : list nat :=
+  filter (fun x => ((evenb x) && negb (ble_nat 7 x))%bool) l.
+
+(* END filter_even_gt7. *)
+
+(* Exercise: 3 stars (partition) *)
+
+Definition partition {X : Type} (f : X -> bool) (l : list X)
+  : list X * list X :=
+  (filter f l, filter (fun x => negb (f x)) l).
+
+Example test_partition1 : partition oddb (1 :: 2 :: 3 :: 4 :: 5 :: nil)%list =
+  ((1 :: 3 :: 5 :: nil)%list, (2 :: 4 :: nil)%list).
+Proof. reflexivity. Qed.
+
+Example test_partition2 :
+  partition (fun x => false) (5 :: 9 :: 0 :: nil)%list =
+  (nil, (5 :: 9 :: 0 :: nil)%list).
+Proof. reflexivity. Qed.
+
+(* END partition. *)
+
+Fixpoint map {X Y : Type} (f : X -> Y) (l : list X) : list Y :=
+  match l with
+    | nil => nil
+    | cons h t => (f h :: map f t)%list
+  end.
+
+(* Exercise: 3 stars (map_rev) *)
+
+Theorem map_app : forall (X Y : Type) (f : X -> Y) (l1 l2 : list X),
+  map f (l1 ++ l2) = (map f l1 ++ map f l2)%list.
+Proof.
+  intros X Y f l1 l2.
+  induction l1 as [|n l1'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = n :: l1'".
+    simpl.
+    rewrite <- IHl1'.
+    reflexivity.
+Qed.
+
+Theorem map_rev : forall (X Y : Type) (f : X -> Y) (l : list X),
+  map f (rev l) = rev (map f l).
+Proof.
+  intros X Y f l.
+  induction l as [|n l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = n :: l'".
+    simpl.
+    assert (forall (Z : Type) (j : list Z) (k : Z),
+            snoc j k = (j ++ (k :: nil))%list).
+      intros Z j k.
+      induction j as [|m j'].
+      SCase "j = nil".
+        reflexivity.
+      SCase "j = m :: j'".
+        simpl.
+        rewrite -> IHj'.
+        reflexivity.
+    rewrite -> H.
+    rewrite -> H.
+    rewrite <- IHl'.
+    rewrite -> map_app.
+    reflexivity.
+Qed.
+
+(* END map_rev. *)
+
+(* Exercise: 2 stars (flat_map) *)
+
+Fixpoint flat_map {X Y : Type} (f : X -> list Y) (l : list X) : list Y :=
+  match l with
+    | nil => nil
+    | cons h t => (f h ++ flat_map f t)%list
+  end.
+
+Example test_flat_map1:
+  flat_map (fun n => (n :: n :: n :: nil)%list) (1 :: 5 :: 4 :: nil)%list =
+  (1 :: 1 :: 1 :: 5 :: 5 :: 5 :: 4 :: 4 :: 4 :: nil)%list.
+Proof. reflexivity. Qed.
+
+(* END flat_map. *)
+
+(* Exercise: 1 star, advanced (fold_types_different) *)
+
+(* fold cons *)
+
+(* END fold_types_different. *)
+
+Definition constfun {X : Type} (x : X) : nat -> X := fun k => x.
+
+Definition override {X : Type} (f : nat -> X) (k : nat) (x : X) : nat -> X :=
+  fun (k' : nat) => if beq_nat k k' then x else f k'.
+
+(* Exercise: 1 star (override_example) *)
+
+Theorem override_example : forall (b : bool),
+  override (constfun b) 3 true 2 = b.
+Proof.
+  intros b.
+  destruct b.
+    reflexivity.
+    reflexivity.
+Qed.
+
+(* END override_example. *)
