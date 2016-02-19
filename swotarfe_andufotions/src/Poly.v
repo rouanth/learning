@@ -284,7 +284,7 @@ Proof. reflexivity. Qed.
 
 (* Exercise: 1 star, advanced (fold_types_different) *)
 
-(* fold cons *)
+(* rev = fold (fun x y => snoc y x) *)
 
 (* END fold_types_different. *)
 
@@ -305,3 +305,71 @@ Proof.
 Qed.
 
 (* END override_example. *)
+
+(* Exercise: 2 stars (override_neq) *)
+
+Theorem override_neq : forall (X : Type) x1 x2 k1 k2 (f : nat -> X),
+  f k1 = x1 ->
+  beq_nat k2 k1 = false ->
+  (override f k2 x2) k1 = x1.
+Proof.
+  intros X x1 x2 k1 k2 f.
+  intros H1.
+  intros H2.
+  unfold override.
+  rewrite -> H2.
+  rewrite -> H1.
+  trivial.
+Qed.
+
+(* END override_neq. *)
+
+(* ((Additional Exercises)) *)
+
+Fixpoint fold { X Y : Type } (f : X -> Y -> Y) (l : list X) (b : Y) : Y :=
+  match l with
+    | nil => b
+    | cons h t => f h (fold f t b)
+  end.
+
+(* Exercise: 2 stars (fold_length) *)
+
+Definition fold_length { X : Type } (l : list X) : nat :=
+  fold (fun _ n => S n) l 0.
+
+Example test_fold_length1 : fold_length (4 :: 7 :: 0 :: nil)%list = 3.
+Proof. reflexivity. Qed.
+
+Theorem fold_length_correct : forall X (l : list X), fold_length l = length l.
+Proof.
+  intros X l.
+  induction l as [|n l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = n :: l'".
+    simpl.
+    rewrite <- IHl'.
+    reflexivity.
+Qed.
+
+(* END fold_length. *)
+
+(* Exercise: 3 stars (fold_map) *)
+
+Definition fold_map {X Y : Type} (f : X -> Y) (l : list X) : list Y :=
+  fold (fun x y => cons (f x) y) l nil.
+
+Theorem fold_map_correct : forall (X Y : Type) (l : list X) (f : X -> Y),
+  map f l = fold_map f l.
+Proof.
+  intros X Y l f.
+  induction l as [|n l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = n :: l'".
+    simpl.
+    rewrite -> IHl'.
+    reflexivity.
+Qed.
+
+(* END fold_map. *)
