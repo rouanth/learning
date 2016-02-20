@@ -440,9 +440,9 @@ Proof. reflexivity. Qed.
 Example mult_3 : mult two three = plus three three.
 Proof. reflexivity. Qed.
 
-(*
 Definition exp (n m : nat) : nat :=
-  fun (X : Type) (f : X -> X) (x : X) => m X (mult ) one.
+  fun (X : Type) (f : X -> X) (x : X) =>
+  (m (X -> X) (n X) (one X f)) x.
 
 Example exp_1 : exp two two = plus two two.
 Proof. reflexivity. Qed.
@@ -452,7 +452,6 @@ Proof. reflexivity. Qed.
 
 Example exp_3 : exp three zero = one.
 Proof. reflexivity. Qed.
-*)
 
 (* END church_numerals. *)
 
