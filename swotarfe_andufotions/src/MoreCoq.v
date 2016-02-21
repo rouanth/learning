@@ -219,3 +219,27 @@ Qed.
 
 (* END beq_nat_true_informal. *)
 
+(* Exercise: 3 stars (gen_dep_practice) *)
+
+Theorem index_after_last: forall (n : nat) (X : Type) (l : list X),
+  length l = n -> index n l = None.
+Proof.
+  intros n X l.
+  generalize dependent n.
+  induction l as [|m l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = m :: l'".
+    intros n H.
+    destruct n.
+    SCase "n = 0".
+      inversion H.
+    SCase "n = S n'".
+      inversion H.
+      simpl.
+      apply IHl'.
+      trivial.
+Qed.
+
+(* END gen_dep_practice. *)
+
