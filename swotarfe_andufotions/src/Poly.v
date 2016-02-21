@@ -146,8 +146,6 @@ Definition hd_opt { X : Type } (l : list X) : option X :=
     | cons h t => Some h
   end.
 
-Check @hd_opt.
-
 Example test_hd_opt1 : hd_opt (1 :: 2 :: nil)%list = Some 1.
 Proof. reflexivity. Qed.
 
@@ -429,7 +427,7 @@ Example plus_3 : plus (plus two two) three = plus one (plus three three).
 Proof. reflexivity. Qed.
 
 Definition mult (n m : nat) : nat :=
-  fun (X : Type) (f : X -> X) (x : X) => m X (n X f) x.
+  fun (X : Type) (f : X -> X) => m X (n X f).
 
 Example mult_1 : mult one one = one.
 Proof. reflexivity. Qed.
@@ -441,8 +439,7 @@ Example mult_3 : mult two three = plus three three.
 Proof. reflexivity. Qed.
 
 Definition exp (n m : nat) : nat :=
-  fun (X : Type) (f : X -> X) (x : X) =>
-  (m (X -> X) (n X) (one X f)) x.
+  fun (X : Type) (f : X -> X) => m (X -> X) (n X) (one X f).
 
 Example exp_1 : exp two two = plus two two.
 Proof. reflexivity. Qed.
