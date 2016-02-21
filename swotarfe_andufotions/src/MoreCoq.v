@@ -173,3 +173,32 @@ Qed.
 
 (* END plus_n_n_injective. *)
 
+(* ((Varying the Induction Hypothesis)) *)
+
+(* Exercise: 2 stars (beq_nat_true) *)
+
+Theorem beq_nat_true : forall n m,
+  beq_nat n m = true -> n = m.
+Proof.
+  intros n. induction n as [|n'].
+  Case "n = 0".
+    intros m H.
+    destruct m.
+    SCase "m = 0".
+      trivial.
+    SCase "m = S m'".
+      inversion H.
+  Case "n = S n'".
+    intros m H.
+    destruct m.
+    SCase "m = 0".
+      inversion H.
+    SCase "m = S m'".
+      simpl in H.
+      apply IHn' in H.
+      rewrite -> H.
+      trivial.
+Qed.
+
+(* END beq_nat_true. *)
+
