@@ -202,3 +202,20 @@ Qed.
 
 (* END beq_nat_true. *)
 
+(* Exercise: 2 stars, advanced (beq_nat_true_informal) *)
+
+(* Performing an induction on n, we have the following cases:
+* a) n is 0;
+* b) n is an increment of another number.
+* In the first case, the possible m are 0 or an increment of another number;
+* the first case is trivial, while the second is contradictory by the
+* definition of beq_nat.
+* The inductive step is proving that for every non-zero n, if beq_nat n m is
+* true, the numbers are equal.
+* If m is zero, there is a contradiction: beq_nat 0 (S m') is always false.
+* If m is non-zero, then, beq_nat (S n') (S m') being the same as
+* beq_nat n' m', falls under the induction hypothesis.
+*)
+
+(* END beq_nat_true_informal. *)
+
