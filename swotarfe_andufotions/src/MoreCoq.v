@@ -136,3 +136,40 @@ Qed.
 
 (* END practice. *)
 
+(* ((Using Tactics on Hypotheses)) *)
+
+(* Exercise: 3 stars (plus_n_n_injective) *)
+
+Theorem plus_0_0_0 : forall (n m : nat), 0 = n + m -> n = 0.
+Proof.
+  intros n m H.
+  induction n as [|n'].
+    reflexivity.
+    inversion H.
+Qed.
+
+Theorem plus_n_n_injective : forall (n m : nat), n + n = m + m -> n = m.
+Proof.
+  intros n. induction n as [|n'].
+  Case "n = 0".
+    intros m H.
+    simpl in H.
+    apply plus_0_0_0 in H.
+    symmetry.
+    apply H.
+  Case "n = S n'".
+    intros m H.
+    destruct m.
+    SCase "m = 0".
+      inversion H.
+    SCase "m = S m'".
+      rewrite <- plus_n_Sm in H.
+      rewrite <- plus_n_Sm in H.
+      inversion H.
+      apply IHn' in H1.
+      rewrite -> H1.
+      trivial.
+Qed.
+
+(* END plus_n_n_injective. *)
+
