@@ -243,3 +243,110 @@ Qed.
 
 (* END gen_dep_practice. *)
 
+(* Exercise: 3 stars, advanced, optional (index_after_last_informal) *)
+
+(* Let l be a list. By induction on l we can prove that, for every list, if
+ * its length equals the requested index, function index for these index and
+ * list returns None.
+ * 
+ * If l is an empty list, the case is trivial: for every empty list the
+ * index function return None.
+ *
+ * If l is created by adding an element to an existing list, that is,
+ * presented in the form `cons m l'` where m is a single element and l' is a
+ * list, then we should perform a case analysis for the index, using the
+ * induction hypothesis: if an index equals the list's length, index n l' =
+ * None.
+ *
+ * If the index is zero, it can't be equal to the list's length by definition
+ * of length.
+ *
+ * If the index in an increment of another number, we have length (m :: l') =
+ * S n', which simplifies to length l' = n'. That condition matches the one in
+ * the induction hypothesis, so we apply it.
+*)
+
+(* END index_after_last_informal. *)
+
+(* Exercise: 3 stars, optional (gen_dep_practice_more) *)
+
+Theorem length_snoc''' : forall (n : nat) (X : Type) (v : X) (l : list X),
+  length l = n -> length (snoc l v) = S n.
+Proof.
+  intros n X v l.
+  generalize dependent n.
+  induction l as [|m l'].
+  Case "l = nil".
+    intros n H.
+    simpl in H.
+    rewrite <- H.
+    reflexivity.
+  Case "l = m :: l'".
+    intros n H.
+    destruct n.
+    SCase "n = 0".
+      inversion H.
+    SCase "n = S n'".
+      inversion H.
+      rewrite -> H1.
+      apply IHl' in H1.
+      simpl.
+      rewrite -> H1.
+      trivial.
+Qed.
+
+(* END gen_dep_practice_more. *)
+
+(* Exercise: 3 stars, optional (app_length_cons) *)
+
+Theorem app_length_cons : forall (X : Type) (l1 l2 : list X) (x : X) (n : nat)
+  , length (l1 ++ (x :: l2))%list = n -> S (length (l1 ++ l2)%list) = n.
+Proof.
+  intros X l1.
+  induction l1 as [|m l1'].
+  Case "l1 = nil".
+    simpl.
+    intros l2 x n H.
+    apply H.
+  Case "l1 = m :: l1'".
+    simpl.
+    intros l2 x n H.
+    destruct n.
+      inversion H.
+      inversion H.
+      rewrite -> H1.
+      apply IHl1' in H1.
+      rewrite -> H1.
+      trivial.
+Qed.
+
+(* END app_length_cons. *)
+
+(* Exercise: 4 stars, optional (app_length_twice) *)
+
+Theorem app_length_twice : forall (X : Type) (n : nat) (l : list X),
+  length l = n -> length (l ++ l) = n + n.
+Proof.
+  intros X n l.
+  generalize dependent n.
+  generalize dependent X.
+  induction l as [|m l'].
+  Case "l = nil".
+    intros n H.
+    inversion H.
+    reflexivity.
+  Case "l = m :: l'".
+    simpl.
+    intros n H.
+    destruct n.
+    SCase "n = 0".
+      inversion H.
+    SCase "n = S n'".
+      inversion H.
+      rewrite -> H1.
+      apply IHl' in H1.
+
+Admitted.
+
+(* END app_length_twice. *)
+
