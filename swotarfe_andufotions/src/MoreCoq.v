@@ -324,6 +324,40 @@ Qed.
 
 (* Exercise: 4 stars, optional (app_length_twice) *)
 
+Theorem app_nil_invariant : forall (X : Type) (l : list X), app l nil = l.
+Proof.
+  intros X l.
+  induction l as [|n l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = n :: l'".
+    simpl.
+    rewrite -> IHl'.
+    trivial.
+Qed.
+
+Theorem length_app_comm : forall (X : Type) (l1 l2 : list X),
+  length (l1 ++ l2) = length (l2 ++ l1).
+Proof.
+  intros X l1.
+  induction l1 as [|m l1'].
+  Case "l1 = nil".
+    intros l2.
+    rewrite -> app_nil_invariant.
+    reflexivity.
+  Case "l1 = m :: l1'".
+    intros l2.
+    simpl.
+    rewrite -> IHl1'.
+    induction l2.
+    SCase "l2 = nil".
+      reflexivity.
+    SCase "l2 = a :: l2".
+      simpl.
+      rewrite -> IHl2.
+      reflexivity.
+Qed.
+
 Theorem app_length_twice : forall (X : Type) (n : nat) (l : list X),
   length l = n -> length (l ++ l) = n + n.
 Proof.
@@ -336,17 +370,21 @@ Proof.
     inversion H.
     reflexivity.
   Case "l = m :: l'".
-    simpl.
     intros n H.
+    simpl.
+    rewrite <- length_app_comm.
+    simpl.
     destruct n.
     SCase "n = 0".
       inversion H.
     SCase "n = S n'".
+      rewrite <- plus_n_Sm.
+      simpl.
       inversion H.
-      rewrite -> H1.
-      apply IHl' in H1.
-
-Admitted.
+      rewrite <- IHl'.
+      trivial.
+      trivial.
+Qed.
 
 (* END app_length_twice. *)
 
