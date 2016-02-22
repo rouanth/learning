@@ -423,3 +423,20 @@ Qed.
 
 (* END double_induction. *)
 
+(* Exercise: 1 star (override_shadow) *)
+
+Theorem override_shadow : forall (X : Type) x1 x2 k1 k2 (f : nat -> X),
+  (override (override f k1 x2) k1 x1) k2 = (override f k1 x1) k2.
+Proof.
+  intros X x1 x2 k1 k2.
+  intros H.
+  unfold override.
+  destruct (beq_nat k1 k2).
+  Case "k1 = k2".
+    trivial.
+  Case "k1 /= k2".
+    trivial.
+Qed.
+
+(* END override_shadow. *)
+
