@@ -388,3 +388,38 @@ Qed.
 
 (* END app_length_twice. *)
 
+(* Exercise: 3 stars, optional (double_induction) *)
+
+Theorem double_induction: forall (P : nat -> nat -> Prop),
+  P 0 0 ->
+  (forall m, P m 0 -> P (S m) 0) ->
+  (forall n, P 0 n -> P 0 (S n)) ->
+  (forall m n, P m n -> P (S m) (S n)) ->
+  forall m n, P m n.
+Proof.
+  intros P.
+  intros P00.
+  intros Pm0.
+  intros P0n.
+  intros Pmn.
+  intros m.
+  induction m as [|m'].
+  Case "m = 0".
+    induction n as [|n'].
+    SCase "n = 0".
+      apply P00.
+    SCase "n = S n'".
+      apply P0n.
+      apply IHn'.
+  Case "m = S m'".
+    destruct n as [|n'].
+    SCase "n = 0".
+      apply Pm0.
+      apply IHm'.
+    SCase "n = S n'".
+      apply Pmn.
+      apply IHm'.
+Qed.
+
+(* END double_induction. *)
+
