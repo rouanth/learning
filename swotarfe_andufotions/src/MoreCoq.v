@@ -683,3 +683,41 @@ Qed.
 
 (* END filter_exercise. *)
 
+(* Exercise: 4 stars, advanced (forall_exists_challenge) *)
+
+Fixpoint forallb {X : Type} (f : X -> bool) (l : list X) : bool :=
+  match l with
+    | nil => true
+    | cons h t => andb (f h) (forallb f t)
+  end.
+
+Fixpoint existsb {X : Type} (f : X -> bool) (l : list X) : bool :=
+  match l with
+    | nil => false
+    | cons h t => orb (f h) (existsb f t)
+  end.
+
+Definition existsb' {X : Type} (f : X -> bool) (l : list X) : bool :=
+  negb (forallb (fun x => negb (f x)) l).
+
+Theorem existsb_existsb' : forall (X : Type) (f : X -> bool) (l : list X),
+  existsb f l = existsb' f l.
+Proof.
+  intros X f l.
+  induction l as [|n l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = n :: l'".
+    simpl.
+      rewrite -> IHl'.
+    unfold existsb'.
+    simpl.
+    destruct (f n) eqn : Hfn.
+    SCase "f n = true".
+      reflexivity.
+    SCase "f n = false".
+      reflexivity.
+Qed.
+
+(* END forall_exists_challenge. *)
+
