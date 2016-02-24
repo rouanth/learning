@@ -440,3 +440,46 @@ Qed.
 
 (* END override_shadow. *)
 
+Fixpoint combine {X Y : Type} (l1 : list X) (l2 : list Y) : list (X * Y) :=
+  match (l1, l2) with
+    | (nil, _) => nil
+    | (_, nil) => nil
+    | (cons h1 t1, cons h2 t2) => cons (h1, h2) (combine t1 t2)
+  end.
+
+(* Exercise: 3 stars, optional (combine_split) *)
+
+Theorem combine_split : forall X Y (l : list (X * Y)) l1 l2,
+  split l = (l1, l2) ->
+  combine l1 l2 = l.
+Proof.
+  intros X Y.
+  intros l.
+  induction l as [|x l'].
+  Case "l = nil".
+    intros l1 l2 H.
+    inversion H.
+    reflexivity.
+  Case "l = x :: l'".
+    destruct x.
+    simpl.
+    destruct (split l') as [l'1 l'2].
+    intros l1 l2 H.
+    destruct l1.
+    SCase "l1 = nil".
+      inversion H.
+    SCase "l1 = z :: l1'".
+      destruct l2.
+      SSCase "l2 = nil".
+        inversion H.
+      SSCase "l2 = m :: l2'".
+        simpl.
+        inversion H.
+        rewrite -> IHl'.
+        trivial.
+        rewrite -> H2.
+        rewrite -> H4.
+        trivial.
+Qed.
+
+(* END combine_split. *)
