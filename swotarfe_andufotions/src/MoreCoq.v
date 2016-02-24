@@ -635,3 +635,24 @@ Qed.
 
 (* END split_combine. *)
 
+(* Exercise: 3 stars (override_permute) *)
+
+Theorem override_permute : forall (X : Type) x1 x2 k1 k2 k3 (f : nat -> X),
+  beq_nat k2 k1 = false ->
+  (override (override f k2 x2) k1 x1) k3 =
+  (override (override f k1 x1) k2 x2) k3.
+Proof.
+  intros X x1 x2 k1 k2 k3 f H.
+  unfold override.
+  destruct (beq_nat k1 k3) eqn: k1eqk3.
+  Case "k1 = k3".
+    apply beq_nat_true in k1eqk3.
+    rewrite -> k1eqk3 in H.
+    rewrite -> H.
+    trivial.
+  Case "k1 /= k3".
+    trivial.
+Qed.
+
+(* END override_permute. *)
+
