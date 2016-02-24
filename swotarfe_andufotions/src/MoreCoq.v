@@ -537,3 +537,31 @@ Qed.
 
 (* END override_same. *)
 
+(* ((Additional Exercises)) *)
+
+(* Exercise: 3 stars (beq_nat_sym) *)
+
+Theorem beq_nat_sym : forall (n m : nat),
+  beq_nat n m = beq_nat m n.
+Proof.
+  intros n.
+  induction n as [|n'].
+  Case "n = 0".
+    intros m.
+    destruct m.
+    SCase "m = 0".
+      reflexivity.
+    SCase "m = S m'".
+      reflexivity.
+  Case "n = S n'".
+    intros m.
+    induction m as [|m'].
+    SCase "m = 0".
+      reflexivity.
+    SCase "m = S m'".
+      simpl.
+      apply IHn'.
+Qed.
+
+(* END beq_nat_sym. *)
+
