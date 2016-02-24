@@ -555,7 +555,7 @@ Proof.
       reflexivity.
   Case "n = S n'".
     intros m.
-    induction m as [|m'].
+    destruct m as [|m'].
     SCase "m = 0".
       reflexivity.
     SCase "m = S m'".
@@ -564,4 +564,23 @@ Proof.
 Qed.
 
 (* END beq_nat_sym. *)
+
+(* Exercise: 3 stars, advanced, optional (beq_nat_sym_informal) *)
+
+(* We shall prove it by the induction on n.
+*
+* The inductive base -- beq 0 m = beq m 0 -- is simple to prove: if m is zero,
+* both sides evaluate to truth, otherwise both evaluate to false, by
+* definition of beq_nat.
+*
+* For the inductive step we have beq_nat (S n') m = beq_nat m (S n'), and the
+* inductive hypothesis is that for all natural numbers m beq_nat n' m =
+* beq_nat m n'. Case analysis on m gives us the following: for m = 0 both
+* sides of beq_nat (S n') 0 = beq_nat 0 (S n') equal to zero for every n'; if
+* m is a successor of some another number m', then beq_nat (S n') (S m') =
+* beq_nat (S m') (S n') evaluates to beq_nat n' m' = beq_nat m' n', which
+* corresponds to the inductive hypothesis.
+*)
+
+(* END beq_nat_sym_informal. *)
 
