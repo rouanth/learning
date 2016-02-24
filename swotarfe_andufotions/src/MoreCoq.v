@@ -602,3 +602,36 @@ Qed.
 
 (* END beq_nat_trans. *)
 
+(* Exercise: 3 stars, advanced (split_combine) *)
+
+Definition split_combine_statement : Prop :=
+  forall (X Y : Type) (l1 : list X) (l2 : list Y),
+  length l1 = length l2 -> split (combine l1 l2) = (l1, l2).
+
+Theorem split_combine : split_combine_statement.
+Proof.
+  unfold split_combine_statement.
+  intros X Y l1.
+  induction l1 as [|n l1'].
+  Case "l1 = nil".
+    intros l2 Hl.
+    destruct l2 as [|m l2'].
+    SCase "l2 = nil".
+      reflexivity.
+    SCase "l2 = m :: l2'".
+      inversion Hl.
+  Case "l1 = n :: l1'".
+    intros l2 Hl.
+    destruct l2 as [|m l2'].
+    SCase "l2 = nil".
+      inversion Hl.
+    SCase "l2 = m :: l2'".
+      inversion Hl.
+      simpl.
+      rewrite -> IHl1'.
+      trivial.
+      apply H0.
+Qed.
+
+(* END split_combine. *)
+
