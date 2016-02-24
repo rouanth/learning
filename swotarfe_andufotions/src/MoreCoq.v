@@ -483,3 +483,37 @@ Proof.
 Qed.
 
 (* END combine_split. *)
+
+(* Exercise: 2 stars (destruct_eqn_practice) *)
+
+Theorem bool_fn_applied_thrice : forall (f : bool -> bool) (b : bool),
+  f (f (f b)) = f b.
+Proof.
+  intros f b.
+  destruct b.
+  Case "b = true".
+    destruct (f true) eqn: H. 
+    SCase "f true = true".
+      rewrite -> H.
+      apply H.
+    SCase "f true = false".
+      destruct (f false) eqn: H2.
+      SSCase "f false = true".
+        apply H.
+      SSCase "f false = false".
+        apply H2.
+  Case "b = false".
+    destruct (f false) eqn: H.
+    SCase "f false = true".
+      destruct (f true) eqn: H2.
+      SSCase "f true = true".
+        apply H2.
+      SSCase "f true = false".
+        apply H.
+    SCase "f false = false".
+      rewrite -> H.
+      apply H.
+Qed.
+
+(* END destruct_eqn_practice. *)
+
