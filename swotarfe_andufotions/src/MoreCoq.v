@@ -656,3 +656,30 @@ Qed.
 
 (* END override_permute. *)
 
+(* Exercise: 3 stars, advanced (filter_exercise) *)
+
+Theorem filter_exercise : forall (X : Type) (test : X -> bool) (x : X)
+  (l lf : list X),
+  filter test l = (x :: lf)%list -> test x = true.
+Proof.
+  intros X test x l.
+  generalize dependent x.
+  induction l as [|n l'].
+  Case "l = nil".
+    intros x lf H.
+    inversion H.
+  Case "l = n :: l'".
+    intros x lf H.
+    simpl in H.
+    destruct (test n) eqn: testn.
+    SCase "test n = true".
+      inversion H.
+      rewrite -> H1 in testn.
+      apply testn.
+    SCase "test n = false".
+      apply IHl' in H.
+      apply H.
+Qed.
+
+(* END filter_exercise. *)
+
