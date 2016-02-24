@@ -584,3 +584,21 @@ Qed.
 
 (* END beq_nat_sym_informal. *)
 
+(* Exercise: 3 stars, optional (beq_nat_trans) *)
+
+Theorem beq_nat_trans : forall n m p,
+  beq_nat n m = true ->
+  beq_nat m p = true ->
+  beq_nat n p = true.
+Proof.
+  intros n m p H1 H2.
+  apply beq_nat_true in H1.
+  apply beq_nat_true in H2.
+  rewrite <- H2.
+  rewrite <- H1.
+  symmetry.
+  apply beq_nat_refl.
+Qed.
+
+(* END beq_nat_trans. *)
+
