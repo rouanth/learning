@@ -517,3 +517,23 @@ Qed.
 
 (* END destruct_eqn_practice. *)
 
+(* Exercise: 2 stars (override_same) *)
+
+Theorem override_same : forall (X : Type) x1 k1 k2 (f : nat -> X),
+  f k1 = x1 ->
+  (override f k1 x1) k2 = f k2.
+Proof.
+  intros X x1 k1 k2 f H.
+  unfold override.
+  destruct (beq_nat k1 k2) eqn: H1.
+  Case "k1 = k2".
+    apply beq_nat_true in H1.
+    rewrite -> H1 in H.
+    symmetry.
+    apply H.
+  Case "k1 /= k2".
+    trivial.
+Qed.
+
+(* END override_same. *)
+
