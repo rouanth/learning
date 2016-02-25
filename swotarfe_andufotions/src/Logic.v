@@ -179,3 +179,17 @@ Inductive True : Prop :=
 
 (* END double_neg_inf. *)
 
+(* Exercise: 2 stars (contrapositive) *)
+
+Theorem contrapositive : forall P Q : Prop, (P -> Q) -> (not Q -> not P).
+Proof.
+  intros P Q H.
+  unfold not.
+  intros G HP.
+  apply G.
+  apply H.
+  apply HP.
+Qed.
+
+(* END contrapositive. *)
+
