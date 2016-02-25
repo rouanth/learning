@@ -33,3 +33,21 @@ Qed.
 
 (* END and_assoc. *)
 
+(* ((Iff)) *)
+
+(* Exercise: 1 star, optional (iff_properties) *)
+
+Theorem iff_refl : forall P : Prop, P <-> P.
+Proof.
+  intros P.
+  split.
+  Case "P -> P #1".
+    intros H.
+    apply H.
+  Case "P -> P #2".
+    intros H.
+    apply H.
+Qed.
+
+(* END iff_properties. *)
+
