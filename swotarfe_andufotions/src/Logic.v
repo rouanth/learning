@@ -159,3 +159,12 @@ Qed.
 
 (* END orb_false_elim. *)
 
+(* ((Falsehood)) *)
+
+(* Exercise: 2 stars, advanced (True) *)
+
+Inductive True : Prop :=
+  truth : True.
+
+(* END True. *)
+
