@@ -168,3 +168,14 @@ Inductive True : Prop :=
 
 (* END True. *)
 
+(* ((Negation)) *)
+
+(* Exercise: 2 stars, advanced (double_neg_inf) *)
+
+(* By definition of negation, ~~P means (P -> False) -> False, i. e. in order
+* to prove a false statement P is enough, and the goal is to prove a false
+* statement. Thus, (P -> False) -> False simplifies to just P, which is given.
+*)
+
+(* END double_neg_inf. *)
+
