@@ -207,3 +207,12 @@ Qed.
 
 (* END not_both_true_and_false. *)
 
+(* Exercise: 1 star, advanced (informal_not_PNP) *)
+
+(* not (P /\ not P), by definition of negation, is the same as (P /\ not P) ->
+* False. By definition of /\, both P and `not P` must be true for the implied
+* False to be true. `not P` unfolds into P -> False, that is, P is sufficient
+* to prove False. P is a given to the implication. *)
+
+(* END informal_not_PNP. *)
+
