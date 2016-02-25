@@ -122,3 +122,40 @@ Qed.
 
 (* END andb_false. *)
 
+(* Exercise: 2 stars, optional (orb_false) *)
+
+Theorem orb_prop : forall b c, orb b c = true -> b = true \/ c = true.
+Proof.
+  intros b c.
+  intros H.
+  destruct b eqn : Hd.
+  Case "b = true".
+    left.
+    trivial.
+  Case "b = false".
+    right.
+    simpl in H.
+    apply H.
+Qed.
+
+(* END orb_false. *)
+
+(* Exercise: 2 stars, optional (orb_false_elim) *)
+
+Theorem orb_false_elim : forall b c, orb b c = false -> b = false /\ c = false.
+Proof.
+  intros b c H.
+  destruct b eqn : Hd.
+  Case "b = true".
+    inversion H.
+  Case "b = false".
+    split.
+    SCase "false = false".
+      trivial.
+    SCase "c = false".
+      simpl in H.
+      apply H.
+Qed.
+
+(* END orb_false_elim. *)
+
