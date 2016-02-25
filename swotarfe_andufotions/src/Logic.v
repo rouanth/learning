@@ -105,3 +105,20 @@ Qed.
 
 (* END or_distributes_over_and. *)
 
+(* Exercise: 2 stars, optional (andb_false) *)
+
+Theorem andb_false : forall b c, andb b c = false -> b = false \/ c = false.
+Proof.
+  intros b c H.
+  destruct b eqn : Hd.
+  Case "b = true".
+    simpl in H.
+    right.
+    apply H.
+  Case "b = false".
+    left.
+    trivial.
+Qed.
+
+(* END andb_false. *)
+
