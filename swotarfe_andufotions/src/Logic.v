@@ -51,3 +51,32 @@ Qed.
 
 (* END iff_properties. *)
 
+(* Exercise: 2 stars (or_distributes_over_and_2) *)
+
+Theorem or_distributes_over_and_2 : forall P Q R : Prop,
+  (P \/ Q) /\ (P \/ R) -> P \/ (Q /\ R).
+Proof.
+  intros P Q R H.
+  destruct H as [[HP|HQ] [HP2|HR]] eqn: Hd.
+  Case "(true \/ _) /\ (true \/ _)".
+    left.
+    apply HP.
+  Case "(true \/ _) /\ (_ \/ true)".
+    left.
+    apply HP.
+  Case "(_ \/ true) /\ (true \/ _)".
+    left.
+    apply HP2.
+  Case "(_ \/ true) /\ (_ \/ true)".
+    right.
+    split.
+    SCase "Q".
+      apply HQ.
+    SCase "R".
+      apply HR.
+Qed.
+
+(* END or_distributes_over_and_2. *)
+
+
+
