@@ -193,3 +193,17 @@ Qed.
 
 (* END contrapositive. *)
 
+(* Exercise: 1 star (not_both_true_and_false) *)
+
+Theorem not_both_true_and_false : forall P : Prop, not (P /\ not P).
+Proof.
+  intros P.
+  unfold not.
+  intros H.
+  inversion H.
+  apply H1.
+  apply H0.
+Qed.
+
+(* END not_both_true_and_false. *)
+
