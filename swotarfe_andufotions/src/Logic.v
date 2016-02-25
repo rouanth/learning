@@ -78,5 +78,30 @@ Qed.
 
 (* END or_distributes_over_and_2. *)
 
+(* Exercise: 1 star, optional (or_distributes_over_and) *)
 
+Theorem or_distributes_over_and : forall P Q R : Prop,
+  P \/ (Q /\ R) -> (P \/ Q) /\ (P \/ R).
+Proof.
+  intros P Q R H.
+  split.
+  Case "P \/ Q".
+    destruct H as [HP | [HQ HR]] eqn: Hd.
+    SCase "true \/ _".
+      left.
+      apply HP.
+    SCase "_ \/ (true /\ true)".
+      right.
+      apply HQ.
+  Case "P \/ R".
+    destruct H as [HP | [HQ HR]] eqn: Hd.
+    SCase "true \/ _".
+      left.
+      apply HP.
+    SCase "_ \/ (true /\ true)".
+      right.
+      apply HR.
+Qed.
+
+(* END or_distributes_over_and. *)
 
