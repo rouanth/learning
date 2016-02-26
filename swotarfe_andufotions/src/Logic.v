@@ -216,3 +216,67 @@ Qed.
 
 (* END informal_not_PNP. *)
 
+(* Exercise: 5 stars, advanced, optional (classical_axioms) *)
+
+Definition pierce := forall P Q : Prop, ((P -> Q) -> P) -> P.
+
+Definition classic := forall P : Prop, not (not P) -> P.
+
+Definition excluded_middle := forall P : Prop, P \/ not P.
+
+Definition de_morgan_not_and_not := forall P Q : Prop,
+  not (not P /\ not Q) -> P \/ Q.
+
+Definition implies_to_or := forall P Q : Prop, (P -> Q) -> (not P \/ Q).
+
+Theorem pierce_implies_classic : pierce -> classic.
+Proof.
+  unfold pierce.
+  unfold classic.
+  intros pierce.
+  intros P.
+  unfold not.
+  intros pff.
+  apply pierce with (Q := False).
+  intros pf.
+  apply pff in pf.
+  inversion pf.
+Qed.
+
+Theorem classic_implies_pierce : classic -> pierce.
+Proof.
+  unfold classic.
+  unfold pierce.
+  intros C.
+  intros P Q PQP.
+  unfold not in C.
+  apply C.
+  intros pf.
+  apply pf.
+  apply PQP.
+  intros P_.
+  apply pf in P_.
+  inversion P_.
+Qed.
+
+Theorem classic_implies_excluded_middle : classic -> excluded_middle.
+Proof.
+  unfold classic.
+  unfold excluded_middle.
+  intros H.
+  intros P.
+  apply H.
+  unfold not.
+  intros H1.
+  apply H1.
+  left.
+  apply H.
+  unfold not.
+  intros H3.
+  apply H1.
+  right.
+  apply H3.
+Qed.
+
+(* END classical_axioms. *)
+
