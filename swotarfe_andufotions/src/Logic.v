@@ -278,5 +278,49 @@ Proof.
   apply H3.
 Qed.
 
+Theorem classic_implies_de_morgan_not_and_not :
+  classic -> de_morgan_not_and_not.
+Proof.
+  unfold classic.
+  intros EM.
+  unfold de_morgan_not_and_not.
+  intros P Q Hand.
+  unfold not in Hand.
+  apply EM.
+  unfold not.
+  intros Hor.
+  apply Hand.
+  split.
+  Case "P -> False".
+    intros P_.
+    apply Hor.
+    left.
+    apply P_.
+  Case "Q -> False".
+    intros Q_.
+    apply Hor.
+    right.
+    apply Q_.
+Qed.
+
+Theorem classic_implies_implies_to_or : classic -> implies_to_or.
+Proof.
+  unfold classic.
+  intros CL.
+  unfold implies_to_or.
+  intros P Q.
+  intros H.
+  apply CL.
+  unfold not.
+  intros H1.
+  apply H1.
+  left.
+  intros P_.
+  apply H1.
+  right.
+  apply H.
+  apply P_.
+Qed.
+
 (* END classical_axioms. *)
 
