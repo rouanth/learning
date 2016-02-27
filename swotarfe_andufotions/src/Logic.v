@@ -216,6 +216,14 @@ Qed.
 
 (* END informal_not_PNP. *)
 
+Theorem double_neg : forall P : Prop, P -> ~~P.
+Proof.
+  unfold not.
+  intros P P_ PF.
+  apply PF.
+  apply P_.
+Qed.
+
 (* Exercise: 5 stars, advanced, optional (classical_axioms) *)
 
 Definition pierce := forall P Q : Prop, ((P -> Q) -> P) -> P.
@@ -228,6 +236,14 @@ Definition de_morgan_not_and_not := forall P Q : Prop,
   not (not P /\ not Q) -> P \/ Q.
 
 Definition implies_to_or := forall P Q : Prop, (P -> Q) -> (not P \/ Q).
+
+Theorem P_or_false : forall P : Prop, P \/ False -> P.
+Proof.
+  intros P PoFH.
+  destruct PoFH.
+  apply H.
+  inversion H.
+Qed.
 
 Theorem pierce_implies_classic : pierce -> classic.
 Proof.
@@ -301,6 +317,25 @@ Proof.
     apply Hor.
     right.
     apply Q_.
+Qed.
+
+Theorem de_morgan_not_and_not_implies_classic :
+  de_morgan_not_and_not -> classic.
+Proof.
+  unfold de_morgan_not_and_not.
+  unfold classic.
+  unfold not.
+  intros H.
+  intros P.
+  intros N.
+  apply P_or_false.
+  apply H.
+  intros R.
+  apply N.
+  intros P_.
+  apply N.
+  destruct R.
+  apply H0.
 Qed.
 
 Theorem classic_implies_implies_to_or : classic -> implies_to_or.
