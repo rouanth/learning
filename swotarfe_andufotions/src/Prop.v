@@ -194,3 +194,11 @@ Qed.
 
 (* END ev__even. *)
 
+(* Exercise: 1 star (l_fails) *)
+
+(* All we know is that n' is even; it tells us nothing about S n'. Since
+* neither evidence not the evidence of the lack thereof can be constructed,
+* we are unable to continue. *)
+
+(* END l_fails. *)
+
