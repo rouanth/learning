@@ -66,3 +66,24 @@ Qed.
 
 (* END b_timesm. *)
 
+(* ((Using Evidence in Proofs)) *)
+
+(* Exercise: 1 star (gorgeous_tree) *)
+
+(*
+
+  ------------------ g_0
+      gorgeous 0
+
+      gorgeous n
+  ------------------ g_plus3
+   gorgeous (3 + n)
+
+      gorgeous n
+  ------------------ g_plus5
+   gorgeous (5 + n)
+
+*)
+
+(* END gorgeous_tree. *)
+
