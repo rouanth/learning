@@ -187,3 +187,10 @@ Qed.
 
 (* END g_times2. *)
 
+(* Exercise: 1 star (ev__even) *)
+
+(* No since the evidence for ev (S n) where n is an arbitrary natural number
+* can't be constructed. *)
+
+(* END ev__even. *)
+
