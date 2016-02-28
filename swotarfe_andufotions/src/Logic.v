@@ -224,6 +224,20 @@ Proof.
   apply P_.
 Qed.
 
+(* Exercise: 3 stars (excluded_middle_irrefutable) *)
+
+Theorem excluded_middle_irrefutable : forall P : Prop, ~ ~ (P \/ ~P).
+Proof.
+  unfold not.
+  intros P H1.
+  apply H1.
+  right.
+  intros P1.
+  apply H1.
+  left.
+  apply P1.
+Qed.
+
 (* Exercise: 5 stars, advanced, optional (classical_axioms) *)
 
 Definition pierce := forall P Q : Prop, ((P -> Q) -> P) -> P.
@@ -292,16 +306,7 @@ Proof.
   intros H.
   intros P.
   apply H.
-  unfold not.
-  intros H1.
-  apply H1.
-  left.
-  apply H.
-  unfold not.
-  intros H3.
-  apply H1.
-  right.
-  apply H3.
+  apply excluded_middle_irrefutable.
 Qed.
 
 Theorem excluded_middle_implies_classic :
