@@ -237,5 +237,14 @@ Proof.
   apply H3.
 Qed.
 
+Theorem even5_nonsense : ev 5 -> 2 + 2 = 9.
+Proof.
+  intros H.
+  inversion H.
+  inversion H1.
+  inversion H3.
+Qed.
+
 (* END inversion_practice. *)
+
 
