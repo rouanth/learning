@@ -21,3 +21,10 @@ Proof.
 Qed.
 
 (* END double_even. *)
+
+(* Exercise: 1 star (varieties_of_beauty) *)
+
+(* An infinity, since we can add 0 as much as we like. *)
+
+(* END varieties_of_beauty. *)
+
