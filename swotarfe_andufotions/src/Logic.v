@@ -245,6 +245,16 @@ Proof.
   inversion H.
 Qed.
 
+Theorem or_com : forall P Q : Prop, P \/ Q -> Q \/ P.
+Proof.
+  intros P Q PQ.
+  destruct PQ.
+  right.
+  apply H.
+  left.
+  apply H.
+Qed.
+
 Theorem pierce_implies_classic : pierce -> classic.
 Proof.
   unfold pierce.
@@ -354,6 +364,19 @@ Proof.
   apply H1.
   right.
   apply H.
+  apply P_.
+Qed.
+
+Theorem implies_to_or_implies_excluded_middle :
+  implies_to_or -> excluded_middle.
+Proof.
+  unfold implies_to_or.
+  unfold excluded_middle.
+  unfold not.
+  intros ITO P.
+  apply or_com.
+  apply ITO.
+  intros P_.
   apply P_.
 Qed.
 
