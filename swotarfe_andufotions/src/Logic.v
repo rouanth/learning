@@ -238,6 +238,11 @@ Proof.
   apply P1.
 Qed.
 
+(* END excluded_middle_irrefutable. *)
+
+Theorem ex_falso_quodlibet : forall P : Prop, False -> P.
+Proof. intros P H. inversion H. Qed.
+
 (* Exercise: 5 stars, advanced, optional (classical_axioms) *)
 
 Definition pierce := forall P Q : Prop, ((P -> Q) -> P) -> P.
@@ -320,8 +325,7 @@ Proof.
     intros kh.
     destruct kh.
     apply H.
-    apply P_or_false.
-    right.
+    apply ex_falso_quodlibet.
     apply nnP.
     apply H.
   apply H.
@@ -405,4 +409,38 @@ Proof.
 Qed.
 
 (* END classical_axioms. *)
+
+(* Exercise: 2 stars (false_beq_nat) *)
+
+Theorem false_beq_nat : forall n m : nat, n <> m ->  beq_nat n m = false.
+Proof.
+  intros n.
+  induction n as [|n'].
+  Case "n = 0".
+    destruct m as [|m'].
+    SCase "m = 0".
+      intros H.
+      unfold not in H.
+      apply ex_falso_quodlibet.
+      apply H.
+      trivial.
+    SCase "m = S m'".
+      reflexivity.
+  Case "n = S n'".
+    destruct m as [|m'].
+    SCase "m = 0".
+      reflexivity.
+    SCase "m = S m'".
+      intros H.
+      simpl.
+      apply IHn'.
+      unfold not.
+      unfold not in H.
+      intros n'm'.
+      apply H.
+      rewrite -> n'm'.
+      reflexivity.
+Qed.
+
+(* END false_beq_nat. *)
 
