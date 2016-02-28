@@ -247,4 +247,22 @@ Qed.
 
 (* END inversion_practice. *)
 
+(* Exercise: 3 stars, advanced (ev_ev__ev) *)
+
+Theorem ev_ev__ev : forall n m,
+  ev (n + m) -> ev n -> ev m.
+Proof.
+  intros n m H1 H2.
+  induction H2.
+  Case "ev (0 + m)".
+    simpl in H1.
+    apply H1.
+  Case "ev (S (S n) + m)".
+    simpl in H1.
+    inversion H1.
+    generalize dependent H0.
+    apply IHev.
+Qed.
+
+(* END ev_ev__ev. *)
 
