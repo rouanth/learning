@@ -266,3 +266,31 @@ Qed.
 
 (* END ev_ev__ev. *)
 
+(* Exercise: 3 stars, optional (ev_plus_plus) *)
+
+Theorem ev_plus_plus : forall n m p,
+  ev (n + m) -> ev (n + p) -> ev (m + p).
+Proof.
+  intros n m p.
+  intros H1 H2.
+  assert (ev ((n + m) + (n + p)) -> ev (m + p)).
+  Case "ev ((n + p) + (n + p)) -> ev (m + p)".
+    rewrite <- plus_swap.
+    rewrite -> plus_assoc.
+    rewrite -> plus_assoc.
+    rewrite <- double_plus.
+    intros Z.
+    apply ev_ev__ev with (n := double n).
+    SCase "ev (double n + (m + p))".
+      rewrite -> plus_assoc.
+      apply Z.
+    SCase "ev (double n)".
+      apply double_even.
+  apply H.
+  apply ev_sum.
+  apply H1.
+  apply H2.
+Qed.
+
+(* END ev_plus_plus. *)
+
