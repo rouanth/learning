@@ -304,6 +304,25 @@ Proof.
   apply H3.
 Qed.
 
+Theorem excluded_middle_implies_classic :
+  excluded_middle -> classic.
+Proof.
+  unfold excluded_middle.
+  unfold classic.
+  unfold not.
+  intros EM P nnP.
+  assert ((P \/ (P -> False)) -> P).
+    intros kh.
+    destruct kh.
+    apply H.
+    apply P_or_false.
+    right.
+    apply nnP.
+    apply H.
+  apply H.
+  apply EM.
+Qed.
+
 Theorem classic_implies_de_morgan_not_and_not :
   classic -> de_morgan_not_and_not.
 Proof.
