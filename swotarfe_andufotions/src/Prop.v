@@ -171,3 +171,19 @@ Qed.
 
 (* END beautiful__gorgeous. *)
 
+(* Exercise: 3 stars, optional (g_times2) *)
+
+Theorem g_times2 : forall n, gorgeous n -> gorgeous (2 * n).
+Proof.
+  intros n H.
+  simpl.
+  rewrite -> plus_0_r.
+  apply gorgeous_sum.
+    apply H.
+    apply H.
+Qed.
+
+(* Huh? *)
+
+(* END g_times2. *)
+
