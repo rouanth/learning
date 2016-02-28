@@ -444,3 +444,17 @@ Qed.
 
 (* END false_beq_nat. *)
 
+(* Exercise: 2 stars, optional (beq_nat_false) *)
+
+Theorem beq_nat_false : forall n m : nat, beq_nat n m = false -> n <> m.
+Proof.
+  intros n m H.
+  unfold not.
+  intros nm.
+  rewrite -> nm in H.
+  rewrite <- beq_nat_refl in H.
+  inversion H.
+Qed.
+
+(* END beq_nat_false. *)
+
