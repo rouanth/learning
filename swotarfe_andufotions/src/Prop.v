@@ -48,3 +48,21 @@ Qed.
 
 (* END b_times2. *)
 
+(* Exercise: 3 stars (b_timesm) *)
+
+Theorem b_timesm : forall n m, beautiful n -> beautiful (m * n).
+Proof.
+  intros n m H.
+  induction m as [|m'].
+  Case "m = 0".
+    simpl.
+    apply bu_0.
+  Case "m = S m'".
+    simpl.
+    apply bu_sum.
+    apply H.
+    apply IHm'.
+Qed.
+
+(* END b_timesm. *)
+
