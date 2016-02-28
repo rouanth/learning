@@ -219,3 +219,11 @@ Qed.
 
 (* END ev_sum. *)
 
+(* Exercise: 1 star, optional (ev_minus2_n) *)
+
+(* We are ultimately left with a statement that ev (S (S n)) is true and sould
+* prove that ev n is also true. But it's the first that follows from the
+* second, not vice versa. *)
+
+(* END ev_minus2_n. *)
+
