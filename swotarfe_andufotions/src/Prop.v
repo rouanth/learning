@@ -294,3 +294,70 @@ Qed.
 
 (* END ev_plus_plus. *)
 
+(* ((Discussion and Variations)) *)
+
+(* Exercise: 4 stars (palindromes) *)
+
+Inductive pal {X : Type} : list X -> Prop :=
+  | pal_nil : pal nil
+  | pal_ev  : forall l1 l2, l2 = rev l1 -> pal (l1 ++ l2)
+  | pal_odd : forall x l1 l2, l2 = rev l1 -> pal (l1 ++ (x :: l2)).
+
+Theorem pal_app_rev : forall (X : Type) (l : list X), pal (l ++ rev l).
+Proof.
+  intros X l.
+  apply pal_ev.
+  trivial.
+Qed.
+
+Theorem snoc_append : forall (X : Type) (x : X) (l : list X),
+  snoc l x = app l (cons x nil).
+Proof.
+  induction l; simpl; auto. rewrite -> IHl. trivial.
+Qed.
+
+Theorem app_assoc : forall (X : Type) (l1 l2 l3 : list X),
+  app (app l1 l2) l3 = app l1 (app l2 l3).
+Proof.
+  induction l1; auto; simpl. intros. rewrite <- IHl1. trivial.
+Qed.
+
+Theorem distr_rev : forall (X : Type) (l1 l2 : list X),
+  rev (app l1 l2) = app (rev l2) (rev l1).
+Proof.
+  induction l1; intros; simpl.
+  Case "l1 = nil".
+    rewrite -> app_nil_invariant.
+    trivial.
+  Case "l1 = x :: l1'".
+    rewrite -> snoc_append.
+    rewrite -> snoc_append.
+    rewrite <- app_assoc.
+    rewrite -> IHl1.
+    trivial.
+Qed.
+
+Theorem pal_rev : forall (X : Type) (l : list X), pal l -> l = rev l.
+Proof.
+  intros X l H.
+  inversion H.
+  Case "nil = rev nil".
+    reflexivity.
+  Case "l1 ++ l2 = rev (l1 ++ l2)".
+    rewrite -> H0.
+    rewrite -> distr_rev.
+    rewrite -> rev_involutive.
+    trivial.
+  Case "(l1 ++ x :: l2) = rev (l1 ++ x :: l2)".
+    rewrite -> distr_rev.
+    simpl.
+    rewrite -> snoc_append.
+    rewrite -> app_assoc.
+    simpl.
+    rewrite -> H0.
+    rewrite -> rev_involutive.
+    trivial.
+Qed.
+
+(* END palindromes. *)
+
