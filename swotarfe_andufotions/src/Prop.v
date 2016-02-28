@@ -202,3 +202,20 @@ Qed.
 
 (* END l_fails. *)
 
+(* Exercise: 2 stars (ev_sum) *)
+
+Theorem ev_sum : forall n m, ev n -> ev m -> ev (n + m).
+Proof.
+  intros n m H1 H2.
+  induction H1.
+  Case "ev m -> ev (0 + m)".
+    simpl.
+    apply H2.
+  Case "ev (S (S n) + m)".
+    simpl.
+    apply ev_SS.
+    apply IHev.
+Qed.
+
+(* END ev_sum. *)
+
