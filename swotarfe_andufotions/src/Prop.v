@@ -227,3 +227,15 @@ Qed.
 
 (* END ev_minus2_n. *)
 
+(* Exercise: 1 star (inversion_practice) *)
+
+Theorem SSSSev_even : forall n, ev (S (S (S (S n)))) -> ev n.
+Proof.
+  intros n H.
+  inversion H.
+  inversion H1.
+  apply H3.
+Qed.
+
+(* END inversion_practice. *)
+
