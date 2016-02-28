@@ -116,3 +116,35 @@ Qed.
 
 (* END gorgeous_plus13. *)
 
+Theorem gorgeous__beautiful : forall n, gorgeous n -> beautiful n.
+Proof.
+  intros n H.
+  induction H.
+  Case "b 0".
+    apply bu_0.
+  Case "b (3 + n)".
+    apply bu_sum.
+    apply bu_3.
+    apply IHgorgeous.
+  Case "b (5 + n)".
+    apply bu_sum.
+    apply bu_5.
+    apply IHgorgeous.
+Qed.
+
+(* Exercise: 2 stars (gorgeous_sum) *)
+
+Theorem gorgeous_sum : forall n m,
+  gorgeous n -> gorgeous m -> gorgeous (n + m).
+Proof.
+  intros n m H1 H2.
+  induction H1.
+  Case "0 + m".
+    simpl. apply H2.
+  Case "3 + n + m".
+    apply g_plus3. apply IHgorgeous.
+  Case "5 + n + m".
+    apply g_plus5. apply IHgorgeous.
+Qed.
+
+(* END gorgeous_sum. *)
