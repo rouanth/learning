@@ -148,3 +148,26 @@ Proof.
 Qed.
 
 (* END gorgeous_sum. *)
+
+(* Exercise: 3 stars, advanced (beautiful__gorgeous) *)
+
+Theorem beautiful__gorgeous : forall n, beautiful n -> gorgeous n.
+Proof.
+  intros n H.
+  induction H.
+  Case "n = 0".
+    apply g_0.
+  Case "n = 3".
+    apply g_plus3.
+    apply g_0.
+  Case "n = 5".
+    apply g_plus5.
+    apply g_0.
+  Case "n = n' + m".
+    apply gorgeous_sum.
+    apply IHbeautiful1.
+    apply IHbeautiful2.
+Qed.
+
+(* END beautiful__gorgeous. *)
+
