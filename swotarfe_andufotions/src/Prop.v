@@ -68,6 +68,11 @@ Qed.
 
 (* ((Using Evidence in Proofs)) *)
 
+Inductive gorgeous : nat -> Prop :=
+  | g_0     : gorgeous 0
+  | g_plus3 : forall n, gorgeous n -> gorgeous (3 + n)
+  | g_plus5 : forall n, gorgeous n -> gorgeous (5 + n).
+
 (* Exercise: 1 star (gorgeous_tree) *)
 
 (*
@@ -86,4 +91,28 @@ Qed.
 *)
 
 (* END gorgeous_tree. *)
+
+(* Exercise: 1 star (gorgeous_plus13) *)
+
+Theorem gorgeous_plus13 : forall n, gorgeous n -> gorgeous (13 + n).
+Proof.
+  intros n H.
+  induction H.
+  Case "g 13".
+    simpl.
+    apply g_plus5.
+    apply g_plus5.
+    apply g_plus3.
+    apply g_0.
+  Case "g (13 + (3 + n))".
+    rewrite -> plus_swap.
+    apply g_plus3.
+    apply IHgorgeous.
+  Case "g (13 + (5 + n))".
+    rewrite -> plus_swap.
+    apply g_plus5.
+    apply IHgorgeous.
+Qed.
+
+(* END gorgeous_plus13. *)
 
