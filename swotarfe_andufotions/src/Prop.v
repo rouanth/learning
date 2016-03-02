@@ -436,44 +436,61 @@ Proof.
       reflexivity.
 Qed.
 
+Theorem rev_pal : forall (X : Type) (x : X) (l : list X),
+  (x :: l)%list = rev (l ++ (x :: nil))%list -> l = rev l.
+Proof.
+  intros X x l H.
+  simpl in H.
+  symmetry in H.
+  rewrite <- rev_involutive in H.
+  simpl in H.
+  rewrite -> snoc_append in H.
+  assert (forall (Y : Type) (l1 l2 : list Y), l1 = l2 -> rev l1 = rev l2).
+    intros Y l1 l2 Z. rewrite -> Z. trivial.
+  apply H0 in H.
+  rewrite -> rev_involutive in H.
+  rewrite -> rev_involutive in H.
+  apply app_inversion in H.
+  apply H.
+Qed.
+
+Theorem rev_pal_gen : forall (X : Type) (x : X) (l : list X),
+  (x :: l)%list = rev (x :: l) ->
+  l = nil \/
+  l <> nil /\ (forall z l', l = (l' ++ z :: nil)%list -> l' = rev l').
+Proof.
+  intros X x l.
+  induction l as [|n lt].
+  Case "l = nil".
+    intros H.
+    left.
+    trivial.
+  Case "l = n :: lt".
+    intros H.
+    right.
+    split.
+    SCase "l <> nil".
+      unfold not.
+      intros K.
+      inversion K.
+    SCase "l' = rev l'".
+      intros z l' Ht.
+      rewrite -> Ht in H.
+      simpl in H.
+      rewrite -> snoc_append in H.
+      replace (l' ++ z :: nil)%list with (snoc l' z) in H.
+      rewrite -> rev_snoc in H.
+      inversion H.
+      rewrite -> snoc_append in H2.
+      apply app_inversion in H2.
+      apply H2.
+      apply snoc_append.
+Qed.
+
 Theorem palindrome_converse : forall (X : Type) (l : list X),
   l = rev l -> pal l.
 Proof.
   intros X l H.
-  induction l as [|n l'].
-  Case "l = nil".
-    apply pal_nil.
-  Case "l = n :: l'".
-    inversion H.
-    rewrite -> snoc_append in H1.
-    destruct (rev l') in H1.
-    SCase "rev l' = nil".
-      inversion H1.
-      apply pal_one.
-      inversion H1.
-    SCase "rev l' = x :: l".
-      apply pal_app.
-      trivial.
-      rewrite -> H3 in H.
-      rewrite -> H2 in H.
-      simpl in H.
-      rewrite -> snoc_append in H.
-      replace (x :: l ++ x :: nil)%list with ((x :: l) ++ x :: nil)%list in H.
-      apply app_inversion in H.
-      symmetry in H.
-      rewrite <- rev_involutive in H.
-      simpl in H.
-      rewrite -> snoc_append in H.
-      assert (forall (Y : Type) (l1 l2 : list Y), l1 = l2 -> rev l1 = rev l2).
-        intros Y l1 l2 Z. rewrite -> Z. trivial.
-      apply H0 in H.
-      rewrite -> rev_involutive in H.
-      rewrite -> rev_involutive in H.
-      apply app_inversion in H.
-      rewrite -> H3 in IHl'.
-      destruct H1.
-      destruct H2.
-      destruct H3.
 
 (* END palindrome_converse. *)
 
