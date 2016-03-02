@@ -491,15 +491,41 @@ Proof.
   induction l. auto. intros H. inversion H.
 Qed.
 
+Theorem ble_nat_trans : forall (n m p : nat),
+  ble_nat n m = true -> ble_nat m p = true -> ble_nat n p = true.
+Proof.
+  induction n.
+  Case "n = 0".
+    reflexivity.
+  Case "n = S n".
+    destruct m.
+    SCase "m = 0".
+      intros p H.
+      inversion H.
+    SCase "m = S m".
+      destruct p.
+      SSCase "p = 0".
+        intros H1 H2.
+        inversion H2.
+      SSCase "p = S p".
+        simpl.
+        apply IHn.
+Qed.
+
 Theorem palindrome_converse_helper : forall (X : Type) (n : nat) (l : list X),
-  n >= length l -> l = rev l -> pal l.
+  ble_nat (length l) n = true -> l = rev l -> pal l.
 Proof.
   induction n.
   Case "n = 0".
     intros l H1 H2.
-    inversion H1.
-    apply length_nil_zero in H0.
-    rewrite -> H0.
+    assert (ble_nat (length l) 0 = true -> l = nil).
+      induction l.
+      trivial.
+      simpl.
+      intros H.
+      inversion H.
+    apply H in H1.
+    rewrite -> H1.
     apply pal_nil.
   Case "n = S n".
     intros l H1 H2.
@@ -537,18 +563,11 @@ Proof.
           simpl in H1.
           rewrite <- plus_n_Sm in H1.
           rewrite -> plus_0_r in H1.
-          unfold ge.
-          unfold ge in H1.
-          inversion H1.
-          apply le_S.
-          apply le_n.
-          assert (length l0 <= S (S (length l0))).
-            apply le_S.
-            apply le_S.
-            apply le_n.
-          generalize dependent H5.
-          generalize dependent H6.
-          apply Le.le_trans.
+          assert (forall k : nat, ble_nat k (S k) = true).
+            induction k. reflexivity. simpl. apply IHk.
+          apply ble_nat_trans with (m := S (length l0)).
+          apply H2.
+          apply H1.
           apply H0 with (z := x0) (l' := l0).
           apply H4.
 Qed.
@@ -558,8 +577,8 @@ Theorem palindrome_converse : forall (X : Type) (l : list X),
 Proof.
   intros X l.
   apply palindrome_converse_helper with (n := length l).
-  unfold ge.
-  apply le_n.
+  symmetry.
+  apply ble_nat_refl.
 Qed.
 
 (* END palindrome_converse. *)
