@@ -328,7 +328,7 @@ Qed.
 Inductive pal {X : Type} : list X -> Prop :=
   | pal_nil : pal nil
   | pal_one : forall x, pal (x :: nil)
-  | pal_app : forall a b l, a = b -> pal l -> pal (a :: l ++ b :: nil)%list.
+  | pal_app : forall a l, pal l -> pal (a :: l ++ a :: nil)%list.
 
 Theorem pal_app_rev : forall (X : Type) (l : list X), pal (l ++ rev l).
 Proof.
@@ -340,7 +340,6 @@ Proof.
     rewrite -> snoc_append.
     rewrite <- app_assoc.
     apply pal_app.
-    trivial.
     apply IHl'.
 Qed.
 
@@ -358,7 +357,6 @@ Proof.
     simpl.
     rewrite -> snoc_append.
     rewrite <- IHpal.
-    rewrite -> H.
     trivial.
 Qed.
 
@@ -487,10 +485,82 @@ Proof.
       apply snoc_append.
 Qed.
 
+Theorem length_nil_zero : forall (X : Type) (l : list X),
+  length l = 0 -> l = nil.
+Proof.
+  induction l. auto. intros H. inversion H.
+Qed.
+
+Theorem palindrome_converse_helper : forall (X : Type) (n : nat) (l : list X),
+  n >= length l -> l = rev l -> pal l.
+Proof.
+  induction n.
+  Case "n = 0".
+    intros l H1 H2.
+    inversion H1.
+    apply length_nil_zero in H0.
+    rewrite -> H0.
+    apply pal_nil.
+  Case "n = S n".
+    intros l H1 H2.
+    inversion H2.
+    destruct l.
+    SCase "l = nil".
+      apply pal_nil.
+    SCase "l = x :: l".
+      simpl in H2.
+      rewrite -> snoc_append in H2.
+      destruct (rev l) eqn : K.
+      SSCase "rev l = nil".
+        inversion H2.
+        apply pal_one.
+      SSCase "rev l = x0 :: l0".
+        inversion H2.
+        destruct H2.
+        rewrite <- H4.
+        rewrite <- H3.
+        rewrite <- H.
+        apply rev_pal_gen in H.
+        destruct H.
+        SSSCase "l = nil".
+          rewrite -> H.
+          apply pal_one.
+        SSSCase "l = l0 ++ x0 :: nil".
+          destruct H.
+          rewrite -> H4.
+          rewrite -> H3.
+          apply pal_app.
+          apply IHn.
+          rewrite -> H4 in H1.
+          simpl in H1.
+          rewrite -> app_length in H1.
+          simpl in H1.
+          rewrite <- plus_n_Sm in H1.
+          rewrite -> plus_0_r in H1.
+          unfold ge.
+          unfold ge in H1.
+          inversion H1.
+          apply le_S.
+          apply le_n.
+          assert (length l0 <= S (S (length l0))).
+            apply le_S.
+            apply le_S.
+            apply le_n.
+          generalize dependent H5.
+          generalize dependent H6.
+          apply Le.le_trans.
+          apply H0 with (z := x0) (l' := l0).
+          apply H4.
+Qed.
+
 Theorem palindrome_converse : forall (X : Type) (l : list X),
   l = rev l -> pal l.
 Proof.
-  intros X l H.
+  intros X l.
+  apply palindrome_converse_helper with (n := length l).
+  unfold ge.
+  apply le_n.
+Qed.
 
 (* END palindrome_converse. *)
 
