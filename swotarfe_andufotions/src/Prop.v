@@ -571,3 +571,9 @@ Inductive total_relation : nat -> nat -> Prop :=
 
 (* END total_relation. *)
 
+(* Exercise: 2 stars (empty_relation) *)
+
+Inductive empty_relation : nat -> nat -> Prop := .
+
+(* END empty_relation. *)
+
