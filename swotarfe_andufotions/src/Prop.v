@@ -596,3 +596,128 @@ Inductive empty_relation : nat -> nat -> Prop := .
 
 (* END empty_relation. *)
 
+(* Exercise: 2 stars, optional (le_exercises) *)
+
+Lemma le_trans : forall n m o, m <= n -> n <= o -> m <= o.
+Proof.
+  induction n.
+  Case "n = 0".
+    induction m.
+    SCase "m = 0".
+      intros o H1 H2.
+      apply H2.
+    SCase "m = S m".
+      intros o H1 H2.
+      inversion H1.
+  Case "n = S n".
+    induction m.
+    SCase "m = 0".
+      induction o.
+      SSCase "o = 0".
+        intros H1 H2.
+        apply le_n.
+      SSCase "o = S o".
+        intros H1 H2.
+        inversion H2.
+        rewrite <- H0.
+        apply H1.
+        apply le_S.
+        apply IHo.
+        apply H1.
+        apply H0.
+    SCase "m = S m".
+      induction o.
+      SSCase "o = 0".
+        intros H1 H2.
+        inversion H2.
+      SSCase "o = S o".
+        intros H1 H2.
+        inversion H1.
+        apply H2.
+        inversion H2.
+        rewrite -> H4 in H1.
+        apply H1.
+        apply le_S.
+        generalize dependent H4.
+        generalize dependent H1.
+        apply IHo.
+Qed.
+
+Theorem O_le_n : forall n, 0 <= n.
+Proof.
+  induction n.
+  Case "n = 0".
+    apply le_n.
+  Case "n = S n".
+    apply le_S.
+    apply IHn.
+Qed.
+
+Theorem n_le_m__Sn_le_Sm : forall n m,
+  n <= m -> S n <= S m.
+Proof.
+  induction n.
+  Case "n = 0".
+    induction m.
+    SCase "m = 0".
+      intros H.
+      apply le_n.
+    SCase "m = S m".
+      intros H.
+      apply le_S.
+      apply IHm.
+      inversion H.
+      apply H1.
+  Case "n = S n".
+    induction m.
+    SCase "m = 0".
+      intros H.
+      inversion H.
+    SCase "m = S m".
+      intros H.
+      inversion H.
+      apply le_n.
+      apply le_S.
+      generalize dependent H1.
+      apply IHm.
+Qed.
+
+Theorem Sn_le_Sm__n_le_m : forall n m, S n <= S m -> n <= m.
+Proof.
+  induction n.
+  Case "n = 0".
+    intros m H.
+    apply O_le_n.
+  Case "n = S n".
+    induction m.
+    SCase "m = 0".
+      intros H.
+      inversion H.
+      inversion H1.
+    SCase "m = S m".
+      intros H.
+      inversion H.
+      apply le_n.
+      apply le_S.
+      generalize dependent H1.
+      apply IHm.
+Qed.
+
+Theorem le_plus_l : forall a b, a <= a + b.
+Proof.
+  intros a b.
+  generalize dependent a.
+  induction b.
+  Case "b = 0".
+    intros a.
+    rewrite -> plus_0_r.
+    apply le_n.
+  Case "b = S b".
+    intros a.
+    rewrite <- plus_n_Sm.
+    apply le_S.
+    apply IHb.
+Qed.
+
+(* END le_exercises. *)
+
