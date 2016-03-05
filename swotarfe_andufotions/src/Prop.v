@@ -982,3 +982,50 @@ R 6 [3; 2; 1; 0] is not provable
 *)
 
 (* END R_provability. *)
+
+(* ((Programming with Propositions)) *)
+
+(* Exercise: 3 stars (combine_odd_even) *)
+
+Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop :=
+  fun n => if oddb n then Podd n else Peven n.
+
+Theorem combine_odd_even_info :
+  forall (Podd Peven : nat -> Prop) (n : nat),
+  (oddb n = true  -> Podd  n) ->
+  (oddb n = false -> Peven n) ->
+  combine_odd_even Podd Peven n.
+Proof.
+  intros Podd Peven n H1 H2.
+  unfold combine_odd_even.
+  destruct (oddb n).
+    apply H1. trivial.
+    apply H2. trivial.
+Qed.
+
+Theorem combine_odd_even_elim_odd :
+  forall (Podd Peven : nat -> Prop) (n : nat),
+  combine_odd_even Podd Peven n ->
+  oddb n = true ->
+  Podd n.
+Proof.
+  intros Podd Peven n H1 H2.
+  unfold combine_odd_even in H1.
+  rewrite -> H2 in H1.
+  apply H1.
+Qed.
+
+Theorem combine_odd_even_elim_even :
+  forall (Podd Peven : nat -> Prop) (n : nat),
+  combine_odd_even Podd Peven n ->
+  oddb n = false ->
+  Peven n.
+Proof.
+  intros Podd Peven n H1 H2.
+  unfold combine_odd_even in H1.
+  rewrite -> H2 in H1.
+  apply H1.
+
+(* END combine_odd_even. *)
+
+
