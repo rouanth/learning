@@ -972,3 +972,13 @@ Proof.
 Qed.
 
 (* END subsequence. *)
+
+(* Exercise: 2 stars, optional (R_provability) *)
+
+(*
+R 2 [1; 0] : c1 -> c2 -> c2
+R 1 [1; 2; 1; 0] : c1 -> c2 -> c2 -> c2 -> c3 -> c3 -> c2 -> c3
+R 6 [3; 2; 1; 0] is not provable
+*)
+
+(* END R_provability. *)
