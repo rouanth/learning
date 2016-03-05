@@ -836,6 +836,15 @@ Qed.
 
 (* END ble_nat_false. *)
 
+Module R.
+
+Inductive R : nat -> nat -> nat -> Prop :=
+  | c1 : R 0 0 0
+  | c2 : forall n m o, R n m o -> R (S n) m (S o)
+  | c3 : forall n m o, R n m o -> R n (S m) (S o)
+  | c4 : forall n m o, R (S n) (S m) (S (S o)) -> R n m o
+  | c5 : forall n m o, R n m o -> R m n o.
+
 (* Exercise: 3 stars (R_provability2) *)
 
 (*
@@ -857,3 +866,51 @@ propositions.
 *)
 
 (* END R_provability2. *)
+
+(* Exercise: 3 stars, optional (R_fact) *)
+
+Theorem R_plus : forall n m o : nat, R n m o -> o = n + m.
+Proof.
+  intros n m o R.
+  induction R.
+  Case "0 = 0 + 0".
+    reflexivity.
+  Case "S o = S n + m".
+    rewrite -> IHR.
+    reflexivity.
+  Case "S o = n + S m".
+    rewrite <- plus_n_Sm.
+    rewrite -> IHR.
+    reflexivity.
+  Case "o = n + m".
+    rewrite <- plus_n_Sm in IHR.
+    inversion IHR.
+    trivial.
+  Case "o = m + n".
+    rewrite -> plus_comm.
+    apply IHR.
+Qed.
+
+Theorem plus_R : forall n m : nat, R n m (n + m).
+Proof.
+  induction n.
+  Case "n = 0".
+    induction m.
+    SCase "m = 0".
+      simpl.
+      apply c1.
+    SCase "m = S m".
+      simpl.
+      simpl in IHm.
+      apply c3.
+      apply IHm.
+  Case "n = S n".
+    simpl.
+    intros m.
+    apply c2.
+    apply IHn.
+Qed.
+
+(* END R_fact. *)
+
+End R.
