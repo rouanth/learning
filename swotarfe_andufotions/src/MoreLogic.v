@@ -40,3 +40,35 @@ Proof.
 Qed.
 
 (* END not_exists_dist. *)
+
+(* Exercise: 2 stars (dist_exists_or) *)
+
+Theorem dist_exists_or : forall (X : Type) (P Q : X -> Prop),
+  (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
+Proof.
+  intros X P Q.
+  split.
+  Case "a -> b".
+    intros H.
+    inversion H.
+    inversion H0.
+    left.
+    exists x.
+    apply H1.
+    right.
+    exists x.
+    apply H1.
+  Case "a <- b".
+    intros H.
+    inversion H.
+    inversion H0.
+    exists x.
+    left.
+    apply H1.
+    inversion H0.
+    exists x.
+    right.
+    apply H1.
+Qed.
+
+(* END dist_exists_or. *)
