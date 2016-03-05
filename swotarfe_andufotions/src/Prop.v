@@ -572,6 +572,16 @@ Proof.
           apply H4.
 Qed.
 
+(* It seems to be impossible to prove the theorem by induction on lists since
+* knowing that the tail of our list is a palindrome does not allow us to prove
+* that the tail without the last element -- an argument to pal_app -- is also
+* a palindrome.
+*
+* So instead we do an induction on list length and prove that if every list
+* of a lesser length than the current one with the property (l' = rev l') is
+* a palindrome, so it the current one with the same property.
+*)
+
 Theorem palindrome_converse : forall (X : Type) (l : list X),
   l = rev l -> pal l.
 Proof.
@@ -718,6 +728,17 @@ Proof.
     apply le_S.
     apply IHb.
 Qed.
+
+Theorem plus_lt : forall n1 n2 m,
+  n1 + n2 < m -> n1 < m /\ n2 < m.
+Proof.
+  unfold lt.
+  intros n1 n2 m.
+  generalize dependent n1.
+  generalize dependent n2.
+  induction m.
+  Case "m = 0".
+    intros n1 n2.
 
 (* END le_exercises. *)
 
