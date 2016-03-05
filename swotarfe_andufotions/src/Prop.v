@@ -914,3 +914,61 @@ Qed.
 (* END R_fact. *)
 
 End R.
+
+(* Exercise: 4 stars, advanced (subsequence) *)
+
+Inductive subseq : list nat -> list nat -> Prop :=
+  | subseq_nil  : forall l, subseq nil l
+  | subseq_cons : forall x l1 l2, subseq l1 l2 -> subseq l1 (x :: l2)
+  | subseq_cons': forall x l1 l2, subseq l1 l2 -> subseq (x :: l1) (x :: l2).
+
+Theorem subseq_refl : forall l, subseq l l.
+Proof.
+  induction l.
+  apply subseq_nil.
+  apply subseq_cons'.
+  apply IHl.
+Qed.
+
+Theorem subseq_app_t : forall l1 l2 l3, subseq l1 l2 -> subseq l1 (l2 ++ l3).
+Proof.
+  intros l1 l2 l3 H.
+  generalize dependent l3.
+  induction H.
+  intros l3. apply subseq_nil.
+  intros l3. simpl. apply subseq_cons. apply IHsubseq.
+  intros L3. simpl. apply subseq_cons'. apply IHsubseq.
+Qed.
+
+Theorem subseq_cons_inv : forall x l1 l2, subseq (x :: l1) l2 -> subseq l1 l2.
+Proof.
+  intros x l1 l2 H.
+  induction l2.
+  Case "l2 = nil".
+    inversion H.
+  Case "l2 = a :: l2".
+    inversion H.
+    SCase "subseq (x :: l1) l2 -> subseq l1 (a :: l2)".
+      apply subseq_cons.
+      apply IHl2.
+      apply H2.
+    SCase "subseq l1 l2 -> subseq l1 (a :: l2)".
+      apply subseq_cons.
+      apply H1.
+Qed.
+
+Theorem subseq_trans : forall l1 l2 l3,
+  subseq l1 l2 -> subseq l2 l3 -> subseq l1 l3.
+Proof.
+  intros l1 l2 l3 H1 H2.
+  generalize dependent l3.
+  induction H1.
+    intros l3 H2. apply subseq_nil.
+    intros l3 H2. apply IHsubseq. generalize dependent H2.
+      apply subseq_cons_inv.
+    intros l3 H2. induction l3. inversion H2. inversion H2.
+      apply subseq_cons. apply IHl3. apply H3.
+      apply subseq_cons'. apply IHsubseq. apply H0.
+Qed.
+
+(* END subsequence. *)
