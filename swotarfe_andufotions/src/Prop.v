@@ -823,3 +823,15 @@ Qed.
 
 (* END le_exercises. *)
 
+(* Exercise: 2 stars, optional (ble_nat_false) *)
+
+Theorem ble_nat_false : forall n m, ble_nat n m = false -> ~(n <= m).
+Proof.
+  unfold not.
+  intros n m H1 H2.
+  apply le_ble_nat in H2.
+  rewrite -> H2 in H1.
+  inversion H1.
+Qed.
+
+(* END ble_nat_false. *)
