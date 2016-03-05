@@ -1025,7 +1025,21 @@ Proof.
   unfold combine_odd_even in H1.
   rewrite -> H2 in H1.
   apply H1.
+Qed.
 
 (* END combine_odd_even. *)
 
+(* Exercise: 4 stars, optional (true_upto_n__true_everywhere) *)
 
+Fixpoint true_upto_n__true_everywhere (n : nat) (f : nat -> Prop) : Prop :=
+    match n with
+      | O    => forall m : nat, f m
+      | S n' => f n -> true_upto_n__true_everywhere n' f
+    end.
+
+Example true_upto_n_example :
+  (true_upto_n__true_everywhere 3 ev =
+  (ev 3 -> ev 2 -> ev 1 -> forall m : nat, ev m)).
+Proof. reflexivity. Qed.
+
+(* END true_upto_n__true_everywhere. *)
