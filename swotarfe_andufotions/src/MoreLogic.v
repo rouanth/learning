@@ -168,3 +168,67 @@ Proof.
 Qed.
 
 (* END all_forallb. *)
+
+(* Exercise: 4 stars, advanced (filter_challenge) *)
+
+Inductive merged {X : Type} : list X -> list X -> list X -> Prop :=
+  | merged_nil   : merged nil nil nil
+  | merged_left  : forall x l1 l2 l3,
+                     merged l1 l2 l3 -> merged (x :: l1) l2 (x :: l3)
+  | merged_right : forall x l1 l2 l3,
+                     merged l1 l2 l3 -> merged l1 (x :: l2) (x :: l3).
+
+Theorem filter_spec : forall (X : Type) (f : X -> bool) (l l1 l2 : list X),
+  (all (fun b => f b = true)  l1) ->
+  (all (fun b => f b = false) l2) ->
+  merged l1 l2 l ->
+  filter f l = l1.
+Proof.
+  intros X f l.
+  induction l.
+  Case "l = nil".
+    intros l1 l2 H1 H2 H3.
+    inversion H3.
+    reflexivity.
+  Case "l = a :: l".
+    simpl.
+    intros l1 l2 H1 H2 H3.
+    inversion H3.
+    SCase "merged_left".
+      inversion H1.
+      SSCase "l1 = nil".
+        rewrite <- H7 in H0.
+        inversion H0.
+      SSCase "x0 :: l5 = l1".
+        rewrite <- H9 in H0.
+        inversion H0.
+        rewrite <- H11 in H7.
+        rewrite -> H in H7.
+        rewrite -> H7.
+        replace (filter f l) with l5.
+        trivial.
+        symmetry.
+        apply IHl with (l2 := l2).
+        apply H8.
+        apply H2.
+        rewrite <- H12.
+        apply H5.
+    SCase "merged_right".
+      inversion H2.
+      SSCase "l2 = nil".
+        rewrite <- H7 in H4.
+        inversion H4.
+      SSCase "x0 :: l5 = l2".
+        rewrite <- H9 in H4.
+        inversion H4.
+        rewrite <- H11 in H7.
+        rewrite -> H in H7.
+        rewrite -> H7.
+        apply IHl with (l2 := l3).
+        apply H1.
+        rewrite <- H12 in H8.
+        apply H8.
+        apply H5.
+Qed.
+
+(* END filter_challenge. *)
