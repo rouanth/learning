@@ -835,3 +835,25 @@ Proof.
 Qed.
 
 (* END ble_nat_false. *)
+
+(* Exercise: 3 stars (R_provability2) *)
+
+(*
+1)
+   R 1 1 2 : c1 -> c2 -> c3
+   R 2 2 6 is not provable.
+2) c5 allows us to swap n with m, but it doesn't change anything: any
+proposition is constructed with c1, c2, c3 and c4, with c1 being proven for
+equal n and m, c4 changing n and m in the same way, and c2 and c3 being
+symmetric in regard to n and m in a sense that c2 can be constructed from c3
+by c4, and vice versa; thus, from the set of rules one of c2, c3, c5 can be
+removed without affecting the set of provable propositions.
+3) Assuming from the previous question that c5 can be removed without
+affecting the set of provable propositions, we can by brief analysis conclude
+that the condition for c4 can only be constructed by applying c2 and c3 to
+some other proposition; but c4 is a reverse of c2 and c3 and thus brings us
+back to the proposition we've started with, not affecting the set of provable
+propositions.
+*)
+
+(* END R_provability2. *)
