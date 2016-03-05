@@ -733,12 +733,93 @@ Theorem plus_lt : forall n1 n2 m,
   n1 + n2 < m -> n1 < m /\ n2 < m.
 Proof.
   unfold lt.
-  intros n1 n2 m.
-  generalize dependent n1.
-  generalize dependent n2.
-  induction m.
+  intros n1 n2 m H.
+  destruct m.
   Case "m = 0".
-    intros n1 n2.
+    inversion H.
+  Case "m = S m".
+    apply Sn_le_Sm__n_le_m in H.
+    inversion H.
+    SCase "n1 + n2 = m".
+      split.
+      SSCase "S n1 <= S (n1 + n2)".
+        apply n_le_m__Sn_le_Sm.
+        apply le_plus_l.
+      SSCase "S n2 <= S (n1 + n2)".
+        apply n_le_m__Sn_le_Sm.
+        rewrite -> plus_comm.
+        apply le_plus_l.
+    SCase "n1 + n2 <= pred m".
+      split.
+      SSCase "S n1 <= S (S m0)".
+        apply n_le_m__Sn_le_Sm.
+        apply le_S.
+        apply le_trans with (n := n1 + n2).
+        apply le_plus_l.
+        apply H0.
+      SSCase "S n2 <= S (S m0)".
+        apply n_le_m__Sn_le_Sm.
+        apply le_S.
+        apply le_trans with (n := n1 + n2).
+        rewrite -> plus_comm.
+        apply le_plus_l.
+        apply H0.
+Qed.
+
+Theorem lt_S : forall n m, n < m -> n < S m.
+Proof.
+  unfold lt.
+  intros n m H.
+  apply le_S.
+  apply H.
+Qed.
+
+Theorem ble_nat_true : forall n m, ble_nat n m = true -> n <= m.
+Proof.
+  induction n.
+  Case "n = 0".
+    intros m H.
+    apply O_le_n.
+  Case "n = S n".
+    intros m H.
+    destruct m.
+    SCase "m = 0".
+      inversion H.
+    SCase "m = S m".
+      simpl in H.
+      apply n_le_m__Sn_le_Sm.
+      generalize dependent H.
+      apply IHn.
+Qed.
+
+Theorem le_ble_nat : forall n m, n <= m -> ble_nat n m = true.
+Proof.
+  induction n.
+  Case "n = 0".
+    reflexivity.
+  Case "n = S n".
+    intros m H.
+    destruct m.
+    SCase "m = 0".
+      inversion H.
+    SCase "m = S m".
+      simpl.
+      apply Sn_le_Sm__n_le_m in H.
+      generalize dependent H.
+      apply IHn.
+Qed.
+
+Theorem ble_nat_true_trans : forall n m o,
+  ble_nat n m = true -> ble_nat m o = true -> ble_nat n o = true.
+Proof.
+  intros n m o H1 H2.
+  apply le_ble_nat.
+  apply ble_nat_true in H1.
+  apply ble_nat_true in H2.
+  generalize dependent H2.
+  generalize dependent H1.
+  apply le_trans.
+Qed.
 
 (* END le_exercises. *)
 
