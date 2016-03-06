@@ -917,12 +917,12 @@ End R.
 
 (* Exercise: 4 stars, advanced (subsequence) *)
 
-Inductive subseq : list nat -> list nat -> Prop :=
+Inductive subseq {X : Type} : list X -> list X -> Prop :=
   | subseq_nil  : forall l, subseq nil l
   | subseq_cons : forall x l1 l2, subseq l1 l2 -> subseq l1 (x :: l2)
   | subseq_cons': forall x l1 l2, subseq l1 l2 -> subseq (x :: l1) (x :: l2).
 
-Theorem subseq_refl : forall l, subseq l l.
+Theorem subseq_refl : forall (X : Type) (l : list X), subseq l l.
 Proof.
   induction l.
   apply subseq_nil.
@@ -930,9 +930,10 @@ Proof.
   apply IHl.
 Qed.
 
-Theorem subseq_app_t : forall l1 l2 l3, subseq l1 l2 -> subseq l1 (l2 ++ l3).
+Theorem subseq_app_t : forall (X : Type) (l1 l2 l3 : list X),
+  subseq l1 l2 -> subseq l1 (l2 ++ l3).
 Proof.
-  intros l1 l2 l3 H.
+  intros X l1 l2 l3 H.
   generalize dependent l3.
   induction H.
   intros l3. apply subseq_nil.
@@ -940,9 +941,10 @@ Proof.
   intros L3. simpl. apply subseq_cons'. apply IHsubseq.
 Qed.
 
-Theorem subseq_cons_inv : forall x l1 l2, subseq (x :: l1) l2 -> subseq l1 l2.
+Theorem subseq_cons_inv : forall (X : Type) (x : X) (l1 l2 : list X),
+  subseq (x :: l1) l2 -> subseq l1 l2.
 Proof.
-  intros x l1 l2 H.
+  intros X x l1 l2 H.
   induction l2.
   Case "l2 = nil".
     inversion H.
@@ -957,10 +959,10 @@ Proof.
       apply H1.
 Qed.
 
-Theorem subseq_trans : forall l1 l2 l3,
+Theorem subseq_trans : forall (X : Type) (l1 l2 l3 : list X),
   subseq l1 l2 -> subseq l2 l3 -> subseq l1 l3.
 Proof.
-  intros l1 l2 l3 H1 H2.
+  intros X l1 l2 l3 H1 H2.
   generalize dependent l3.
   induction H1.
     intros l3 H2. apply subseq_nil.
