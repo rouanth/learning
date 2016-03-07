@@ -232,3 +232,169 @@ Proof.
 Qed.
 
 (* END filter_challenge. *)
+
+(* Exercise: 5 stars, advanced, optional (filter_challenge_2) *)
+
+Theorem filter_empty : forall (X : Type) (test : X -> bool) (l : list X),
+  filter test l = nil -> all (fun x => test x = false) l.
+Proof.
+  intros X test l.
+  induction l.
+  Case "l = nil".
+    intros H.
+    apply all_nil.
+  Case "l = a :: l".
+    intros H.
+    simpl in H.
+    destruct (test a) eqn: TA.
+    SCase "test a = true".
+      inversion H.
+    SCase "test a = false".
+      apply all_cons.
+      apply TA.
+      apply IHl.
+      apply H.
+Qed.
+
+Theorem subseq_all : forall (X : Type) (P : X -> Prop) (l1 l2 : list X),
+  all P l1 -> subseq l2 l1 -> all P l2.
+Proof.
+  intros X P l1.
+  induction l1.
+  Case "l1 = nil".
+    intros.
+    inversion H0.
+    apply all_nil.
+  Case "l1 = a :: l1".
+    intros.
+    inversion H.
+    inversion H0.
+    apply all_nil.
+    generalize dependent H7.
+    generalize dependent H4.
+    apply IHl1.
+    apply all_cons.
+    apply H3.
+    generalize dependent H7.
+    generalize dependent H4.
+    apply IHl1.
+Qed.
+
+Theorem filter_subseq :
+  forall (X : Type) (test : X -> bool) l,
+  subseq (filter test l) l.
+Proof.
+  intros X test.
+  induction l.
+  Case "l = nil".
+    simpl.
+    apply subseq_nil.
+  Case "l = a :: l".
+    simpl.
+    destruct (test a).
+    SCase "test a = true".
+      apply subseq_cons'.
+      apply IHl.
+    SCase "test a = false".
+      apply subseq_cons.
+      apply IHl.
+Qed.
+
+Theorem all_cons_inv : forall (X : Type) (P : X -> Prop) (x : X) (l : list X),
+  all P (x :: l) -> all P l.
+Proof.
+  intros X P x l H.
+  inversion H.
+  apply H3.
+Qed.
+
+Theorem filter_spec_2_helper :
+  forall (X : Type) (test : X -> bool) (n : nat) (l ls : list X),
+  length l <= n ->
+  subseq ls l -> (all (fun x => test x = true) ls) ->
+  length ls <= length (filter test l).
+Proof.
+  intros X test n.
+  induction n.
+  Case "n = 0".
+    intros l ls Hn Hs.
+    inversion Hn.
+    apply length_nil_zero in H0.
+    rewrite -> H0 in Hs.
+    inversion Hs.
+    simpl.
+    intros.
+    apply O_le_n.
+  Case "n = S n".
+    destruct l.
+    SCase "l = nil".
+      intros ls Hn Hs.
+      inversion Hs.
+      simpl.
+      intros.
+      apply O_le_n.
+    SCase "l = a :: l".
+      intros ls Hn.
+      generalize dependent ls.
+      simpl in Hn.
+      apply Sn_le_Sm__n_le_m in Hn.
+      simpl.
+      destruct (test x) eqn : Htx.
+      SSCase "test x = true".
+        destruct ls.
+        SSSCase "ls = nil".
+          simpl.
+          intros.
+          apply O_le_n.
+        SSSCase "ls = x0 :: ls".
+          intros Hs Ht.
+          simpl.
+          apply n_le_m__Sn_le_Sm.
+          apply all_cons_inv in Ht.
+          inversion Hs.
+          SSSSCase "cons".
+            assert (subseq ls l).
+            apply subseq_cons_inv in H1.
+            apply H1.
+            apply IHn.
+            apply Hn.
+            apply H3.
+            apply Ht.
+          SSSSCase "cons'".
+            apply IHn.
+            apply Hn.
+            apply H0.
+            apply Ht.
+      SSCase "test x = false".
+        intros ls Hs Ht.
+        inversion Hs.
+        SSSCase "ls = nil".
+          simpl. apply O_le_n.
+        SSSCase "cons".
+          apply IHn.
+          apply Hn.
+          apply H1.
+          apply Ht.
+        SSSCase "cons'".
+          rewrite <- H0 in Ht.
+          inversion Ht.
+          rewrite -> H in H5.
+          rewrite -> H5 in Htx.
+          inversion Htx.
+Qed.
+
+Theorem filter_spec_2 :
+  forall (X : Type) (test : X -> bool) (l ls : list X),
+  subseq ls l ->
+  (all (fun x => test x = true) ls) ->
+  length ls <= length (filter test l).
+Proof.
+  intros.
+  apply filter_spec_2_helper with (n := length l).
+  apply le_n.
+  apply H.
+  apply H0.
+Qed.
+
+(* END filter_challenge_2. *)
+
