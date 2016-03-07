@@ -82,3 +82,10 @@ Definition or_commut : forall P Q, P \/ Q -> Q \/ P :=
   end.
 
 (* END or_commut''. *)
+
+(* Exercise: 2 stars, optional (ex_beautiful_Sn) *)
+
+Definition p : ex (fun n => beautiful (S n)) :=
+  ex_intro _ 2 bu_3.
+
+(* END ex_beautiful_Sn. *)
