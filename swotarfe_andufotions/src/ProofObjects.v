@@ -58,10 +58,16 @@ Qed.
 
 Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R :=
   fun P Q R E1 E2 =>
-    match E1 with
-      | conj Pt Qt => match E2 with
-                        | conj Qt2 Rt => @conj P R Pt Rt
-                      end
+    match (E1, E2) with
+      | (conj Pt Qt, conj Qt2 Rt) => @conj P R Pt Rt
     end.
 
 (* END conj_fact. *)
+
+(* Exercise: 2 stars, advanced, optional (beautiful_iff_gorgeous) *)
+
+Definition beautiful_iff_gorgeous :
+  forall n, beautiful n <-> gorgeous n :=
+  fun n => conj (beautiful__gorgeous n) (gorgeous__beautiful n).
+
+(* END beautiful_iff_gorgeous. *)
