@@ -12,3 +12,10 @@ Proof.
 Qed.
 
 (* END plus_one_r'. *)
+
+(* Exercise: 1 star, optional (rgb) *)
+
+(* rgb_ind : forall (P : rgb -> Prop), P red -> P green -> P blue ->
+   forall (r : rgb), P r. *)
+
+(* END rgb. *)
