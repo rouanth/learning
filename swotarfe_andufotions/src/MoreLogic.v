@@ -494,3 +494,30 @@ Proof.
 Qed.
 
 (* END no_repeats. *)
+
+(* Exercise: 3 stars (nostutter) *)
+
+Inductive nostutter {X : Type} : list X -> Prop :=
+  | nost_nil  : nostutter nil
+  | nost_one  : forall a, nostutter (a :: nil)%list
+  | nost_cons : forall a b l, not (a = b) -> nostutter (b :: l)%list ->
+                  nostutter (a :: b :: l)%list.
+
+Example test_nostutter1 : nostutter (3 :: 1 :: 4 :: 1 :: 5 :: 6 :: nil)%list.
+Proof. repeat constructor; auto. Qed.
+
+Example test_nostutter2 : forall (X : Type), nostutter (@nil X).
+Proof. repeat constructor; auto. Qed.
+
+Example test_nostutter3 : nostutter (5 :: nil)%list.
+Proof. repeat constructor; auto. Qed.
+
+Example test_nostutter4 : not (nostutter (3 :: 1 :: 1 :: 4 :: nil)%list).
+Proof.
+  intro.
+  repeat match goal with
+    h : nostutter _ |- _ => inversion h; clear h; subst end.
+  contradiction H1; trivial.
+Qed.
+
+(* END nostutter. *)
