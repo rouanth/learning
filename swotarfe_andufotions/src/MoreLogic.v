@@ -398,3 +398,99 @@ Qed.
 
 (* END filter_challenge_2. *)
 
+(* Exercise: 4 stars, advanced (no_repeats) *)
+
+Inductive appears_in {X : Type} (a : X) : list X -> Prop :=
+  | ai_here  : forall l,   appears_in a (a :: l)
+  | ai_later : forall b l, appears_in a l -> appears_in a (b :: l).
+
+Lemma appears_in_app : forall (X : Type) (xs ys : list X) (x : X),
+  appears_in x (xs ++ ys) -> appears_in x xs \/ appears_in x ys.
+Proof.
+  intros X xs.
+  induction xs.
+  Case "xs = nil".
+    intros ys x H.
+    simpl in H.
+    right.
+    apply H.
+  Case "xs = a :: xs".
+    intros ys x H.
+    simpl in H.
+    inversion H.
+    left.
+    apply ai_here.
+    apply IHxs in H1.
+    inversion H1.
+    left.
+    apply ai_later.
+    apply H3.
+    right.
+    apply H3.
+Qed.
+
+Lemma app_appears_in : forall (X : Type) (xs ys : list X) (x : X),
+  appears_in x xs \/ appears_in x ys -> appears_in x (xs ++ ys).
+Proof.
+  intros X xs.
+  induction xs.
+  Case "xs = nil".
+    intros ys x H.
+    inversion H.
+    inversion H0.
+    simpl. apply H0.
+  Case "xs = a :: xs".
+    intros ys x H.
+    inversion H.
+    inversion H0.
+    apply ai_here.
+    simpl.
+    apply ai_later.
+    apply IHxs.
+    left.
+    apply H2.
+    simpl.
+    apply ai_later.
+    apply IHxs.
+    right.
+    apply H0.
+Qed.
+
+Inductive disjoint {X : Type} : list X -> list X -> Prop :=
+  | dis_nil  : forall l, disjoint nil l 
+  | dis_cons : forall x l1 l2, disjoint l1 l2 -> not (appears_in x l2) ->
+                disjoint (x :: l1) l2.
+
+Inductive no_repeats {X : Type} : list X -> Prop :=
+  | nr_nil  : no_repeats nil
+  | nr_cons : forall x l, no_repeats l -> not (appears_in x l) ->
+                no_repeats (x :: l).
+
+Theorem disjoint_app_no_repeats : forall (X : Type) (l1 l2 : list X),
+  disjoint l1 l2 -> no_repeats l1 -> no_repeats l2 -> no_repeats (l1 ++ l2).
+Proof.
+  induction l1.
+  Case "l1 = nil".
+    intros. simpl. apply H1.
+  Case "l1 = a :: l1".
+    intros. simpl.
+    inversion H0.
+    inversion H.
+    apply nr_cons.
+    apply IHl1.
+    apply H8.
+    apply H4.
+    apply H1.
+    unfold not.
+    intros.
+    apply appears_in_app in H11.
+    inversion H11.
+    unfold not in H5.
+    apply H5.
+    apply H12.
+    unfold not in H10.
+    apply H10.
+    apply H12.
+Qed.
+
+(* END no_repeats. *)
