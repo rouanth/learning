@@ -27,3 +27,12 @@ Qed.
    forall (l : natlist), P l. *)
 
 (* END natlist1. *)
+
+(* Exercise: 1 star, optional (byntree_ind) *)
+
+(* byntree_ind : forall P : byntree -> Prop, P bempty ->
+   (forall (y : yesno) (b : byntree), P (bleaf y b)) ->
+   (forall (y : yesno) (b1 b2 : byntree), P (nbranch y b1 b2)) ->
+   forall b : byntree, P b. *)
+
+(* END byntree_ind. *)
