@@ -36,3 +36,11 @@ Qed.
    forall b : byntree, P b. *)
 
 (* END byntree_ind. *)
+
+(* Exercise: 1 star, optional (ex_set) *)
+
+Inductive ExSet : Type :=
+  | con1 : bool -> ExSet
+  | con2 : nat  -> ExSet -> ExSet.
+
+(* END ex_set. *)
