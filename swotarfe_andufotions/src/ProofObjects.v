@@ -31,6 +31,14 @@ Definition nine_is_beautiful' := bu_sum 3 6 bu_3 (bu_sum 3 3 bu_3 bu_3).
 (* Exercise: 2 stars b_times2 *)
 
 Definition b_times2' : forall (n : nat), beautiful n -> beautiful (2 * n) :=
-  fun n => fun E => bu_sum n (n + 0) E (bu_sum n 0 E bu_0).
+  fun n E => bu_sum n (n + 0) E (bu_sum n 0 E bu_0).
 
 (* END b_times2. *)
+
+(* Exercise: 2 stars, optional (gorgeous_plus13_po) *)
+
+Definition gorgeous_plus13_po : forall n, gorgeous n -> gorgeous (13 + n) :=
+  fun n E => g_plus5 (8 + n) (g_plus5 (3 + n) (g_plus3 n E)).
+
+(* END gorgeous_plus13_po. *)
+
