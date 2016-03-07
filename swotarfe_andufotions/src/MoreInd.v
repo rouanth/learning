@@ -19,3 +19,11 @@ Qed.
    forall (r : rgb), P r. *)
 
 (* END rgb. *)
+
+(* Exercise: 1 star, optional (natlist1) *)
+
+(* natlist_ind : forall (P : natlist -> Prop), P nnil ->
+   (forall (l : natlist) (n : nat), P l -> P (ncons l n)) ->
+   forall (l : natlist), P l. *)
+
+(* END natlist1. *)
