@@ -53,3 +53,15 @@ Proof.
 Qed.
 
 (* END case_proof_objects. *)
+
+(* Exercise: 2 stars, optional (conj_fact) *)
+
+Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R :=
+  fun P Q R E1 E2 =>
+    match E1 with
+      | conj Pt Qt => match E2 with
+                        | conj Qt2 Rt => @conj P R Pt Rt
+                      end
+    end.
+
+(* END conj_fact. *)
