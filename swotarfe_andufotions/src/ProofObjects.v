@@ -42,3 +42,14 @@ Definition gorgeous_plus13_po : forall n, gorgeous n -> gorgeous (13 + n) :=
 
 (* END gorgeous_plus13_po. *)
 
+(* Exercise: 1 star, optional (case_proof_objects) *)
+
+Theorem and_example :
+  (beautiful 0) /\ (beautiful 3).
+Proof.
+  split.
+  Case "left".  apply bu_0.
+  Case "right". apply bu_3.
+Qed.
+
+(* END case_proof_objects. *)
