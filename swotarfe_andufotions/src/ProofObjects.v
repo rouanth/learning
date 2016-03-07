@@ -89,3 +89,18 @@ Definition p : ex (fun n => beautiful (S n)) :=
   ex_intro _ 2 bu_3.
 
 (* END ex_beautiful_Sn. *)
+
+(* ((Giving Explicit Arguments to Lemmas and Hypotheses)) *)
+
+(* Exercise: 2 stars (trans_eq_example_redux) *)
+
+Example trans_eq_example' : forall (a b c d e f : nat),
+  (a :: b :: nil)%list = (c :: d :: nil)%list ->
+  (c :: d :: nil)%list = (e :: f :: nil)%list ->
+  (a :: b :: nil)%list = (e :: f :: nil)%list.
+Proof.
+  intros a b c d e f.
+  apply (trans_eq _ _ (c :: d :: nil)%list).
+Qed.
+
+(* END trans_eq_example_redux. *)
