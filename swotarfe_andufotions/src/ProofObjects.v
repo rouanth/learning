@@ -71,3 +71,14 @@ Definition beautiful_iff_gorgeous :
   fun n => conj (beautiful__gorgeous n) (gorgeous__beautiful n).
 
 (* END beautiful_iff_gorgeous. *)
+
+(* Exercise: 2 stars, optional (or_commut'') *)
+
+Definition or_commut : forall P Q, P \/ Q -> Q \/ P :=
+  fun P Q H =>
+  match H with
+    | or_intror Hp => or_introl Hp
+    | or_introl Hq => or_intror Hq
+  end.
+
+(* END or_commut''. *)
