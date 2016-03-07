@@ -521,3 +521,123 @@ Proof.
 Qed.
 
 (* END nostutter. *)
+
+(* Exercise: 4 stars, advanced (pigeonhole principle) *)
+
+Lemma appears_in_app_split : forall (X : Type) (x : X) (l : list X),
+  appears_in x l -> exists l1, exists l2, (l = l1 ++ (x :: l2))%list.
+Proof.
+  intros X x l H.
+  induction l.
+  Case "l = nil".
+    inversion H.
+  Case "l = a :: l".
+    inversion H.
+    SCase "a = x".
+      exists nil.
+      exists l.
+      reflexivity.
+    SCase "appears_in x l".
+      apply IHl in H1.
+      destruct H1.
+      destruct H1.
+      exists (a :: x0)%list.
+      exists x1.
+      rewrite -> H1.
+      reflexivity.
+Qed.
+
+Inductive repeats {X : Type} : list X -> Prop :=
+  | rep_n    : forall x l, appears_in x l -> repeats (x :: l)
+  | rep_cons : forall x l, repeats l -> repeats (x :: l).
+
+Theorem pure_functions : forall (X Y : Type) (f : X -> Y) (x1 x2 : X),
+  x1 = x2 -> f x1 = f x2.
+Proof.
+  intros X Y f x1 x2 H.
+  rewrite -> H.
+  trivial.
+Qed.
+
+Theorem appears_app_comm : forall (X : Type) (x : X) (l1 l2 : list X),
+  appears_in x (l1 ++ l2) -> appears_in x (l2 ++ l1).
+Proof.
+  intros.
+  apply appears_in_app in H.
+  apply or_comm in H.
+  apply app_appears_in in H.
+  apply H.
+Qed.
+
+Theorem length_app_comm : forall (X : Type) (l1 l2 : list X),
+  length (l1 ++ l2) = length (l2 ++ l1).
+Proof.
+  intros X l1 l2.
+  rewrite -> app_length.
+  rewrite -> app_length.
+  rewrite -> plus_comm.
+  reflexivity.
+Qed.
+
+Theorem pigeonhole_principle :
+  excluded_middle ->
+  forall (X : Type) (l1 l2 : list X),
+  (forall x, appears_in x l1 -> appears_in x l2) ->
+  length l2 < length l1 ->
+  repeats l1.
+Proof.
+  intros EM.
+  intros X l1. induction l1 as [|x l1'].
+  Case "l1 = nil".
+    intros. inversion H0.
+  Case "l1 = x :: l1'".
+    intros.
+    assert (appears_in x (x :: l1')).
+      apply ai_here.
+    apply H in H1.
+    apply appears_in_app_split in H1.
+    inversion H1.
+    inversion H2.
+    rewrite -> H3 in H0.
+    rewrite -> length_app_comm in H0.
+    unfold lt in H0.
+    simpl in H0.
+    apply Sn_le_Sm__n_le_m in H0.
+    rewrite -> H3 in H.
+    assert (forall z : X, appears_in z (x :: l1') ->
+        appears_in z (x :: (x1 ++ x0))%list).
+      intros z Hz.
+      apply H in Hz.
+      apply appears_app_comm in Hz.
+      simpl in Hz.
+      apply Hz.
+    (* Excluded middle *)
+    assert (appears_in x l1' \/ not (appears_in x l1')).
+      apply EM.
+    destruct H5.
+    SCase "x appears in l1'".
+      apply rep_n.
+      apply H5.
+    SCase "x does not appear in l1'".
+      apply rep_cons.
+      apply IHl1' with (l2 := (x1 ++ x0)%list).
+      intros x2 Hh.
+      assert (x2 = x \/ not (x2 = x)).
+        apply EM.
+      destruct H6.
+      SSCase "x2 = x".
+        rewrite -> H6 in Hh.
+        apply H5 in Hh.
+        inversion Hh.
+      SSCase "x2 <> x".
+        apply ai_later with (b := x) in Hh.
+        apply H4 in Hh.
+        inversion Hh.
+        apply H6 in H8.
+        inversion H8.
+        apply H8.
+        unfold lt.
+        apply H0.
+Qed.
+
+(* END pigeonhole principle. *)
