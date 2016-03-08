@@ -129,15 +129,3 @@ Inductive bar_set : Set :=
   | bar3 : bool -> bar_set -> bar_set.
 
 (* END bar_ind_principle. *)
-
-(* Exercise: 2 stars, optional (no_longer_than_ind) *)
-
-(* P nil n
-P l n
-P (cons x l) (S n)
-P l n
-P l (S n)
-P l n
-*)
-
-(* END no_longer_than_ind. *)
