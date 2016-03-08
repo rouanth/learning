@@ -120,3 +120,12 @@ forall (f : foo X Y), P f.
 *)
 
 (* END foo_ind_principle. *)
+
+(* Exercise: 2 stars, optional (bar_ind_principle) *)
+
+Inductive bar_set : Set :=
+  | bar1 : nat -> bar_set
+  | bar2 : bar_set -> bar_set
+  | bar3 : bool -> bar_set -> bar_set.
+
+(* END bar_ind_principle. *)
