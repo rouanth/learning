@@ -63,3 +63,12 @@ Inductive mytype (X : Type) : Type :=
   | constr3 : mytype X -> nat -> mytype X.
 
 (* END mytype. *)
+
+(* Exercise: 1 star, optional (foo) *)
+
+Inductive foo (X Y : Type) : Type :=
+  | bar : X -> foo X Y
+  | baz : Y -> foo X Y
+  | quux : (nat -> foo X Y) -> foo X Y.
+
+(* END foo. *)
