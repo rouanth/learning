@@ -141,3 +141,12 @@ P l n
 *)
 
 (* END no_longer_than_ind. *)
+
+(* Exercise: 1 star, optional (and_ind_principle) *)
+
+(*
+and_ind :
+  forall (P R Q : Prop), (R -> Q -> P) -> R \/ Q -> P.
+*)
+
+(* END and_ind_principle. *)
