@@ -54,3 +54,12 @@ Inductive ExSet : Type :=
 *)
 
 (* END tree. *)
+
+(* Exercise: 1 star, optional (mytype) *)
+
+Inductive mytype (X : Type) : Type :=
+  | constr1 : X   -> mytype X
+  | constr2 : nat -> mytype X
+  | constr3 : mytype X -> nat -> mytype X.
+
+(* END mytype. *)
