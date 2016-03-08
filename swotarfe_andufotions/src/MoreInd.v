@@ -72,3 +72,13 @@ Inductive foo (X Y : Type) : Type :=
   | quux : (nat -> foo X Y) -> foo X Y.
 
 (* END foo. *)
+
+(* Exercise: 1 star, optional (foo') *)
+
+(* P f
+P (C1 l f)
+P C2
+P f
+*)
+
+(* END foo'. *)
