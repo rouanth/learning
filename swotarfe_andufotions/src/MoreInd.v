@@ -150,3 +150,20 @@ and_ind :
 *)
 
 (* END and_ind_principle. *)
+
+(* Exercise: 1 star, optional (or_ind_principle) *)
+
+(*
+or_ind :
+  forall P R Q : Prop, (R -> P) -> (Q -> P) -> R \/ Q -> P.
+*)
+
+(* END or_ind_principle. *)
+
+(* Exercise: 1 star, optional (False_ind_principle) *)
+
+(* False_ind :
+  forall P : Prop, False -> P
+*)
+
+(* END False_ind_principle. *)
