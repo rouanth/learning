@@ -44,3 +44,13 @@ Inductive ExSet : Type :=
   | con2 : nat  -> ExSet -> ExSet.
 
 (* END ex_set. *)
+
+(* Exercise: 1 star, optional (tree) *)
+
+(* forall (X : Type) (P : tree -> Prop),
+   (forall (x : X), P (leaf x)) ->
+   (forall (n1 n2 : tree), P n1 -> P n2 -> P (node n1 n2)) ->
+   forall t : tree, P t.
+*)
+
+(* END tree. *)
