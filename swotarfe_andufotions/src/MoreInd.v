@@ -82,3 +82,29 @@ P f
 *)
 
 (* END foo'. *)
+
+(* Exercise: 1 star, optional (plus_explicit_prop) *)
+
+Definition plus_assoc_def (n m o : nat) :=
+  (n + m) + o = n + (m + o).
+
+Theorem plus_assoc' : forall n m o, plus_assoc_def n m o.
+Proof.
+  induction n.
+    reflexivity.
+    intros. unfold plus_assoc_def in IHn. unfold plus_assoc_def. simpl.
+      rewrite -> IHn. trivial.
+Qed.
+
+Definition plus_comm_def (n m : nat) :=
+  n + m = m + n.
+
+Theorem plus_comm' : forall n m, plus_comm_def n m.
+Proof.
+  induction n.
+    unfold plus_comm_def. intros. rewrite -> plus_0_r. reflexivity.
+    intros. unfold plus_comm_def. rewrite <- plus_n_Sm. simpl.
+      unfold plus_comm_def in IHn. rewrite -> IHn. reflexivity.
+Qed.
+
+(* END plus_explicit_prop. *)
