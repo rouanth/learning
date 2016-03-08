@@ -108,3 +108,15 @@ Proof.
 Qed.
 
 (* END plus_explicit_prop. *)
+
+(* ((Additional Exercises)) *)
+
+(* Exercise: 2 stars, optional (foo_ind_principle) *)
+
+(* P (foo1 X Y x)
+P (foo2 X Y y)
+forall (f : foo X Y), P f -> P (foo3 X Y f)
+forall (f : foo X Y), P f.
+*)
+
+(* END foo_ind_principle. *)
