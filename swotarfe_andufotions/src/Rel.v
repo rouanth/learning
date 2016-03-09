@@ -22,3 +22,15 @@ Proof.
 Qed.
 
 (* END total_relation_not_partial_function. *)
+
+(* Exercise: 2 stars, optional *)
+
+Theorem empty_relation_partial_function :
+  partial_function empty_relation.
+Proof.
+  unfold partial_function.
+  intros.
+  inversion H0.
+Qed.
+
+(* END. *)
