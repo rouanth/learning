@@ -158,3 +158,17 @@ Proof.
 Qed.
 
 (* END. *)
+
+(* Exercise: 2 stars, optional *)
+
+Theorem le_step : forall n m p, n < m -> m <= S p -> n <= p.
+Proof.
+  unfold lt.
+  intros.
+  apply le_trans with (p := S p) in H.
+  apply le_S_n in H.
+  apply H.
+  apply H0.
+Qed.
+
+(* END. *)
