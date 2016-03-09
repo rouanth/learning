@@ -51,3 +51,18 @@ Proof.
 Qed.
 
 (* END. *)
+
+(* Exercise: 2 stars, optional *)
+
+Theorem lt_trans'' : transitive lt.
+Proof.
+  unfold lt. unfold transitive.
+  intros n m o Hnm Hmo.
+  induction o as [| o'].
+    inversion Hmo.
+    apply le_S. inversion Hmo.
+      rewrite <- H0. apply Hnm.
+      apply IHo'. apply H0.
+Qed.
+
+(* END. *)
