@@ -122,3 +122,20 @@ Proof.
 Qed.
 
 (* END. *)
+
+Definition symmetric {X : Type} (R : relation X) :=
+  forall a b, R a b -> R b a.
+
+(* Exercise: 2 stars, optional *)
+
+Theorem le_not_symmetric : not (symmetric le).
+Proof.
+  intros H.
+  unfold symmetric in H.
+  assert (0 <= 1).
+    apply le_S. apply le_n.
+  apply H in H0.
+  inversion H0.
+Qed.
+
+(* END. *)
