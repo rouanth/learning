@@ -108,3 +108,17 @@ both of which are given. Thus, (S n <= n) can't be true.
 *)
 
 (* END le_Sn_n_inf. *)
+
+(* Exercise: 1 star, optional *)
+
+Theorem le_Sn_n : forall n, not (S n <= n).
+Proof.
+  intros n H.
+  induction n.
+    inversion H.
+    apply le_S_n in H.
+    apply IHn in H.
+    apply H.
+Qed.
+
+(* END. *)
