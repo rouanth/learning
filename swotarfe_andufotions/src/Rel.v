@@ -139,3 +139,22 @@ Proof.
 Qed.
 
 (* END. *)
+
+Definition antisymmetric {X : Type} (R : relation X) :=
+  forall a b : X, R a b -> R b a -> a = b.
+
+(* Exercise: 2 stars, optional *)
+
+Theorem le_antisymmetric : antisymmetric le.
+Proof.
+  unfold antisymmetric.
+  induction a.
+    intros. inversion H0. trivial.
+    destruct b.
+      intros. inversion H.
+      intros. apply le_S_n in H. apply le_S_n in H0. apply IHa in H.
+        rewrite -> H. trivial.
+      apply H0.
+Qed.
+
+(* END. *)
