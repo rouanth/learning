@@ -80,3 +80,31 @@ Proof.
 Qed.
 
 (* END. *)
+
+(* And this one suddenly has a name. *)
+(* Exercise: 2 stars, optional (le_Sn_n_inf) *)
+
+(* Theorem: For every n, ~(S n ≤ n) *)
+
+(* Proof.
+
+Unfolding the definitions, we mush show that (S n <= n) can't be true for any
+n.
+
+By induction on n,
+
+First we need to show that ~(1 <= 0). There is no constructor for `le` which
+could prove (1 <= 0), so it can't be true.
+
+Then we need to show that if (S n <= n) is False, then (S (S n) <= S n) is also
+false. I. e., we need to prove that from (S (S n) <= S n) follows even False.
+
+Applying le_S_n to it, we get (S n <= n). There is a contradiction between
+~(S n <= n)
+and
+(S n <= n),
+both of which are given. Thus, (S n <= n) can't be true.
+
+*)
+
+(* END le_Sn_n_inf. *)
