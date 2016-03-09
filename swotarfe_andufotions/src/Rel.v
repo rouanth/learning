@@ -66,3 +66,17 @@ Proof.
 Qed.
 
 (* END. *)
+
+(* Exercise: 1 star, optional *)
+
+Theorem le_S_n : forall n m, (S n <= S m) -> (n <= m).
+Proof.
+  intros n m H.
+  inversion H.
+    apply le_n.
+    apply (le_trans n (S n) m).
+      apply le_S. apply le_n.
+      apply H1.
+Qed.
+
+(* END. *)
