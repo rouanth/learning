@@ -172,3 +172,18 @@ Proof.
 Qed.
 
 (* END. *)
+
+Inductive clos_refl_trans {X : Type} (R : relation X) : relation X :=
+  | rt_step : forall x y, R x y -> clos_refl_trans R x y
+  | rt_refl : forall x, clos_refl_trans R x x
+  | rt_trans : forall x y z,
+      clos_refl_trans R x y ->
+      clos_refl_trans R y z ->
+      clos_refl_trans R x z.
+
+Inductive refl_step_closure {X : Type} (R : relation X) : relation X :=
+  | rsc_refl : forall (x : X), refl_step_closure R x x
+  | rsc_step : forall (x y z : X),
+                 R x y ->
+                 refl_step_closure R y z ->
+                 refl_step_closure R x z.
