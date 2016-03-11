@@ -187,3 +187,23 @@ Inductive refl_step_closure {X : Type} (R : relation X) : relation X :=
                  R x y ->
                  refl_step_closure R y z ->
                  refl_step_closure R x z.
+
+Theorem rsc_R : forall (X:Type) (R:relation X) (x y : X),
+  R x y -> refl_step_closure R x y.
+Proof.
+intros X R x y H.
+apply rsc_step with y. apply H. apply rsc_refl. Qed.
+
+(* Exercise: 2 stars, optional (rsc_trans) *)
+
+Theorem rsc_trans :
+  forall (X:Type) (R: relation X) (x y z : X),
+    refl_step_closure R x y ->
+    refl_step_closure R y z ->
+    refl_step_closure R x z.
+Proof.
+  intros X R x y z H1 H2.
+
+  Admitted.
+
+(* END rsc_trans. *)
