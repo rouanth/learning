@@ -215,3 +215,32 @@ Qed.
 
 (* END rsc_trans. *)
 
+(* Exercise: 3 stars, optional (rtc_rsc_coincide) *)
+
+Theorem rtc_rsc_coincide : forall (X:Type) (R: relation X) (x y : X),
+clos_refl_trans R x y <-> refl_step_closure R x y.
+Proof.
+  intros X R x y.
+  split.
+  Case "rtc -> rsc".
+    intros H.
+    induction H.
+    SCase "R x y".
+      apply rsc_R. apply H.
+    SCase "x = y".
+      apply rsc_refl.
+    SCase "rct x y0 -> rct y0 y".
+      apply rsc_trans with y.
+      apply IHclos_refl_trans1.
+      apply IHclos_refl_trans2.
+  Case "rsc -> rtc".
+    intros H.
+    induction H.
+    SCase "x = x".
+      apply rt_refl.
+    SCase "R x y -> rsc R y z".
+      apply rt_step in H.
+      apply rt_trans with y. apply H. apply IHrefl_step_closure.
+Qed.
+
+(* END rtc_rsc_coincide. *)
