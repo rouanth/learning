@@ -173,6 +173,8 @@ Qed.
 
 (* END. *)
 
+(* ((Reflexive, Transitive Closure)) *)
+
 Inductive clos_refl_trans {X : Type} (R : relation X) : relation X :=
   | rt_step : forall x y, R x y -> clos_refl_trans R x y
   | rt_refl : forall x, clos_refl_trans R x x
@@ -203,7 +205,13 @@ Theorem rsc_trans :
     refl_step_closure R x z.
 Proof.
   intros X R x y z H1 H2.
-
-  Admitted.
+  induction H1 as [x | x y z'].
+    apply H2.
+    apply rsc_step with y.
+    apply H.
+    apply IHrefl_step_closure.
+    apply H2.
+Qed.
 
 (* END rsc_trans. *)
+
