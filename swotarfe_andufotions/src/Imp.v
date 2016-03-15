@@ -13,9 +13,26 @@ Inductive aexp : Type :=
 Inductive bexp : Type :=
   | BTrue : bexp
   | BFalse : bexp
-  | Beq : bexp -> bexp -> bexp
-  | BLe : bexp -> bexp -> bexp
+  | Beq : aexp -> aexp -> bexp
+  | BLe : aexp -> aexp -> bexp
   | BNot : bexp -> bexp
   | BAnd : bexp -> bexp -> bexp.
 
 
+Fixpoint aeval (a : aexp) : nat :=
+  match a with
+    | ANum   n   => n
+    | APlus  b c => (aeval b) + (aeval c)
+    | AMinus b c => (aeval b) - (aeval c)
+    | AMult  b c => (aeval b) * (aeval c)
+  end.
+
+Fixpoint beval (b : bexp) : bool :=
+  match b with
+    | BTrue    => true
+    | BFalse   => false
+    | Beq c d  => beq_nat (aeval c) (aeval d)
+    | BLe c d  => ble_nat (aeval c) (aeval d)
+    | BNot k   => negb (beval k)
+    | BAnd c d => (beval c) && (beval d)
+  end.
