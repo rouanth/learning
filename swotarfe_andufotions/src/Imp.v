@@ -36,3 +36,34 @@ Fixpoint beval (b : bexp) : bool :=
     | BNot k   => negb (beval k)
     | BAnd c d => (beval c) && (beval d)
   end.
+
+Fixpoint optimize_0plus (a : aexp) : aexp :=
+  match a with
+    | ANum n => ANum n
+    | APlus (ANum 0) b => optimize_0plus b
+    | APlus b c => APlus (optimize_0plus b) (optimize_0plus c)
+    | AMinus b c => AMinus (optimize_0plus b) (optimize_0plus c)
+    | AMult b c => AMult (optimize_0plus b) (optimize_0plus c)
+  end.
+
+Theorem optimize_0plus_sound''': forall a,
+  aeval (optimize_0plus a) = aeval a.
+Proof.
+  induction a; simpl. trivial.
+  destruct a1; simpl. destruct n. simpl. apply IHa2.
+                      simpl. rewrite IHa2. trivial.
+
+(* Exercise: 3 stars (optimize_0plus_b) *)
+
+Fixpoint optimize_0plus_b (b : bexp) : bexp :=
+  match b with
+    | Beq c d => Beq (optimize_0plus c) (optimize_0plus d)
+    | BLe c d => BLe (optimize_0plus c) (optimize_0plus d)
+    | BNot k  => BNot (optimize_0plus_b k)
+    | BAnd c d => BAnd (optimize_0plus_b c) (optimize_0plus_b d)
+    | e => e
+  end.
+
+
+
+(* END optimize_0plus_b. *)
