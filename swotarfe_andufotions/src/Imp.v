@@ -46,12 +46,14 @@ Fixpoint optimize_0plus (a : aexp) : aexp :=
     | AMult b c => AMult (optimize_0plus b) (optimize_0plus c)
   end.
 
-Theorem optimize_0plus_sound''': forall a,
+Theorem optimize_0plus_sound: forall a,
   aeval (optimize_0plus a) = aeval a.
 Proof.
-  induction a; simpl. trivial.
-  destruct a1; simpl. destruct n. simpl. apply IHa2.
-                      simpl. rewrite IHa2. trivial.
+  induction a; try (simpl; rewrite IHa1; rewrite IHa2); try reflexivity.
+  destruct a1; simpl; simpl in IHa1;
+    try (rewrite IHa1; rewrite IHa2; reflexivity).
+  destruct n; simpl; rewrite IHa2; reflexivity.
+Qed.
 
 (* Exercise: 3 stars (optimize_0plus_b) *)
 
@@ -64,6 +66,12 @@ Fixpoint optimize_0plus_b (b : bexp) : bexp :=
     | e => e
   end.
 
-
+Theorem optimize_0plus_b_sound : forall b,
+  beval (optimize_0plus_b b) = beval b.
+Proof.
+  induction b; simpl; repeat (rewrite optimize_0plus_sound); try trivial.
+  rewrite IHb. trivial.
+  rewrite IHb1. rewrite IHb2. trivial.
+Qed.
 
 (* END optimize_0plus_b. *)
