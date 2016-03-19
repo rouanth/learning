@@ -75,3 +75,113 @@ Proof.
 Qed.
 
 (* END optimize_0plus_b. *)
+
+(* Exercise: 4 stars, optional (optimizer) *)
+
+Fixpoint soph_opt_a (a : aexp) : aexp :=
+  match a with
+    | APlus  b c => match (soph_opt_a b, soph_opt_a c) with
+                      | (ANum 0, e) => e
+                      | (e, ANum 0) => e
+                      | (e, f     ) => APlus e f
+                    end
+    | AMult  b c => match (soph_opt_a b, soph_opt_a c) with
+                      | (ANum 0, e) => ANum 0
+                      | (e, ANum 0) => ANum 0
+                      | (ANum 1, e) => e
+                      | (e, ANum 1) => e
+                      | (e, f     ) => AMult e f
+                    end
+    | AMinus b c => match (soph_opt_a b, soph_opt_a c) with
+                      | (e, ANum 0) => e
+                      | (e, f     ) => AMinus e f
+                    end
+    | e => e
+  end.
+
+Fixpoint soph_opt_b (b : bexp) : bexp :=
+  match b with
+    | Beq c d => match (soph_opt_a c, soph_opt_a d) with
+                   | (ANum n, ANum m) => if beq_nat n m then BTrue else BFalse
+                   | (e, f          ) => Beq e f
+                 end
+    | BLe c d => match (soph_opt_a c, soph_opt_a d) with
+                   | (ANum n, ANum m) => if ble_nat n m then BTrue else BFalse
+                   | (e, f          ) => Beq e f
+                 end
+    | BNot k  => match (soph_opt_b k) with
+                   | BTrue  => BFalse
+                   | BFalse => BTrue
+                   | e      => BNot e
+                 end
+    | BAnd c d => match (soph_opt_b c, soph_opt_b d) with
+                   | (BFalse, e) => BFalse
+                   | (e, BFalse) => BFalse
+                   | (BTrue,  e) => e
+                   | (e,  BTrue) => e
+                   | (e, f     ) => BAnd e f
+                  end
+    | e => e
+end.
+
+Fixpoint soph_opt_a_soft (a : aexp) : aexp :=
+  match a with
+    | APlus  (ANum 0) e => soph_opt_a_soft e
+    | APlus  e (ANum 0) => soph_opt_a_soft e
+    | APlus  e f        => APlus  (soph_opt_a_soft e) (soph_opt_a_soft f)
+    | AMult  (ANum 0) e => ANum 0
+    | AMult  e (ANum 0) => ANum 0
+    | AMult  e f        => AMult  (soph_opt_a_soft e) (soph_opt_a_soft f)
+    | AMinus e (ANum 0) => soph_opt_a_soft e
+    | AMinus e f        => AMinus (soph_opt_a_soft e) (soph_opt_a_soft f)
+    | e => e
+end.
+
+Fixpoint soph_opt_b_soft (b : bexp) : bexp :=
+  match b with
+    | Beq  (ANum n) (ANum m) => if beq_nat n m then BTrue else BFalse
+    | Beq  c        d        => Beq (soph_opt_a_soft c) (soph_opt_a_soft d)
+    | BLe  (ANum n) (ANum m) => if ble_nat n m then BTrue else BFalse
+    | BLe  c        d        => BLe (soph_opt_a_soft c) (soph_opt_a_soft d)
+    | BNot BTrue             => BFalse
+    | BNot BFalse            => BTrue
+    | BNot e                 => BNot (soph_opt_b_soft e)
+    | BAnd BFalse   e        => BFalse
+    | BAnd e        BFalse   => BFalse
+    | BAnd BTrue    e        => soph_opt_b_soft e
+    | BAnd e        BTrue    => soph_opt_b_soft e
+    | BAnd e        f        => BAnd (soph_opt_b_soft e) (soph_opt_b_soft f)
+    | e => e
+end.
+
+Theorem minus_0_r : forall n, n - 0 = n.
+Proof.
+  induction n; reflexivity.
+Qed.
+
+Theorem soph_opt_a_soft_sound : forall a, aeval (soph_opt_a_soft a) = aeval a.
+Proof.
+  induction a; try trivial;
+    destruct a1; destruct a2;
+        try (destruct n); try (destruct n0); simpl;
+        simpl in IHa1; try (rewrite IHa1);
+        simpl in IHa2; try (rewrite IHa2);
+    try (rewrite plus_0_r); try (rewrite minus_0_r); try (rewrite mult_0_r);
+    reflexivity.
+Qed.
+
+Theorem soph_opt_b_soft_sound : forall b, beval (soph_opt_b_soft b) = beval b.
+Proof.
+  induction b; try reflexivity;
+    try (destruct a; destruct a0;
+      unfold soph_opt_b_soft; unfold beval;
+        repeat (rewrite soph_opt_a_soft_sound); trivial); simpl.
+      destruct (beq_nat n n0); reflexivity.
+      destruct (ble_nat n n0); reflexivity.
+    destruct b; simpl; simpl in IHb; try (rewrite IHb); reflexivity.
+    destruct b1; destruct b2; simpl;
+      try (simpl in IHb1; rewrite IHb1); try (simpl in IHb2; rewrite IHb2);
+      try (rewrite andb_true_r); try (rewrite andb_false_r); trivial.
+Qed.
+
+(* END optimizer. *)
