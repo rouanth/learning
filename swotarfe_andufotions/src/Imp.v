@@ -185,3 +185,51 @@ Proof.
 Qed.
 
 (* END optimizer. *)
+
+(* ((Evaluation as a Relation)) *)
+
+Inductive aevalR : aexp -> nat -> Prop :=
+  | E_ANum   : forall n, aevalR (ANum n) n
+  | E_APlus  : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 aevalR (APlus  e1 e2) (n + m)
+  | E_AMinus : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 aevalR (AMinus e1 e2) (n - m)
+  | E_AMult  : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 aevalR (AMult  e1 e2) (n * m)
+.
+
+Theorem aeval_iff_aevalR : forall a n,
+  aevalR a n <-> aeval a = n.
+Proof.
+  split.
+  intros H; induction H; subst; reflexivity.
+  generalize dependent n.
+  induction a; intros; subst; constructor; try apply IHa1;
+    try apply IHa2; reflexivity.
+Qed.
+
+(* Exercise: 3 stars (bevalR) *)
+
+Inductive bevalR : bexp -> bool -> Prop :=
+  | E_BTrue  : bevalR BTrue  true
+  | E_BFalse : bevalR BFalse false
+  | E_Beq    : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 bevalR (Beq e1 e2) (beq_nat n m)
+  | E_BLe    : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 bevalR (BLe e1 e2) (ble_nat n m)
+  | E_BNot   : forall e b, bevalR e b -> bevalR (BNot e) (negb b)
+  | E_BAnd   : forall e1 e2 b1 b2, bevalR e1 b1 -> bevalR e2 b2 ->
+                 bevalR (BAnd e1 e2) (b1 && b2).
+
+Theorem beval_iff_bevalR : forall a b,
+  bevalR a b <-> beval a = b.
+Proof.
+  split.
+  intros H; induction H; try apply aeval_iff_aevalR in H;
+    try apply aeval_iff_aevalR in H0; subst; reflexivity.
+  generalize dependent b.
+  induction a; intros; subst; constructor; try apply aeval_iff_aevalR;
+    try apply IHa; try apply IHa1; try apply IHa2; reflexivity.
+Qed.
+
+(* END bevalR. *)
