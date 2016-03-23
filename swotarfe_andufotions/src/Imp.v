@@ -281,3 +281,17 @@ Proof.
 Qed.
 
 (* END update_neq. *)
+
+(* Exercise: 1 star (update_example) *)
+
+Theorem update_example : forall (n:nat),
+  (update empty_state (Id 2) n) (Id 3) = 0.
+Proof.
+  unfold update.
+  intros.
+  apply neq_id.
+  intro.
+  inversion H.
+Qed.
+
+(* END update_example. *)
