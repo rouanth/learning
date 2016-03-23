@@ -247,3 +247,23 @@ Proof.
 Qed.
 
 (* END neq_id. *)
+
+Definition state := id -> nat.
+
+Definition empty_state : state :=
+  fun _ => 0.
+
+Definition update (st : state) (x : id) (n : nat) : state :=
+  fun x' => if eq_id_dec x x' then n else st x'.
+
+(* Exercise: 1 star (update_eq) *)
+
+Theorem update_eq : forall n x st,
+  (update st x n) x = n.
+Proof.
+  intros.
+  unfold update.
+  apply eq_id.
+Qed.
+
+(* END update_eq. *)
