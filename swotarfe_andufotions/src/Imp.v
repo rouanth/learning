@@ -55,6 +55,8 @@ Proof.
   destruct n; simpl; rewrite IHa2; reflexivity.
 Qed.
 
+(* ((Coq Automation)) *)
+
 (* Exercise: 3 stars (optimize_0plus_b) *)
 
 Fixpoint optimize_0plus_b (b : bexp) : bexp :=
@@ -185,3 +187,7 @@ Proof.
 Qed.
 
 (* END optimizer. *)
+
+(* ((Evaluation as a Relation)) *)
+
+
