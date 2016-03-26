@@ -1,0 +1,17 @@
+\begin{description}
+\item[Problem]
+Prove $A \subset B$ if and only if $A \cap B = A$.
+
+\item[Proof]
+
+First, we need to prove that $A \subset B$ implies $A \cap B = A$. If $A$ is a
+proper subset of $B$, than, by definition, every element of $A$ is also
+present in $B$. Thus, $A \cap B = \left\{ x : x \in A\ \text{and}\ x \in B
+\right\} = \left\{ x : x \in A \right\} = A$.
+
+Now assume the converse; that is, if $A \cap B = A$, then necessarily $A
+\subset B$. Let's assume that $A$ is not a subset of $B$, that is, there exists
+$a \in A, a \not \in B$. But then $a \not \in A \cap B$, which contradicts the
+hypothesis.
+
+\end{description}
