@@ -190,4 +190,150 @@ Qed.
 
 (* ((Evaluation as a Relation)) *)
 
+Inductive aevalR : aexp -> nat -> Prop :=
+  | E_ANum   : forall n, aevalR (ANum n) n
+  | E_APlus  : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 aevalR (APlus  e1 e2) (n + m)
+  | E_AMinus : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 aevalR (AMinus e1 e2) (n - m)
+  | E_AMult  : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 aevalR (AMult  e1 e2) (n * m)
+.
 
+Theorem aeval_iff_aevalR : forall a n,
+  aevalR a n <-> aeval a = n.
+Proof.
+  split.
+  intros H; induction H; subst; reflexivity.
+  generalize dependent n.
+  induction a; intros; subst; constructor; try apply IHa1;
+    try apply IHa2; reflexivity.
+Qed.
+
+(* Exercise: 3 stars (bevalR) *)
+
+Inductive bevalR : bexp -> bool -> Prop :=
+  | E_BTrue  : bevalR BTrue  true
+  | E_BFalse : bevalR BFalse false
+  | E_Beq    : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 bevalR (Beq e1 e2) (beq_nat n m)
+  | E_BLe    : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
+                 bevalR (BLe e1 e2) (ble_nat n m)
+  | E_BNot   : forall e b, bevalR e b -> bevalR (BNot e) (negb b)
+  | E_BAnd   : forall e1 e2 b1 b2, bevalR e1 b1 -> bevalR e2 b2 ->
+                 bevalR (BAnd e1 e2) (b1 && b2).
+
+Theorem beval_iff_bevalR : forall a b,
+  bevalR a b <-> beval a = b.
+Proof.
+  split.
+  intros H; induction H; try apply aeval_iff_aevalR in H;
+    try apply aeval_iff_aevalR in H0; subst; reflexivity.
+  generalize dependent b.
+  induction a; intros; subst; constructor; try apply aeval_iff_aevalR;
+    try apply IHa; try apply IHa1; try apply IHa2; reflexivity.
+Qed.
+
+(* END bevalR. *)
+
+(* Exercise: 1 star, optional (neq_id) *)
+
+Lemma neq_id : forall (T : Type) x y (p q:T), x <> y ->
+               (if eq_id_dec x y then p else q) = q.
+Proof.
+  unfold not.
+  intros.
+  destruct (eq_id_dec x y).
+    contradiction.
+  trivial.
+Qed.
+
+(* END neq_id. *)
+
+Definition state := id -> nat.
+
+Definition empty_state : state :=
+  fun _ => 0.
+
+Definition update (st : state) (x : id) (n : nat) : state :=
+  fun x' => if eq_id_dec x x' then n else st x'.
+
+(* Exercise: 1 star (update_eq) *)
+
+Theorem update_eq : forall n x st,
+  (update st x n) x = n.
+Proof.
+  intros.
+  unfold update.
+  apply eq_id.
+Qed.
+
+(* END update_eq. *)
+
+(* Exercise: 1 star (update_neq) *)
+
+Theorem update_neq : forall x2 x1 n st,
+  x2 <> x1 ->
+  (update st x2 n) x1 = (st x1).
+Proof.
+  intros.
+  unfold update.
+  apply neq_id.
+  apply H.
+Qed.
+
+(* END update_neq. *)
+
+(* Exercise: 1 star (update_example) *)
+
+Theorem update_example : forall (n:nat),
+  (update empty_state (Id 2) n) (Id 3) = 0.
+Proof.
+  unfold update.
+  intros.
+  apply neq_id.
+  intro.
+  inversion H.
+Qed.
+
+(* END update_example. *)
+
+(* Exercise: 1 star (update_shadow) *)
+
+Theorem update_shadow : forall n1 n2 x1 x2 (st : state),
+  (update (update st x2 n1) x2 n2) x1 = (update st x2 n2) x1.
+Proof.
+  intros.
+  unfold update.
+  destruct (eq_id_dec x2 x1); trivial.
+Qed.
+
+(* END update_shadow. *)
+
+(* Exercise: 2 stars (update_same) *)
+
+Theorem update_same : forall n1 x1 x2 (st : state),
+  st x1 = n1 ->
+  (update st x1 n1) x2 = st x2.
+Proof.
+  intros.
+  unfold update.
+  destruct (eq_id_dec x1 x2); subst; reflexivity.
+Qed.
+
+(* END update_same. *)
+
+(* Exercise: 3 stars (update_permute) *)
+
+Theorem update_permute : forall n1 n2 x1 x2 x3 st,
+  x2 <> x1 ->
+  (update (update st x2 n1) x1 n2) x3 = (update (update st x1 n2) x2 n1) x3.
+Proof.
+  unfold update.
+  intros.
+  destruct (eq_id_dec x1 x3).
+  subst. symmetry. apply neq_id. apply H.
+  reflexivity.
+Qed.
+
+(* END update_permute. *)
