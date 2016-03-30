@@ -25,13 +25,13 @@ $(REFDIR)%.tex: data/%/*.tex
 	printf '%s' '\end{enumerate}'   >> $@
 
 $(TMPTEX): $(HEADTEMPL) $(CHREFS) $(TAILTEMPL)
-	cat $^ > $(TMPTEX)
+	cat $^ > $@
 
 $(TMPPDF): $(TMPTEX)
-	pdflatex -output-directory $(TMPDIR) $(TMPTEX)
+	pdflatex -output-directory $(TMPDIR) $<
 
 $(RESPDF): $(TMPPDF)
-	cp $(TMPPDF) $(RESPDF)
+	cp $< $@
 
 clean:
 	rm -f $(CHREFS) $(TMPAUX) $(TMPLOG) $(TMPPDF) $(RESPDF) $(TMPTEX)
