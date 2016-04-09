@@ -549,6 +549,6 @@ Proof.
   induction contra; inversion Heqloopdef; subst.
   inversion H.
   apply IHcontra2. trivial.
-Admitted.
+Qed.
 
 (* END loop_never_stops. *)
