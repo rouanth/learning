@@ -340,6 +340,8 @@ Qed.
 
 (* END update_permute. *)
 
+(* ((Commands)) *)
+
 Inductive aexp : Type :=
   | ANum   : nat  -> aexp
   | AId    : id   -> aexp
@@ -428,6 +430,8 @@ Definition loop : com :=
   WHILE BTrue DO
     SKIP
   END.
+
+(* ((Evaluation)) *)
 
 Reserved Notation "c1 '/' st '⇓' st'" (at level 40, st at level 39).
 
@@ -519,3 +523,18 @@ Proof.
 Qed.
 
 (* END pup_to_n. *)
+
+(* ((Reasoning About Imp Programs)) *)
+
+(* Exercise: 3 stars (XtimesYinZ_spec) *)
+
+Theorem XtimesYinZ_spec : forall st st' x y,
+  st X = x -> st Y = y -> XtimesYinZ / st ⇓ st' -> st' Z = x * y.
+Proof.
+  intros.
+  inversion H1.
+  subst.
+  reflexivity.
+Qed.
+
+(* END XtimesYinZ_spec. *)
