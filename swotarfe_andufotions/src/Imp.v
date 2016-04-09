@@ -236,6 +236,8 @@ Qed.
 
 (* END bevalR. *)
 
+End AExp.
+
 (* Exercise: 1 star, optional (neq_id) *)
 
 Lemma neq_id : forall (T : Type) x y (p q:T), x <> y ->
@@ -337,3 +339,150 @@ Proof.
 Qed.
 
 (* END update_permute. *)
+
+Inductive aexp : Type :=
+  | ANum   : nat  -> aexp
+  | AId    : id   -> aexp
+  | APlus  : aexp -> aexp -> aexp
+  | AMinus : aexp -> aexp -> aexp
+  | AMult  : aexp -> aexp -> aexp.
+
+Definition X : id := Id 0.
+Definition Y : id := Id 1.
+Definition Z : id := Id 2.
+
+Inductive bexp : Type :=
+  | BTrue : bexp
+  | BFalse : bexp
+  | BEq : aexp -> aexp -> bexp
+  | BLe : aexp -> aexp -> bexp
+  | BNot : bexp -> bexp
+  | BAnd : bexp -> bexp -> bexp.
+
+Fixpoint aeval (st : state) (a : aexp) : nat :=
+  match a with
+    | ANum   n   => n
+    | AId    i   => st i
+    | APlus  b c => (aeval st b) + (aeval st c)
+    | AMinus b c => (aeval st b) - (aeval st c)
+    | AMult  b c => (aeval st b) * (aeval st c)
+  end.
+
+Fixpoint beval (st : state) (b : bexp) : bool :=
+  match b with
+    | BTrue    => true
+    | BFalse   => false
+    | BEq c d  => beq_nat (aeval st c) (aeval st d)
+    | BLe c d  => ble_nat (aeval st c) (aeval st d)
+    | BNot k   => negb (beval st k)
+    | BAnd c d => (beval st c) && (beval st d)
+  end.
+
+Inductive com : Type :=
+  | CSkip  : com
+  | CAss   : id   -> aexp -> com
+  | CSeq   : com  -> com  -> com
+  | CIf    : bexp -> com -> com -> com
+  | CWhile : bexp -> com -> com.
+
+Notation "'SKIP'" :=
+  CSkip.
+Notation "x '::=' a" :=
+  (CAss x a) (at level 60).
+Notation "c1 ;; c2" :=
+  (CSeq c1 c2) (at level 80, right associativity).
+Notation "'WHILE' b 'DO' c 'END'" :=
+  (CWhile b c) (at level 80, right associativity).
+Notation "'IFB' c1 'THEN' c2 'ELSE' c3 'FI'" :=
+  (CIf c1 c2 c3) (at level 80, right associativity).
+
+Definition fact_in_coq : com :=
+  Z ::= AId X;;
+  Y ::= ANum 1;;
+  WHILE BNot (BEq (AId Z) (ANum 0)) DO
+    Y ::= AMult (AId Y) (AId Z);;
+    Z ::= AMinus (AId Z) (ANum 1)
+  END.
+
+Definition plus2 : com :=
+  X ::= (APlus (AId X) (ANum 2)).
+
+Definition XtimesYinZ : com :=
+  Z ::= (AMult (AId X) (AId Y)).
+
+Definition subtract_slowly_body : com :=
+  Z ::= AMinus (AId Z) (ANum 1) ;;
+  X ::= AMinus (AId X) (ANum 1).
+
+Definition subtract_slowly : com :=
+  WHILE BNot (BEq (AId X) (ANum 0)) DO
+    subtract_slowly_body
+  END.
+
+Definition subtract_3_from_5_slowly : com :=
+  X ::= ANum 3 ;;
+  Z ::= ANum 5 ;;
+  subtract_slowly.
+
+Definition loop : com :=
+  WHILE BTrue DO
+    SKIP
+  END.
+
+Reserved Notation "c1 '/' st '⇓' st'" (at level 40, st at level 39).
+
+Inductive ceval : com -> state -> state -> Prop :=
+  | E_Skip : forall st, SKIP / st ⇓ st
+  | E_Ass  : forall st x ae,  (x ::= ae) / st ⇓ (update st x (aeval st ae))
+  | E_Seq  : forall st st' st'' c1 c2,
+               c1 / st  ⇓ st'  ->
+               c2 / st' ⇓ st'' ->
+               (c1 ;; c2) / st ⇓ st''
+  | E_IfTrue  : forall st st' ct ce be,
+               beval st be = true ->
+               ct / st ⇓ st'   ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ st'
+  | E_IfFalse : forall st st' ct ce be,
+               beval st be = false ->
+               ce / st ⇓ st'    ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ st'
+  | E_WhileEnd : forall st c be,
+               beval st be = false ->
+               (WHILE be DO c END) / st ⇓ st
+  | E_WhileLoop : forall st st' st'' c be,
+               beval st be = true ->
+               c / st ⇓ st' ->
+               (WHILE be DO c END) / st' ⇓ st'' ->
+               (WHILE be DO c END) / st  ⇓ st''
+   where "c1 '/' st '⇓' st'" := (ceval c1 st st').
+
+Example ceval_example1:
+    (X ::= ANum 2;;
+     IFB BLe (AId X) (ANum 1)
+       THEN Y ::= ANum 3
+       ELSE Z ::= ANum 4
+     FI)
+   / empty_state
+   ⇓ (update (update empty_state X 2) Z 4).
+Proof.
+  apply E_Seq with (update empty_state X 2).
+  apply E_Ass.
+  apply E_IfFalse.
+  reflexivity.
+  apply E_Ass.
+Qed.
+
+(* Exercise: 2 stars (ceval_example2) *)
+
+Example ceval_example2:
+    (X ::= ANum 0;; Y ::= ANum 1;; Z ::= ANum 2) / empty_state ⇓
+    (update (update (update empty_state X 0) Y 1) Z 2).
+Proof.
+  apply E_Seq with (update empty_state X 0).
+  apply E_Ass.
+  apply E_Seq with (update (update empty_state X 0) Y 1).
+  apply E_Ass.
+  apply E_Ass.
+Qed.
+
+(* END ceval_example2. *)
