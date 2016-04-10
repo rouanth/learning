@@ -552,3 +552,35 @@ Proof.
 Qed.
 
 (* END loop_never_stops. *)
+
+Fixpoint no_whiles (c : com) : bool :=
+  match c with
+  | SKIP => true
+  | _ ::= _ => true
+  | c1 ;; c2 => andb (no_whiles c1) (no_whiles c2)
+  | IFB _ THEN ct ELSE cf FI => andb (no_whiles ct) (no_whiles cf)
+  | WHILE _ DO _ END => false
+  end.
+
+(* Exercise: 3 stars (no_whilesR) *)
+
+Inductive no_whilesR : com -> Prop :=
+  | NW_Skip : no_whilesR SKIP
+  | NW_Ass  : forall x n, no_whilesR (x ::= n)
+  | NW_Seq  : forall c1 c2,
+    no_whilesR c1 -> no_whilesR c2 -> no_whilesR (c1 ;; c2)
+  | NW_If   : forall be ct ce,
+    no_whilesR ct -> no_whilesR ce -> no_whilesR (IFB be THEN ct ELSE ce FI).
+
+Theorem no_whiles_eqv:
+  forall c, no_whiles c = true <-> no_whilesR c.
+Proof.
+  induction c; repeat constructor; intros; inversion H;
+    try (apply andb_true_iff in H1; destruct H1;
+      try apply IHc1; try apply IHc2; assumption);
+    subst; simpl; apply IHc1 in H2; rewrite -> H2.
+      apply IHc2 in H3; rewrite -> H3. reflexivity.
+      apply IHc2 in H4; rewrite -> H4. reflexivity.
+Qed.
+
+(* END no_whilesR. *)
