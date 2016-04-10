@@ -584,3 +584,21 @@ Proof.
 Qed.
 
 (* END no_whilesR. *)
+
+(* Exercise: 4 stars (no_whiles_terminating) *)
+
+Theorem no_whiles_terminating: forall c st,
+  no_whilesR c -> exists st', c / st ⇓ st'.
+Proof.
+  induction c; intros; inversion H; subst.
+    exists st. constructor.
+    exists (update st i (aeval st a)). constructor.
+    apply (IHc1 st) in H2. destruct H2. apply (IHc2 x ) in H3. destruct H3.
+      exists x0. apply E_Seq with (st' := x); assumption.
+    apply (IHc1 st) in H2. destruct H2. apply (IHc2 st) in H4. destruct H4.
+      destruct (beval st b) eqn: Hbeval.
+        exists x;  apply E_IfTrue;  assumption.
+        exists x0; apply E_IfFalse; assumption.
+Qed.
+
+(* END no_whiles_terminating. *)
