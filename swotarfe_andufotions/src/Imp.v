@@ -621,7 +621,7 @@ Fixpoint s_execute (st : state) (stack : list nat)
                     | SPush n => cons n stack
                     | SLoad i => cons (st i) stack
                     | SPlus  => match stack with
-                                  | (n1 :: n2 :: r) => ((n1 + n2) :: r)
+                                  | (n1 :: n2 :: r) => ((n2 + n1) :: r)
                                   | _ => stack
                                 end
                     | SMinus => match stack with
@@ -629,7 +629,7 @@ Fixpoint s_execute (st : state) (stack : list nat)
                                   | _ => stack
                                 end
                     | SMult  => match stack with
-                                  | (n1 :: n2 :: r) => ((n1 * n2) :: r)
+                                  | (n1 :: n2 :: r) => ((n2 * n1) :: r)
                                   | _ => stack
                                 end
                     end
@@ -664,3 +664,32 @@ Proof. reflexivity. Qed.
 
 (* END stack_compiler. *)
 
+(* Exercise: 3 stars, advanced (stack_compiler_correct) *)
+
+Theorem s_execute_app : forall e1 e2 st s s' s'',
+  s_execute st s  e1 = s'  ->
+  s_execute st s' e2 = s'' ->
+  s_execute st s (e1 ++ e2) = s''.
+Proof.
+  induction e1; intros. subst; reflexivity.
+    destruct a; simpl; apply IHe1 with (s' := s'); trivial.
+Qed.
+
+Theorem s_compiler_correct_helper : forall e st s,
+  s_execute st s (s_compile e) = aeval st e :: s.
+Proof.
+  induction e; try reflexivity;
+    intros; simpl; repeat (
+      apply s_execute_app with (s' := (aeval st e1 :: s));
+      [apply IHe1 |
+      apply s_execute_app with (s' := (aeval st e2 :: aeval st e1 :: s));
+      [apply IHe2 | reflexivity]] ).
+Qed.
+
+Theorem s_compiler_correct : forall st e,
+  s_execute st [] (s_compile e) = [ aeval st e ].
+Proof.
+  intros; apply (s_compiler_correct_helper e st []).
+Qed.
+
+(* END stack_compiler_correct. *)
