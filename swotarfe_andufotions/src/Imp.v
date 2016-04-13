@@ -767,7 +767,7 @@ Proof.
   intros.
   inversion H.
     inversion H2.
-    inversion H5.
+    inversion H5. trivial.
 Qed.
 
 Theorem while_continue : forall b c st st' s,
