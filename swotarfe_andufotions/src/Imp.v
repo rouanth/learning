@@ -602,3 +602,65 @@ Proof.
 Qed.
 
 (* END no_whiles_terminating. *)
+
+Inductive sinstr : Type :=
+  | SPush : nat -> sinstr
+  | SLoad : id -> sinstr
+  | SPlus : sinstr
+  | SMinus : sinstr
+  | SMult : sinstr.
+
+(* Exercise: 3 stars (stack_compiler) *)
+
+Fixpoint s_execute (st : state) (stack : list nat)
+                   (prog : list sinstr)
+                 : list nat :=
+  match prog with
+    | nil => stack
+    | cons h t => let nst := match h with
+                    | SPush n => cons n stack
+                    | SLoad i => cons (st i) stack
+                    | SPlus  => match stack with
+                                  | (n1 :: n2 :: r) => ((n1 + n2) :: r)
+                                  | _ => stack
+                                end
+                    | SMinus => match stack with
+                                  | (n1 :: n2 :: r) => ((n2 - n1) :: r)
+                                  | _ => stack
+                                end
+                    | SMult  => match stack with
+                                  | (n1 :: n2 :: r) => ((n1 * n2) :: r)
+                                  | _ => stack
+                                end
+                    end
+                   in s_execute st nst t
+  end.
+
+Example s_execute1 :
+     s_execute empty_state []
+       [SPush 5; SPush 3; SPush 1; SMinus]
+   = [2; 5].
+Proof. reflexivity. Qed.
+
+Example s_execute2 :
+     s_execute (update empty_state X 3) [3;4]
+       [SPush 4; SLoad X; SMult; SPlus]
+   = [15; 4].
+Proof. reflexivity. Qed.
+
+Fixpoint s_compile (e : aexp) : list sinstr :=
+  match e with
+    | ANum n     => (SPush n :: nil)
+    | AId  i     => (SLoad i :: nil)
+    | APlus  a b => (s_compile a ++ s_compile b ++ SPlus  :: nil)
+    | AMinus a b => (s_compile a ++ s_compile b ++ SMinus :: nil)
+    | AMult  a b => (s_compile a ++ s_compile b ++ SMult  :: nil)
+  end.
+
+Example s_compile1 :
+    s_compile (AMinus (AId X) (AMult (ANum 2) (AId Y)))
+  = [SLoad X; SPush 2; SLoad Y; SMult; SMinus].
+Proof. reflexivity. Qed.
+
+(* END stack_compiler. *)
+
