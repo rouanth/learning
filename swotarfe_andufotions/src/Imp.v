@@ -860,3 +860,23 @@ Qed.
 (* END ceval_deterministic. *)
 
 End BreakImp.
+
+(* Exercise: 3 stars, optional (short_circuit) *)
+
+Fixpoint beval_sc (st : state) (b : bexp) : bool :=
+  match b with
+    | BTrue    => true
+    | BFalse   => false
+    | BEq c d  => beq_nat (aeval st c) (aeval st d)
+    | BLe c d  => ble_nat (aeval st c) (aeval st d)
+    | BNot k   => negb (beval st k)
+    | BAnd c d => if beval st c then beval st d else false
+  end.
+
+Theorem short_circuit_sound : forall st b, beval st b = beval_sc st b.
+Proof.
+  intros.
+  destruct b; reflexivity.
+Qed.
+
+(* END short_circuit. *)
