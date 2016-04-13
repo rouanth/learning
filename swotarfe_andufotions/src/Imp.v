@@ -730,6 +730,8 @@ Inductive ceval : com -> state -> status -> state -> Prop :=
   | E_Skip : forall st, SKIP / st ⇓ SContinue / st
   | E_Ass  : forall st x ae,
       (x ::= ae) / st ⇓ SContinue / (update st x (aeval st ae))
+  | E_Break : forall st,
+               BREAK / st ⇓ SBreak / st
   | E_Seq_C : forall st st' st'' sc2 c1 c2,
                c1 / st  ⇓ SContinue / st'  ->
                c2 / st' ⇓ sc2 / st'' ->
@@ -786,5 +788,27 @@ Proof.
 Qed.
 
 (* END break_imp. *)
+
+(* Exercise: 3 stars, advanced, optional (while_break_true) *)
+
+Theorem while_break_true : forall b c st st',
+  (WHILE b DO c END) / st ⇓ SContinue / st' ->
+  beval st' b = true ->
+  exists st'', c / st'' ⇓ SBreak / st'.
+Proof.
+  intros b c.
+  remember (WHILE b DO c END) as loopdef eqn:Heqloopdef.
+  destruct c eqn:C; intros; try (
+      induction H; inversion Heqloopdef; subst;
+      [rewrite -> H in H0; inversion H0 | inversion H1; subst |
+      apply (IHceval2 Heqloopdef H0)]).
+    exists st'; constructor.
+    exists st. apply E_Seq_C with (st' := st'0). apply H4. apply H8.
+    exists st. apply E_Seq_B. apply H5.
+    exists st. apply E_IfTrue. apply H8. apply H9.
+    exists st. apply E_IfFalse. apply H8. apply H9.
+Qed.
+
+(* END while_break_true. *)
 
 End BreakImp.
