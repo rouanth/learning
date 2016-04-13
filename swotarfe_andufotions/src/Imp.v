@@ -811,4 +811,52 @@ Qed.
 
 (* END while_break_true. *)
 
+(* Exercise: 4 stars, advanced, optional (ceval_deterministic) *)
+
+Theorem ceval_deterministic: forall (c: com) st st' st'' s1 s2,
+  c / st ⇓ s1 / st'  ->
+  c / st ⇓ s2 / st'' ->
+  st' = st'' /\ s1 = s2.
+Proof.
+  intros. generalize dependent s2. generalize dependent st''.
+  induction H; intros; try (inversion H0; subst; split; reflexivity).
+  Case "E_Seq_C".
+    inversion H1; subst.
+    SCase "continue on c1".
+      apply IHceval1 in H4. destruct H4. subst.
+      apply (IHceval2 _ _ H8).
+    SCase "break on c1: contradiction".
+      apply IHceval1 in H7. destruct H7. inversion H3.
+  Case "E_Seq_B".
+    inversion H0; subst.
+      apply IHceval in H3. destruct H3. inversion H2.
+      apply (IHceval _ _ H6).
+  Case "E_IfTrue".
+    inversion H1; subst.
+      apply (IHceval _ _ H9).
+      rewrite -> H8 in H. inversion H.
+  Case "E_IfFalse".
+    inversion H1; subst.
+      rewrite -> H8 in H. inversion H.
+      apply (IHceval _ _ H9).
+  Case "E_WhileEnd".
+    inversion H0; subst.
+      split; trivial.
+      rewrite -> H3 in H. inversion H.
+      rewrite -> H3 in H. inversion H.
+  Case "E_WhileBreak".
+    inversion H1; subst.
+      rewrite -> H7 in H. inversion H.
+      apply IHceval in H8; destruct H8; subst; split; trivial.
+      apply IHceval in H5; destruct H5. inversion H3.
+  Case "E_WhileLoop".
+    inversion H2; subst.
+      rewrite -> H in H8. inversion H8.
+      apply IHceval1 in H9. destruct H9. inversion H4.
+      apply IHceval1 in H6. destruct H6. subst.
+        apply (IHceval2 _ _ H10).
+Qed.
+
+(* END ceval_deterministic. *)
+
 End BreakImp.
