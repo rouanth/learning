@@ -693,3 +693,98 @@ Proof.
 Qed.
 
 (* END stack_compiler_correct. *)
+
+Module BreakImp.
+
+Inductive com : Type :=
+  | CSkip  : com
+  | CBreak : com
+  | CAss   : id   -> aexp -> com
+  | CSeq   : com  -> com  -> com
+  | CIf    : bexp -> com  -> com -> com
+  | CWhile : bexp -> com  -> com.
+
+Notation "'SKIP'" :=
+  CSkip.
+Notation "'BREAK'" :=
+  CBreak.
+Notation "x '::=' a" :=
+  (CAss x a) (at level 60).
+Notation "c1 ;; c2" :=
+  (CSeq c1 c2) (at level 80, right associativity).
+Notation "'WHILE' b 'DO' c 'END'" :=
+  (CWhile b c) (at level 80, right associativity).
+Notation "'IFB' c1 'THEN' c2 'ELSE' c3 'FI'" :=
+  (CIf c1 c2 c3) (at level 80, right associativity).
+
+Inductive status : Type :=
+  | SContinue : status
+  | SBreak    : status.
+
+Reserved Notation "c1 '/' st '⇓' s '/' st'"
+                  (at level 40, st, s at level 39).
+
+(* Exercise: 5 stars, advanced (break_imp) *)
+
+Inductive ceval : com -> state -> status -> state -> Prop :=
+  | E_Skip : forall st, SKIP / st ⇓ SContinue / st
+  | E_Ass  : forall st x ae,
+      (x ::= ae) / st ⇓ SContinue / (update st x (aeval st ae))
+  | E_Seq_C : forall st st' st'' sc2 c1 c2,
+               c1 / st  ⇓ SContinue / st'  ->
+               c2 / st' ⇓ sc2 / st'' ->
+               (c1 ;; c2) / st ⇓ sc2 / st''
+  | E_Seq_B : forall st st' c1 c2,
+               c1 / st ⇓ SBreak / st' ->
+               (c1 ;; c2) / st ⇓ SBreak / st'
+  | E_IfTrue  : forall st st' sct ct ce be,
+               beval st be = true ->
+               ct / st ⇓ sct / st'   ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ sct / st'
+  | E_IfFalse : forall st st' sce ct ce be,
+               beval st be = false ->
+               ce / st ⇓ sce / st'    ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ sce / st'
+  | E_WhileEnd : forall st c be,
+               beval st be = false ->
+               (WHILE be DO c END) / st ⇓ SContinue / st
+  | E_WhileBreak : forall st st' c be,
+               beval st be = true ->
+               c / st ⇓ SBreak / st' ->
+               (WHILE be DO c END) / st ⇓ SContinue / st'
+  | E_WhileLoop : forall st st' st'' c be,
+               beval st be = true ->
+               c / st ⇓ SContinue / st' ->
+               (WHILE be DO c END) / st' ⇓ SContinue / st'' ->
+               (WHILE be DO c END) / st  ⇓ SContinue / st''
+   where "c1 '/' st '⇓' s '/' st'" := (ceval c1 st s st').
+
+Theorem break_ignore: forall c st st' s,
+  (BREAK ;; c) /st ⇓ s / st' -> st = st'.
+Proof.
+  intros.
+  inversion H.
+    inversion H2.
+    inversion H5.
+Qed.
+
+Theorem while_continue : forall b c st st' s,
+  (WHILE b DO c END) / st ⇓ s / st' ->
+  s = SContinue.
+Proof.
+  intros.
+  inversion H; trivial.
+Qed.
+
+Theorem while_stops_on_break : forall b c st st',
+  beval st b = true ->
+  c / st ⇓ SBreak / st' ->
+  (WHILE b DO c END) / st ⇓ SContinue / st'.
+Proof.
+  intros b c st st'.
+  apply E_WhileBreak.
+Qed.
+
+(* END break_imp. *)
+
+End BreakImp.
