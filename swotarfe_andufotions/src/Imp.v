@@ -880,3 +880,17 @@ Proof.
 Qed.
 
 (* END short_circuit. *)
+
+(* Exercise: 4 stars, optional (add_for_loop) *)
+
+Notation "'FOR' '(' c1 ';' c2 ';' c3 ')' 'DO' c4 'END'" :=
+  (c1 ;; WHILE c2 DO c4 ;; c3 END) (at level 80, right associativity).
+
+Definition imp_fact n : com :=
+  Y ::= ANum 1 ;;
+  FOR (X ::= ANum 1; BLe (AId X) (ANum n); X ::= APlus (AId X) (ANum 1))
+  DO
+    Y ::= AMult (AId Y) (AId X)
+  END.
+
+(* END add_for_loop. *)
