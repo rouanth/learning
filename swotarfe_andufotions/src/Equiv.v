@@ -27,3 +27,31 @@ Proof.
 Qed.
 
 (* END skip_right. *)
+
+Definition bequiv b1 b2 :=
+  forall st, beval st b1 = beval st b2.
+
+(* Exercise: 2 stars (IFB_false) *)
+
+Theorem IFB_false : forall b c1 c2,
+  bequiv b BFalse -> cequiv (IFB b THEN c1 ELSE c2 FI) c2.
+Proof.
+  intros.
+  intros st st'.
+  split.
+  Case "->".
+    intro. inversion H0; subst.
+      unfold bequiv in H.
+        assert (beval st b = beval st BFalse) by apply H. rewrite -> H6 in H1.
+        inversion H1.
+      assumption.
+  Case "<-".
+    intro.
+    apply E_IfFalse.
+    unfold bequiv in H.
+    rewrite -> H.
+    reflexivity.
+    assumption.
+Qed.
+
+(* END skip_right. *)
