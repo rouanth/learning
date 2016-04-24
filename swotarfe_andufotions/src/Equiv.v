@@ -55,3 +55,24 @@ Proof.
 Qed.
 
 (* END skip_right. *)
+
+(* Exercise: 3 stars (swap_if_branches) *)
+
+Theorem swap_if_branches: forall b e1 e2,
+  cequiv (IFB b THEN e1 ELSE e2 FI)
+    (IFB BNot b THEN e2 ELSE e1 FI).
+Proof.
+  intros.
+  intros st st'.
+  split.
+  Case "->".
+    intro. inversion H; subst; [apply E_IfFalse | apply E_IfTrue];
+      simpl; try (rewrite -> H5; reflexivity);
+      apply H6.
+  Case "<-".
+    intro. inversion H; subst; [apply E_IfFalse | apply E_IfTrue];
+      simpl in H5; try assumption; destruct (beval st b); simpl in H5; trivial;
+        try inversion H5.
+Qed.
+
+(* END swap_if_branches. *)
