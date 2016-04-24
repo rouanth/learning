@@ -1,3 +1,4 @@
+Require Import Omega.
 Require Import Imp.
 
 (* ((Evaluation Function)) *)
@@ -31,16 +32,6 @@ Definition test_ceval (st:state) (c:com) :=
   | None => None
   | Some st => Some (st X, st Y, st Z)
   end.
-
-Eval compute in 
-  (test_ceval empty_state
-    (
-      X ::= ANum 2;;
-      IFB BLe (AId X) (ANum 1)
-        THEN Y ::= ANum 3
-        ELSE Z ::= ANum 4
-      FI
-    )).
 
 (* Exercise: 2 stars (pup_to_n) *)
 
@@ -154,3 +145,70 @@ function does not change the state, and (loop) / st ⇓ st holds by E_WhileEnd.
 *)
 
 (* END ceval_step__ceval_inf. *)
+
+Theorem ceval_step_more : forall i1 i2 st st' c,
+  i1 <= i2 ->
+  ceval_step st c i1 = Some st' ->
+  ceval_step st c i2 = Some st'.
+Proof.
+  induction i1; intros.
+    Case "returned after 0 steps".
+      inversion H0.
+    Case "returned after (S i1) steps".
+      destruct i2.
+      SCase "S _ <= 0".
+        inversion H.
+      SCase "S i1 <= S i2".
+        apply le_S_n in H.
+        destruct c; inversion H0; simpl; try reflexivity.
+          SSCase ";;  ".
+            destruct (ceval_step st c1 i1) eqn: Heq.
+              apply (IHi1 i2) in Heq; try assumption. rewrite -> Heq.
+                rewrite -> H2. apply IHi1; try assumption.
+              inversion H2.
+          SSCase "IFB ".
+            destruct (beval st b) eqn: Heq;
+              rewrite -> H2; apply IHi1; assumption.
+          SSCase "While".
+            destruct (beval st b) eqn: Heq.
+              rewrite -> H2.
+              destruct (ceval_step st c i1) eqn: Heq'.
+                assert (ceval_step st c i2 = Some s)
+                  by apply (IHi1 _ _ _ _ H Heq').
+                rewrite -> H1.
+                apply IHi1; assumption.
+                inversion H2.
+             trivial.
+Qed.
+
+(* Exercise: 3 stars (ceval__ceval_step) *)
+
+Theorem ceval__ceval_step : forall c st st',
+  c / st ⇓ st' -> exists i, ceval_step st c i = Some st'.
+Proof.
+  intros c st st' Hce.
+  induction Hce; try (exists 1; reflexivity).
+    Case "c1 ;; c2".
+      destruct IHHce1. destruct IHHce2.
+      exists (S (x + x0)).
+        simpl.
+        assert (ceval_step st c1 (x + x0) = Some st').
+          apply (ceval_step_more x). omega. assumption.
+        rewrite -> H1. apply (ceval_step_more x0). omega. assumption.
+    Case "IFB True".
+      destruct IHHce. exists (S x). simpl. rewrite -> H. assumption.
+    Case "IFB False".
+      destruct IHHce. exists (S x). simpl. rewrite -> H. assumption.
+    Case "While False".
+      exists 1. simpl. rewrite -> H. trivial.
+    Case "While True".
+      destruct IHHce1. destruct IHHce2.
+      exists (S (x + x0)).
+      simpl. rewrite -> H.
+      assert (ceval_step st c (x + x0) = Some st').
+        apply (ceval_step_more x). omega. assumption.
+      rewrite -> H2.
+      apply (ceval_step_more x0). omega. assumption.
+Qed.
+
+(* END ceval__ceval_step. *)
