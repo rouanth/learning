@@ -1,0 +1,33 @@
+\begin{description}
+\item[Problem] Define a function on the real numbers by
+$$f(x) = \dfrac{x + 1}{x - 1}$$
+What are the domain and range of $f$? What is the inverse of $f$? Compute
+$f \circ f^{-1}$ and $f^{-1} \circ f$.
+\item[Solution]
+Domain of $f$ is $x \in \mathbb{R}_{\ne 1}$ since $f(1) = \dfrac{2}{0}$, and
+division by zero is prohibited.
+
+Let $y$ be $f(x)$, then $(y-1)(x-1) = 2$. It is easy to observe that $x$ and
+$y$ are symmetrical--- can be interchanged, that is--- and so the range of $f$
+is also $\mathbb{R}_{\ne 1}$.
+
+The inverse is also easy to deduce: $f^{-1}(y) = x(y) = \dfrac{y + 1}{y - 1}$.
+
+Then,
+
+\begin{equation*}
+\begin{aligned}
+(f \circ f^{-1})(y) &= f\left(\dfrac{y + 1}{y - 1}\right)
+                     = \dfrac{\dfrac{y + 1}{y - 1} + 1}
+                             {\dfrac{y + 1}{y - 1} - 1}
+                     = \dfrac{\dfrac{y + 1 + y - 1}{y - 1}}
+                             {\dfrac{y + 1 - y + 1}{y - 1}}
+                     = y \cdot \dfrac{y-1}{y-1}
+                     = \text{id}_{\mathbb{R}_{\ne 1}}
+\end{aligned}
+\end{equation*}
+
+Due to the symmetry of $f$ and $f^{-1}$, $f^{-1} \circ f$ is also
+$\text{id}_{\mathbb{R}_{\ne 1}}$.
+
+\end{description}
