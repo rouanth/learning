@@ -64,8 +64,8 @@ arr/.style = {->,thick,shorten <= 2pt, shorten >= 2}
 
 \draw [arr] (a1) -- (b1) node [midway,below] {$f$};
 \draw [arr] (b1) -- (c1) node [midway,above] {$g$};
-\draw [arr] (b2) -- (c1) node [midway,below] {$g$};
-\path (a1) edge[arr, out = 70, in = 110, looseness = 1]
+\draw (b2) edge[arr, bend right] node [below] {$g$} (c1);
+\draw (a1) edge[arr, out = 70, in = 110, looseness = 1]
         node [above] {$g \circ f$} (c1);
 
 \end{tikzpicture}
@@ -84,6 +84,13 @@ there exists $a$ such that $(g \circ f)(a) = c$, and since $f$ is a mapping,
 there exists $b = f(a)$. But $g(b) = g(f(a)) = (g \circ f)(a) = c$--- there
 \textit{is} a pre-image of $c$ in $b$. Then, for every $c$ there is a pre-image
 in $b$, and $g$ is surjective.
+
+\item If $g \circ f$ is onto and $g$ is one-to-one, show that $f$ is onto.
+\item Let some $b$ not have a pre-image in $A$. Let $g(b) = c$. Since
+$g \circ f$ is onto, there exists $a \in A, (g \circ f)(a) = c$, i.\ e.
+$g (f(a)) = c$. But since $g$ is injective, from $g(b) = g(f(a))$ follows
+$b = f(a)$--- $a$ is a pre-image of $b$ in $A$. We arrive at a contradiction,
+thus $f$ is onto.
 
 \end{enumerate}
 \end{description}
