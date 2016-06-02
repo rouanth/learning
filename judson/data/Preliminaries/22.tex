@@ -1,0 +1,90 @@
+\begin{description}
+\item[Problem] Let $f : A \rightarrow B$ and $g : B \rightarrow C$ be maps.
+\begin{enumerate}
+\item If $f$ and $g$ are both one-to-one functions, show that $g \circ f$ is
+one-to-one.
+\item If $g \circ f$ is onto, show that $g$ is onto.
+\item If $g \circ f$ is one-to-one, show that $f$ is one-to-one.
+\item If $g \circ f$ is one-to-one and $f$ is onto, show that $g$ is
+        one-to-one.
+\item If $g \circ f$ is onto and $g$ is one-to-one, show that $f$ is onto.
+\end{enumerate}
+\item[Proof]
+\begin{enumerate}
+\item To be one-to-one, the function must be both injective and unto.
+
+Let's show that $g \circ f$ is injective, that is, to every pre-image
+corresponds exactly one image. Since $g$ is injective, for every $c = g(b), b
+\in B$ there exists only one pre-image $b$. By the same logic, for every image
+$b$ of $f$ there is only a single pre-image $a$. It is easy to show that for
+every $c = (g \circ f)(a)$ there exists one pre-image $a$, and thus $g \circ f$
+is injective.
+
+To show that it is onto, observe the following: let $b$ be a pre-image of $c
+\in C$ in $B$, that is, $c = g(b)$. Such a $b$ always exists since $g$ is
+onto. Next, let $a$ be a pre-image of $b$, $b = f(a)$. Then for every $c$
+there exists $a$ such that $c = (g \circ f)(a)$. The function is onto.
+
+Since $g \circ f$ is both injective and surjective, it is also one-to-one.
+
+\item If $g \circ f$ is onto, then for every $c \in C$ there exists $a \in A$
+such that $c = (g \circ f)(a)$. Let's assume that $g$ is not onto. Then there
+exists such $c'$ that there is no $b \in B$ such that $c' = g(b)$. Let $a'$ be
+the pre-image of $c'$ under $g \circ f$. Since $f$ is a map, there exists
+$b' = f(a')$. But then $c'$ must be equal to $g(b')$ which under our assumption
+is impossible. We arrive at a contradiction, thus $g$ is onto.
+
+\item First, we'll prove that $f$ is injective. Let $a$ and $a'$ in $A$ be two
+pre-images of some $b \in B$. Since $g \circ f$ is one-to-one, there exist $c$
+and $c'$ such that $(g \circ f)(a) = c$ and $(g \circ f)(a') = c'$. But $c = (g
+\circ f)(a) = g(f(a)) = g(b)$, and $c' = (g \circ f)(a') = g(f(a')) = g(b)$,
+that is, $c$ and $c'$ must be equal.  And since $g \circ f$ is injective, $a$
+and $a'$ must also be equal. Thus, every $b \in B$ has a unique pre-image in
+$A$, and $f$ is injective.  
+
+Next, it would be appropriate to prove that $f$ is surjective, but I don't
+believe it myself. To my knowledge, the following describes a scheme in which
+$f$ isn't onto, but $g \circ f$ is one-to-one:
+
+\begin{center}
+\begin{tikzpicture}[
+ele/.style = {draw=black,circle,minimum width=.1em,inner sep = 0.1em},
+dom/.style = {draw=blue,shape=ellipse},
+arr/.style = {->,thick,shorten <= 2pt, shorten >= 2}
+]
+\node [ele] (a1) {$a_1$};
+\node [dom, fit = {(a1) (a1)},label=below:\color{blue}$A$] (A) {};
+
+\node [ele,right = 5em of a1] (b1) {$b_1$};
+\node [ele,below of = b1]     (b2) {$b_2$};
+\node [dom, fit = {(b1) (b2)},label=below left:\color{blue}$B$] (B) {};
+
+\node [ele,right = 5em of b1] (c1) {$c_1$};
+\node [dom, fit = {(c1) (c1)},label=below:\color{blue}$C$] (C) {};
+
+\draw [arr] (a1) -- (b1) node [midway,below] {$f$};
+\draw [arr] (b1) -- (c1) node [midway,above] {$g$};
+\draw [arr] (b2) -- (c1) node [midway,below] {$g$};
+\path (a1) edge[arr, out = 70, in = 110, looseness = 1]
+        node [above] {$g \circ f$} (c1);
+
+\end{tikzpicture}
+\end{center}
+
+\item First, to prove that $g$ is injective. Let $b$, $b'$ be two pre-images of
+some $c \in C$ in $B$. Since $f$ is onto, there exist $a$ and $a'$ such that $b
+= f(a)$, $b' = f(a')$. But since $g \circ f$ is injective, from $c = (g \circ
+f)(a) = (g \circ f)(a')$ follows $a = a'$. Then, since $f$ is a mapping, $f(a)
+= f(a')$, and $b = b'$. Each $c$ has only one pre-image in $B$, thus $g$ is
+injective.
+
+Next, it is surjective. Let's assume it isn't--- then there exists $c \in C$
+such that there is no $b \in B, g(b) = c$. But since $g \circ f$ is onto,
+there exists $a$ such that $(g \circ f)(a) = c$, and since $f$ is a mapping,
+there exists $b = f(a)$. But $g(b) = g(f(a)) = (g \circ f)(a) = c$--- there
+\textit{is} a pre-image of $c$ in $b$. Then, for every $c$ there is a pre-image
+in $b$, and $g$ is surjective.
+
+\end{enumerate}
+\end{description}
+
