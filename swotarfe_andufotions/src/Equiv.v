@@ -76,3 +76,25 @@ Proof.
 Qed.
 
 (* END swap_if_branches. *)
+
+(* Exercise: 2 stars, advanced, optional (WHILE_false_informal) *)
+
+(* We must prove that WHILE b DO c END behaves like SKIP if `b` is equivalent
+to BFalse. For this, we must prove that SKIP yields the same result as loop
+with false statement and vice versa.
+
+First, let's prove that SKIP can be replaced with WHILE b DO c END, where `b`
+can be replaced with BFalse. SKIP doesn't change the state of the program, and
+so the initial and final states are the same. This property also holds for loop
+termination rule E_WhileEnd. This rule also requires that the loop condition
+evaluates to `false` under the current environment, and we prove this by
+evaluating BFalse to which the loop condition of our loop is equivalent.
+
+To prove the reverse, let's consider two cases: this iteration of WHILE is the
+last and thus doesn't change the state of the program -- which corresponds to
+the only evaluation rule for SKIP -- or this iteration is intermediary -- but
+this can't be true since `b` evaluates to `false`.
+
+*)
+
+(* END WHILE_false_informal. *)
