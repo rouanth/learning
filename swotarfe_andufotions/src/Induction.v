@@ -146,7 +146,42 @@ Qed.
 
 (* END double_plus. *)
 
-(* Exercise: 1 start (destruct_induction) *)
+Fixpoint evenb (n:nat) : bool :=
+  match n with
+  | O => true
+  | S O => false
+  | S (S n') => evenb n'
+  end.
+
+(* Exercise: 2 stars, optional (evenb_S) *)
+
+Lemma evenb_S_helper : forall b : bool,
+  negb (negb b) = b.
+Proof.
+  intros b.
+  destruct b.
+  - reflexivity.
+  - reflexivity.
+Qed.
+
+Theorem evenb_S : forall n : nat,
+  evenb (S n) = negb (evenb n).
+Proof.
+  intro n.
+  induction n as [|n'].
+  Case "n = 0".
+    reflexivity.
+  Case "n = S n'".
+    destruct n' as [|n''].
+      reflexivity.
+      rewrite -> IHn'.
+      rewrite -> evenb_S_helper.
+      reflexivity.
+Qed.
+
+(* END evenb_S. *)
+
+(* Exercise: 1 star (destruct_induction) *)
 
 (* `induction` is useful when dealing with inductive types: after proving the
 * induction base, user is provided with a statement which assumes the
