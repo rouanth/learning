@@ -155,6 +155,22 @@ Qed.
 
 (* ((Proof by Case Analysis)) *)
 
+(* Exercise: 2 stars (andb_true_elim2) *)
+
+Theorem andb_true_elim2: forall b c : bool,
+  andb b c = true -> c = true.
+Proof.
+  intros b c H.
+  destruct c.
+    - reflexivity.
+    - rewrite <- H.
+      destruct b.
+      + reflexivity.
+      + reflexivity.
+Qed.
+
+(* END andb_true_elim2. *)
+
 (* Exercise: 1 star (zero_nbeq_plus_1) *)
 
 Theorem zero_nbeq_plus_1 : forall n : nat,
