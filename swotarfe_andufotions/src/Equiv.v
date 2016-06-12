@@ -121,3 +121,36 @@ Proof.
 Qed.
 
 (* END WHILE_true. *)
+
+Theorem loop_unrolling: forall b c,
+  cequiv (WHILE b DO c END) (IFB b THEN (c ;; WHILE b DO c END) ELSE SKIP FI).
+Proof.
+  split; intro.
+  - inversion H; subst.
+    + apply E_IfFalse. assumption. apply E_Skip.
+    + apply E_IfTrue. assumption. apply E_Seq with (st' := st'0).
+      assumption. assumption.
+  - inversion H; subst.
+    + inversion H6; subst.
+      apply E_WhileLoop with (st' := st'0).
+      assumption. assumption. assumption.
+    + inversion H6; subst.
+      apply E_WhileEnd. assumption.
+Qed.
+
+(* Exercise: 2 stars, optional (seq_assoc) *)
+
+Theorem seq_assoc : forall c1 c2 c3,
+  cequiv ((c1 ;; c2) ;; c3) (c1 ;; (c2 ;; c3)).
+Proof.
+  split; intro.
+  - inversion H; subst. inversion H2; subst.
+    apply E_Seq with (st' := st'1). assumption.
+    apply E_Seq with (st' := st'0). assumption. assumption.
+  - inversion H; subst. inversion H5; subst.
+    apply E_Seq with (st' := st'1).
+    apply E_Seq with (st' := st'0).
+    assumption. assumption. assumption.
+Qed.
+
+(* END seq_assoc. *)
