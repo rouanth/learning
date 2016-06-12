@@ -98,3 +98,26 @@ this can't be true since `b` evaluates to `false`.
 *)
 
 (* END WHILE_false_informal. *)
+
+Lemma WHILE_true_nonterm : forall b c st st',
+     bequiv b BTrue ->
+     ~( (WHILE b DO c END) / st ⇓ st' ).
+Proof.
+  intros b c st st' Hb H.
+  remember (WHILE b DO c END) as rule.
+  induction H; inversion Heqrule; subst.
+  - rewrite Hb in H. inversion H.
+  - apply IHceval2. reflexivity.
+Qed.
+
+(* Exercise: 2 stars, recommended (WHILE_true) *)
+
+Theorem WHILE_true : forall b c,
+  bequiv b BTrue ->
+  cequiv (WHILE b DO c END) (WHILE BTrue DO SKIP END).
+Proof.
+  split; intro; apply WHILE_true_nonterm in H0;
+   [inversion H0 | apply H | inversion H0 | unfold bequiv; intro; reflexivity].
+Qed.
+
+(* END WHILE_true. *)
