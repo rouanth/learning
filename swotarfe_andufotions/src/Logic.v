@@ -2,6 +2,27 @@ Require Export MoreCoq.
 
 (* ((Conjunction (Logical "and"))) *)
 
+(* Exercise: 2 stars (and_exercise) *)
+
+Example and_exercise:
+  forall n m : nat, n + m = 0 -> n = 0 /\ m = 0.
+Proof.
+  intros n m H.
+  destruct n.
+  Case "n = 0".
+    split.
+    SCase "0 = 0 ?".
+      reflexivity.
+    SCase "m = 0".
+      simpl in H.
+      rewrite H.
+      reflexivity.
+  Case "n != 0".
+    inversion H.
+Qed.
+
+(* END and_exercise. *)
+
 (* Exercise: 1 star, optional (proj2) *)
 
 Theorem proj2 : forall (P Q : Prop), P /\ Q -> Q.
