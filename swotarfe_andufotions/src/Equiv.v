@@ -1,4 +1,5 @@
 Require Export Imp.
+Require Import Coq.Logic.FunctionalExtensionality.
 
 (* Exercise: 2 stars (equiv_classes) *)
 
@@ -154,3 +155,31 @@ Proof.
 Qed.
 
 (* END seq_assoc. *)
+
+Definition aequiv (a1 a2 : aexp) : Prop :=
+  forall (st : state), aeval st a1 = aeval st a2.
+
+(* Exercise: 2 stars, recommended (assign_aequiv) *)
+
+Theorem assign_aequiv : forall X e,
+  aequiv (AId X) e ->
+  cequiv SKIP (X ::= e).
+Proof.
+  intros.
+  split; intro.
+  - replace st' with (update st X (aeval st e)).
+    + apply E_Ass.
+    + inversion H0; subst.
+      apply functional_extensionality. intro x.
+      apply update_same.
+      apply H.
+  - inversion H0; subst.
+    replace (update st X (aeval st e)) with st.
+    + apply E_Skip.
+    + apply functional_extensionality; intro x.
+      symmetry; apply update_same.
+      apply H.
+Qed.
+
+(* END assign_aequiv. *)
+
