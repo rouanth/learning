@@ -237,6 +237,59 @@ Qed.
 
 (* END informal_not_PNP. *)
 
+Axiom functional_extensionality : forall {X Y: Type} {f g : X -> Y},
+  (forall (x:X), f x = g x) -> f = g.
+
+Fixpoint rev_append {X} (l1 l2 : list X) : list X :=
+  match l1 with
+    | nil => l2
+    | (x :: l1')%list => rev_append l1' (x :: l2)
+  end.
+
+Definition tr_rev {X} (l : list X) : list X :=
+  rev_append l nil.
+
+(* Exercise: 5 stars (tr_rev) *)
+
+Theorem snoc_append : forall (X : Type) (x : X) (l : list X),
+  snoc l x = app l (cons x nil).
+Proof.
+  induction l; simpl; auto. rewrite -> IHl. trivial.
+Qed.
+
+Theorem rev_append_snoc_helper : forall X (x : list X) (a1 a2 : X),
+  (a1 :: (x ++ a2 :: nil))%list = ((a1 :: x) ++ (a2 :: nil))%list.
+Proof.
+  induction x.
+  - reflexivity.
+  - reflexivity.
+Qed.
+
+Lemma rev_append_snoc : forall X (x1 x2 : list X) (a : X),
+  rev_append x1 (x2 ++ a :: nil) = snoc (rev_append x1 x2) a.
+Proof.
+  intros X x.
+  induction x.
+  - simpl. intros. rewrite -> snoc_append. reflexivity.
+  - simpl. intros. rewrite -> rev_append_snoc_helper. rewrite -> IHx.
+    reflexivity.
+Qed.
+
+Lemma tr_rev_correct : forall X, @tr_rev X = @rev X.
+Proof.
+  intro X.
+  apply functional_extensionality.
+  intro x.
+  induction x.
+  - reflexivity.
+  - simpl. rewrite <- IHx. unfold tr_rev. simpl.
+    replace (a :: nil)%list with (nil ++ a :: nil)%list.
+    + rewrite -> rev_append_snoc. reflexivity.
+    + reflexivity.
+Qed.
+
+(* END tr_rev. *)
+
 Theorem double_neg : forall P : Prop, P -> ~~P.
 Proof.
   unfold not.
@@ -478,4 +531,3 @@ Proof.
 Qed.
 
 (* END beq_nat_false. *)
-
