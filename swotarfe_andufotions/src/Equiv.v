@@ -235,3 +235,52 @@ Proof.
   intros. intros st st'.
   apply iff_trans with (c2 / st ⇓ st'). apply H. apply H0.
 Qed.
+
+Theorem CAss_congruence : forall i a1 a1',
+  aequiv a1 a1' ->
+  cequiv (CAss i a1) (CAss i a1').
+Proof.
+  intros. split; intro;
+    inversion H0; subst;
+    [ rewrite -> H | rewrite <- H];
+    apply E_Ass.
+Qed.
+
+Theorem CWhile_congruence : forall b1 b1' c1 c1',
+  bequiv b1 b1' -> cequiv c1 c1' ->
+  cequiv (WHILE b1 DO c1 END) (WHILE b1' DO c1' END).
+Proof.
+  intros. split; intro.
+  - remember (WHILE b1 DO c1 END) as While.
+    induction H1; inversion HeqWhile; subst.
+    + apply E_WhileEnd.
+      rewrite <- H.
+      assumption.
+    + apply E_WhileLoop with (st' := st').
+      * rewrite <- H. assumption.
+      * apply H0. assumption.
+      * apply IHceval2. reflexivity.
+  - remember (WHILE b1' DO c1' END) as While.
+    induction H1; inversion HeqWhile; subst.
+    + apply E_WhileEnd.
+      rewrite -> H.
+      assumption.
+    + apply E_WhileLoop with (st' := st').
+      * rewrite -> H. assumption.
+      * apply H0. assumption.
+      * apply IHceval2. reflexivity.
+Qed.
+
+(* Exercise: 3 stars, optional (CSeq_congruence) *)
+
+Theorem CSeq_congruence : forall c1 c2 c1' c2',
+  cequiv c1 c1' -> cequiv c2 c2' -> cequiv (c1 ;; c2) (c1' ;; c2').
+Proof.
+  intros. split; intro;
+    [ remember (c1 ;; c2) as Seq | remember (c1' ;; c2') as Seq];
+    induction H1; inversion HeqSeq; subst;
+    apply E_Seq with (st' := st');
+    [ apply H | apply H0 | apply H | apply H0 ]; assumption.
+Qed.
+
+(* END CSeq_congruence. *)
