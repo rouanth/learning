@@ -183,3 +183,55 @@ Qed.
 
 (* END assign_aequiv. *)
 
+Lemma refl_aequiv : forall (a : aexp), aequiv a a.
+Proof.
+  split.
+Qed.
+
+Lemma sym_aequiv : forall (a1 a2 : aexp), aequiv a1 a2 -> aequiv a2 a1.
+Proof.
+  unfold aequiv.
+  intros.
+  symmetry.
+  apply H.
+Qed.
+
+Lemma trans_aequiv : forall (a1 a2 a3 : aexp),
+  aequiv a1 a2 -> aequiv a2 a3 -> aequiv a1 a3.
+Proof.
+  intros. intro st. rewrite -> H. apply H0.
+Qed.
+
+Lemma refl_bequiv : forall (b : bexp), bequiv b b.
+Proof.
+  split.
+Qed.
+
+Lemma sym_bequiv : forall (b1 b2 : bexp), bequiv b1 b2 -> bequiv b2 b1.
+Proof.
+  unfold bequiv. intros. symmetry. apply H.
+Qed.
+
+Lemma trans_bequiv : forall (b1 b2 b3 : bexp),
+  bequiv b1 b2 -> bequiv b2 b3 -> bequiv b1 b3.
+Proof.
+  intros. intro st. rewrite -> H. apply H0.
+Qed.
+
+Lemma refl_cequiv : forall c, cequiv c c.
+Proof.
+  split; intros; assumption.
+Qed.
+
+Lemma iff_trans : forall (P1 P2 P3 : Prop),
+  (P1 <-> P2) -> (P2 <-> P3) -> (P1 <-> P3).
+Proof.
+  intros; split; rewrite -> H; apply H0.
+Qed.
+
+Lemma trans_cequiv : forall c1 c2 c3,
+  cequiv c1 c2 -> cequiv c2 c3 -> cequiv c1 c3.
+Proof.
+  intros. intros st st'.
+  apply iff_trans with (c2 / st ⇓ st'). apply H. apply H0.
+Qed.
