@@ -1,0 +1,46 @@
+\begin{description}
+\item[Problem] Let $f : X \rightarrow Y$ be a map with $A_1, A_2 \subset X$ and
+$B_1, B_2 \subset Y$.
+\begin{enumerate}
+\item Prove $f(A_1 \cup A_2) = f(A_1) \cup f(A_2)$.
+\item Prove $f(A_1 \cap A_2) \subset f(A_1) \cap f(A_2)$. Give an example in
+which equality fails.
+\item Prove $f^{-1}(B_1 \cup B_2) = f^{-1} (B_1) \cup f^{-1} (B_2)$, where
+$f^{-1}(B) = \left\{x \in X : f(x) \in B\right\}$.
+\item Prove $f^{-1} (B_1 \cap B_2) = f^{-1}(B_1) \cap f^{-1} (B_2)$.
+\item Prove $f^{-1} (Y \setminus B_1) = X \setminus f^{-1} (B_1)$.
+\end{enumerate}
+
+\item[Proof]
+        \begin{enumerate}
+                \item We must show that $f(A_1 \cup A_2) \subset f(A_1) \cup
+                        f(A_2)$ and $f(A_1) \cup f(A_2) \subset f(A_1 \cup
+                        A_2)$.
+
+                        If $x \in A_1 \cup A_2$, then $x \in A_1$ or
+                        $x \in A_2$. If $x \in A_1$, then $f(x) \in f(A_1)$;
+                        if $x \in A_2$, then $x \in f(A_2)$, i.\ e. $\forall x
+                        \in A_1 \cup A_2, f(x) \in f(A_1) \cup f(A_2)$, or
+                        $f(A_1 \cup A_2) \subset f(A_1) \cup f(A_2)$.
+
+                        If $y \in f(A_1) \cup f(A_2)$, then $y \in f(A_1)$ or
+                        $y \in f(A_2)$. If $y \in f(A_1)$, then it has at least
+                        one pre-image in $A_1$. Otherwise, it has a pre-image
+                        in $A_2$. Thus, if $y$ is in $f(A_1) \cup f(A_2)$, it
+                        is also in $f(A_1 \cup A_2)$.
+
+                \item Let $x \in A_1 \cap A_2$. Since it is present in both
+                        $A_1$ and $A_2$, $f(x)$ is a member of both $f(A_1)$
+                        and $f(A_2)$, that is, $f(x) \in f(A_1) \cap f(A_2)$.
+
+                        Equality doesn't hold when some $y \in A_1 \cap A_2$
+                        has preimages in both $A_1 \setminus A_2$ and $A_2
+                        \setminus A_1$, but not in $A_1 \cap A_2$. An example
+                        of that is $f(x) = |x| : \mathbb{Z} \rightarrow
+                        \mathbb{Z}$ when $A_1 = \mathbb{Z}_{< 0}$, $A_2 =
+                        \mathbb{N}$, as $f(A_1 \cap A_2) = f(\emptyset) =
+                        \emptyset$, but $f(A_1) \cap f(A_2) = \mathbb{N} \cap
+                        \mathbb{N} = \mathbb{N}$.
+
+        \end{enumerate}
+\end{description}
