@@ -367,7 +367,7 @@ Fixpoint fold_constants_bexp (b : bexp) : bexp :=
     | BNot a   => match fold_constants_bexp a with
                     | BTrue => BFalse
                     | BFalse => BTrue
-                    | e => e
+                    | e => BNot e
                   end
     | BAnd a b => match (fold_constants_bexp a, fold_constants_bexp b) with
                     | (_, BFalse) => BFalse
@@ -441,3 +441,50 @@ Example fold_com_ex1 :
        X ::= APlus (AId X) (ANum 1)
 END).
 Proof. reflexivity. Qed.
+
+Theorem fold_constants_aexp_sound :
+  atrans_sound fold_constants_aexp.
+Proof.
+  intros a st.
+  induction a; simpl; try reflexivity;
+  destruct (fold_constants_aexp a1); destruct (fold_constants_aexp a2); simpl;
+    rewrite IHa1; rewrite IHa2; reflexivity.
+Qed.
+
+(* Exercise: 3 stars, optional (fold_bexp_Eq_informal) *)
+
+Theorem fold_constants_bexp_sound:
+  btrans_sound fold_constants_bexp.
+Proof.
+  intros b st.
+  induction b; simpl; try reflexivity.
+  - remember (fold_constants_aexp a) as a';
+    remember (fold_constants_aexp a0) as a0'.
+    replace (aeval st a) with (aeval st a')
+      by (subst; rewrite <- fold_constants_aexp_sound; reflexivity).
+    replace (aeval st a0) with (aeval st a0')
+      by (subst; rewrite <- fold_constants_aexp_sound; reflexivity).
+    destruct (fold_constants_aexp a); destruct (fold_constants_aexp a0);
+    rewrite Heqa'; rewrite Heqa0'; simpl; try reflexivity.
+    destruct (beq_nat n n0); reflexivity.
+  - remember (fold_constants_aexp a) as a';
+    remember (fold_constants_aexp a0) as a0'.
+    replace (aeval st a) with (aeval st a')
+      by (subst; rewrite <- fold_constants_aexp_sound; reflexivity).
+    replace (aeval st a0) with (aeval st a0')
+      by (subst; rewrite <- fold_constants_aexp_sound; reflexivity).
+    destruct (fold_constants_aexp a); destruct (fold_constants_aexp a0);
+    rewrite Heqa'; rewrite Heqa0'; simpl; try reflexivity.
+    destruct (ble_nat n n0); reflexivity.
+  - remember (fold_constants_bexp b) as b'.
+    rewrite -> IHb.
+    destruct (fold_constants_bexp b); rewrite Heqb'; try reflexivity.
+  - remember (fold_constants_bexp b1) as b1';
+    remember (fold_constants_bexp b2) as b2'.
+    assert (forall b, b && false = false) by (destruct b; reflexivity).
+    destruct (fold_constants_bexp b1); destruct (fold_constants_bexp b2);
+    rewrite IHb1; rewrite IHb2; rewrite Heqb1'; rewrite Heqb2';
+    try reflexivity; simpl; try apply H.
+Qed.
+
+(* END fold_bexp_Eq_informal. *)
