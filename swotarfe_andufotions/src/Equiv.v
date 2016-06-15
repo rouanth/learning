@@ -284,3 +284,31 @@ Proof.
 Qed.
 
 (* END CSeq_congruence. *)
+
+(* Exercise: 3 stars (CIf_congruence) *)
+
+Theorem CIf_congruence : forall b b' ct ct' ce ce',
+  bequiv b b' -> cequiv ct ct' -> cequiv ce ce' ->
+  cequiv (IFB b THEN ct ELSE ce FI) (IFB b' THEN ct' ELSE ce' FI).
+Proof.
+  intros. intros st st'.
+  split; intros.
+  - remember (IFB b THEN ct ELSE ce FI) as If.
+    induction H2; inversion HeqIf; subst.
+    + apply E_IfTrue.
+      * rewrite <- H. apply H2.
+      * apply H0. apply H3.
+    + apply E_IfFalse.
+      * rewrite <- H. apply H2.
+      * apply H1. apply H3.
+  - remember (IFB b' THEN ct' ELSE ce' FI) as If.
+    induction H2; inversion HeqIf; subst.
+    + apply E_IfTrue.
+      * rewrite -> H. apply H2.
+      * apply H0. apply H3.
+    + apply E_IfFalse.
+      * rewrite -> H. apply H2.
+      * apply H1. apply H3.
+Qed.
+
+(* END CIf_congruence. *)
