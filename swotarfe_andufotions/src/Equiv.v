@@ -488,3 +488,57 @@ Proof.
 Qed.
 
 (* END fold_bexp_Eq_informal. *)
+
+Theorem IFB_true : forall b c1 c2,
+  bequiv b BTrue ->
+  cequiv (IFB b THEN c1 ELSE c2 FI) c1.
+Proof.
+  split; intros.
+  - inversion H0; subst.
+    + assumption.
+    + rewrite H in H6. inversion H6.
+  - apply E_IfTrue.
+    + rewrite H. reflexivity.
+    + assumption.
+Qed.
+
+Theorem WHILE_false : forall b c,
+  bequiv b BFalse -> cequiv (WHILE b DO c END) SKIP.
+Proof.
+  split; intros.
+  - inversion H0; subst.
+    + apply E_Skip.
+    + rewrite H in H3. inversion H3.
+  - inversion H0; subst.
+    apply E_WhileEnd.
+    rewrite H. reflexivity.
+Qed.
+
+(* Exercise: 3 stars (fold_constants_com_sound) *)
+
+Theorem fold_constants_com_sound :
+  ctrans_sound fold_constants_com.
+Proof.
+  intros c; induction c; simpl.
+  - apply refl_cequiv.
+  - apply CAss_congruence; apply fold_constants_aexp_sound.
+  - apply CSeq_congruence; assumption.
+  - assert (bequiv b (fold_constants_bexp b)) by
+      apply fold_constants_bexp_sound.
+    destruct (fold_constants_bexp b) eqn: bfb;
+      try (apply CIf_congruence; assumption).
+    + apply trans_cequiv with c1.
+      * apply IFB_true; assumption.
+      * assumption.
+    + apply trans_cequiv with c2.
+      * apply IFB_false; assumption.
+      * assumption.
+  - assert (bequiv b (fold_constants_bexp b)) by
+      apply fold_constants_bexp_sound.
+    destruct (fold_constants_bexp b) eqn: bfb;
+      try (apply CWhile_congruence; assumption).
+    + apply WHILE_true; assumption.
+    + apply WHILE_false; assumption.
+Qed.
+
+(* END fold_constants_com_sound. *)
