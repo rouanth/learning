@@ -653,3 +653,34 @@ Proof.
 Qed.
 
 (* END optimize_0plus. *)
+
+Inductive var_not_used_in_aexp (X : id) : aexp -> Prop :=
+  | VNUNum : forall n, var_not_used_in_aexp X (ANum n)
+  | VNUVar : forall Y, X <> Y -> var_not_used_in_aexp X (AId Y)
+  | VNUPlus : forall a b,
+      var_not_used_in_aexp X a -> var_not_used_in_aexp X b ->
+      var_not_used_in_aexp X (APlus a b)
+  | VNUMinus : forall a b,
+      var_not_used_in_aexp X a -> var_not_used_in_aexp X b ->
+      var_not_used_in_aexp X (AMinus a b)
+  | VNUMult : forall a b,
+      var_not_used_in_aexp X a -> var_not_used_in_aexp X b ->
+      var_not_used_in_aexp X (AMult a b)
+.
+
+
+(* Exercise: 4 stars, optional (better_subst_equiv) *)
+
+Lemma aeval_weakening : forall i st a ni,
+  var_not_used_in_aexp i a ->
+  aeval (update st i ni) a = aeval st a.
+Proof.
+  intros.
+  induction H; simpl; try reflexivity;
+    try (rewrite IHvar_not_used_in_aexp1;
+      rewrite IHvar_not_used_in_aexp2;
+      reflexivity).
+  apply update_neq; assumption.
+Qed.
+
+(* END better_subst_equiv. *)
