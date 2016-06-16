@@ -542,3 +542,72 @@ Proof.
 Qed.
 
 (* END fold_constants_com_sound. *)
+
+(* Exercise: 4 stars, advanced, optional (optimize_0plus) *)
+
+Fixpoint optimise_0_aexp (a : aexp) : aexp :=
+  match a with
+    | ANum n => ANum n
+    | AId  i => AId  i
+    | APlus e1 e2 =>
+        match (optimise_0_aexp e1, optimise_0_aexp e2) with
+          | (ANum 0, e) => e
+          | (e, ANum 0) => e
+          | (e1', e2')  => APlus e1' e2'
+        end
+    | AMinus e1 e2 =>
+        match (optimise_0_aexp e1, optimise_0_aexp e2) with
+          | (e, ANum 0) => e
+          | (e1', e2')  => AMinus e1' e2'
+        end
+    | AMult  e1 e2 =>
+        match (optimise_0_aexp e1, optimise_0_aexp e2) with
+          | (ANum 0, e) => ANum 0
+          | (e, ANum 0) => ANum 0
+          | (ANum 1, e) => e
+          | (e, ANum 1) => e
+          | (e1, e2)    => AMult e1 e2
+        end
+  end.
+
+Fixpoint optimise_0_bexp (b : bexp) : bexp :=
+  match b with
+    | BTrue => BTrue
+    | BFalse => BFalse
+    | BEq n m => BEq (optimise_0_aexp n) (optimise_0_aexp m)
+    | BLe n m => BLe (optimise_0_aexp n) (optimise_0_aexp m)
+    | BAnd n m => match (optimise_0_bexp n, optimise_0_bexp m) with
+                    | (BFalse, _) => BFalse
+                    | (_, BFalse) => BFalse
+                    | (BTrue,  e) => e
+                    | (e, BTrue ) => e
+                    | (e1, e2)    => BAnd e1 e2
+                  end
+    | BNot n => BNot (optimise_0_bexp n)
+  end.
+
+Fixpoint optimise_0_com (c : com) : com :=
+  match c with
+    | SKIP => SKIP
+    | i ::= a => CAss i (optimise_0_aexp a)
+    | a ;; b  => CSeq (optimise_0_com a) (optimise_0_com b)
+    | IFB b THEN ct ELSE ce FI => IFB (optimise_0_bexp b)
+                                  THEN (optimise_0_com ct)
+                                  ELSE (optimise_0_com ce) FI
+    | WHILE b DO c END => WHILE (optimise_0_bexp b) DO (optimise_0_com c) END
+  end.
+
+Theorem optimise_0_aexp_sound :
+  atrans_sound optimise_0_aexp.
+Proof.
+  unfold atrans_sound. unfold aequiv.
+  intros.
+  induction a; try reflexivity; simpl.
+  - rewrite IHa1; rewrite IHa2;
+    destruct (optimise_0_aexp a1); destruct (optimise_0_aexp a2);
+      try destruct n; simpl; try reflexivity; try apply plus_0_r.
+    + destruct n0; try reflexivity.
+      simpl; rewrite plus_0_r; trivial.
+Admitted.
+
+(* END optimize_0plus. *)
