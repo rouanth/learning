@@ -668,6 +668,14 @@ Inductive var_not_used_in_aexp (X : id) : aexp -> Prop :=
       var_not_used_in_aexp X (AMult a b)
 .
 
+Fixpoint subst_aexp (i : id) (u : aexp) (a : aexp) : aexp :=
+  match a with
+    | ANum n => ANum n
+    | AId i' => if eq_id_dec i i' then u else AId i'
+    | APlus n m  => APlus  (subst_aexp i u n) (subst_aexp i u m)
+    | AMinus n m => AMinus (subst_aexp i u n) (subst_aexp i u m)
+    | AMult  n m => AMult  (subst_aexp i u n) (subst_aexp i u m)
+  end.
 
 (* Exercise: 4 stars, optional (better_subst_equiv) *)
 
@@ -682,5 +690,83 @@ Proof.
       reflexivity).
   apply update_neq; assumption.
 Qed.
+
+Definition subst_equiv_weaker_property := forall i1 i2 a1 a2,
+  var_not_used_in_aexp i1 a1 -> 
+  cequiv (i1 ::= a1;; i2 ::= a2)
+         (i1 ::= a1;; i2 ::= subst_aexp i1 a1 a2).
+
+Theorem unused_var_does_not_matter :
+  forall i n a st,
+    var_not_used_in_aexp i a ->
+    aeval st a = aeval (update st i n) a.
+Proof.
+  intros.
+  induction a; inversion H; subst; simpl;
+    try rewrite IHa1; try rewrite IHa2; try assumption; try reflexivity.
+  - symmetry. apply update_neq. assumption.
+Qed.
+
+Theorem better_subst_equiv : subst_equiv_weaker_property.
+Proof.
+  intros i1 i2 a1 a2 Hvnu.
+  split.
+  - generalize dependent i1.
+    generalize dependent i2.
+    generalize dependent st.
+    generalize dependent st'.
+    generalize dependent a1.
+    induction a2; simpl; intros.
+    + assumption.
+    + inversion H; inversion H2; inversion H5; subst;
+        simpl; simpl in H; simpl in H5;
+      apply E_Seq with (update st i1 (aeval st a1)); try assumption.
+      destruct (eq_id_dec i1 i); try apply E_Ass.
+      subst.
+      replace ((update st i (aeval st a1)) i) with
+        (aeval (update st i (aeval st a1)) a1);
+        try apply E_Ass.
+      rewrite -> update_eq.
+      symmetry.
+      apply unused_var_does_not_matter.
+      assumption.
+    + inversion H; inversion H2; inversion H5; subst;
+        simpl; simpl in H; simpl in H5;
+      apply E_Seq with (update st i1 (aeval st a1)); try assumption.
+      remember (update st i1 (aeval st a1)) as st'.
+      replace (aeval st' a2_1 +
+               aeval st' a2_2) with
+              (aeval st'
+               (APlus (subst_aexp i1 a1 a2_1) (subst_aexp i1 a1 a2_2)));
+        try apply E_Ass.
+      simpl.
+      assert ((i1 ::= a1;; i2 ::= a2_1) / st ⇓ update st' i2 (aeval st' a2_1)).
+      { apply E_Seq with st'.
+        assumption.
+        apply E_Ass. }
+      remember H0 as H0_subst.
+      clear HeqH0_subst.
+      apply IHa2_1 in H0_subst.
+
+
+    + destruct (eq_id_dec i1 i).
+      * subst.
+        replace (aeval (update st i (aeval st a1)) a1) with
+                (aeval (update st i (aeval st a1)) (AId i)).
+        apply E_Ass.
+        simpl.
+        rewrite -> update_eq.
+        apply unused_var_does_not_matter.
+        apply Hvnu.
+      * apply E_Ass.
+  - split; intros; inversion H; inversion H2; inversion H5; subst;
+      simpl; simpl in H; simpl in H5;
+      apply E_Seq with (update st i1 (aeval st a1)); try assumption.
+    + replace (aeval (update st i1 (aeval st a1)) a2_1 +
+               aeval (update st i1 (aeval st a1)) a2_2) with
+      (aeval (update st i1 (aeval st a1))
+               (APlus (subst_aexp i1 a1 a2_1) (subst_aexp i1 a1 a2_2))).
+      apply E_Ass.
+      simpl.
 
 (* END better_subst_equiv. *)
