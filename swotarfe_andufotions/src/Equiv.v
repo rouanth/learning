@@ -726,3 +726,22 @@ Proof.
 Qed.
 
 (* END better_subst_equiv. *)
+
+(* Exercise: 3 stars, optional (inequiv_exercise) *)
+
+Theorem inequiv_exercise:
+  not (cequiv (WHILE BTrue DO SKIP END) SKIP).
+Proof.
+  intro contra.
+  remember empty_state as st.
+  assert (SKIP / st ⇓ st).
+  { apply E_Skip. }
+  assert (not (WHILE BTrue DO SKIP END / st ⇓ st)).
+  { apply loop_never_stops. }
+  unfold not in H0.
+  apply contra in H.
+  apply H0.
+  apply H.
+Qed.
+
+(* END inequiv_exercise. *)
