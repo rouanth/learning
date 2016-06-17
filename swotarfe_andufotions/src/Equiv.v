@@ -710,63 +710,19 @@ Qed.
 Theorem better_subst_equiv : subst_equiv_weaker_property.
 Proof.
   intros i1 i2 a1 a2 Hvnu.
-  split.
-  - generalize dependent i1.
-    generalize dependent i2.
-    generalize dependent st.
-    generalize dependent st'.
-    generalize dependent a1.
-    induction a2; simpl; intros.
-    + assumption.
-    + inversion H; inversion H2; inversion H5; subst;
-        simpl; simpl in H; simpl in H5;
-      apply E_Seq with (update st i1 (aeval st a1)); try assumption.
-      destruct (eq_id_dec i1 i); try apply E_Ass.
-      subst.
-      replace ((update st i (aeval st a1)) i) with
-        (aeval (update st i (aeval st a1)) a1);
-        try apply E_Ass.
-      rewrite -> update_eq.
-      symmetry.
-      apply unused_var_does_not_matter.
-      assumption.
-    + inversion H; inversion H2; inversion H5; subst;
-        simpl; simpl in H; simpl in H5;
-      apply E_Seq with (update st i1 (aeval st a1)); try assumption.
-      remember (update st i1 (aeval st a1)) as st'.
-      replace (aeval st' a2_1 +
-               aeval st' a2_2) with
-              (aeval st'
-               (APlus (subst_aexp i1 a1 a2_1) (subst_aexp i1 a1 a2_2)));
-        try apply E_Ass.
-      simpl.
-      assert ((i1 ::= a1;; i2 ::= a2_1) / st ⇓ update st' i2 (aeval st' a2_1)).
-      { apply E_Seq with st'.
-        assumption.
-        apply E_Ass. }
-      remember H0 as H0_subst.
-      clear HeqH0_subst.
-      apply IHa2_1 in H0_subst.
-
-
-    + destruct (eq_id_dec i1 i).
-      * subst.
-        replace (aeval (update st i (aeval st a1)) a1) with
-                (aeval (update st i (aeval st a1)) (AId i)).
-        apply E_Ass.
-        simpl.
-        rewrite -> update_eq.
-        apply unused_var_does_not_matter.
-        apply Hvnu.
-      * apply E_Ass.
-  - split; intros; inversion H; inversion H2; inversion H5; subst;
-      simpl; simpl in H; simpl in H5;
-      apply E_Seq with (update st i1 (aeval st a1)); try assumption.
-    + replace (aeval (update st i1 (aeval st a1)) a2_1 +
-               aeval (update st i1 (aeval st a1)) a2_2) with
-      (aeval (update st i1 (aeval st a1))
-               (APlus (subst_aexp i1 a1 a2_1) (subst_aexp i1 a1 a2_2))).
-      apply E_Ass.
-      simpl.
+  split; intros; inversion H; inversion H2; inversion H5; subst;
+    apply E_Seq with (update st i1 (aeval st a1)); try assumption;
+    [ replace (aeval (update st i1 (aeval st a1)) a2) with
+            (aeval (update st i1 (aeval st a1)) (subst_aexp i1 a1 a2)) |
+      replace (aeval (update st i1 (aeval st a1)) (subst_aexp i1 a1 a2)) with
+            (aeval (update st i1 (aeval st a1)) a2) ];
+    try apply E_Ass;
+    clear H H2 H5 i2; generalize dependent i1; generalize dependent a1;
+    induction a2; intros; simpl; try rewrite IHa2_1; try rewrite IHa2_2;
+      try reflexivity; try assumption;
+    destruct (eq_id_dec i1 i); try reflexivity;
+      subst; rewrite update_eq; [symmetry; apply unused_var_does_not_matter |
+        apply unused_var_does_not_matter]; assumption.
+Qed.
 
 (* END better_subst_equiv. *)
