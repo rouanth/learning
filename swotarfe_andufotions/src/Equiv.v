@@ -1089,3 +1089,34 @@ Qed.
 (* END p5_p6_equiv. *)
 
 End Himp.
+
+(* Exercise: 3 stars, optional (swap_noninterfering_assignments) *)
+
+Theorem swap_noninterfering_assignments: forall l1 l2 a1 a2,
+  l1 <> l2 ->
+  var_not_used_in_aexp l1 a2 ->
+  var_not_used_in_aexp l2 a1 ->
+  cequiv
+    (l1 ::= a1;; l2 ::= a2)
+    (l2 ::= a2;; l1 ::= a1).
+Proof.
+  intros. intros st st'.
+  assert (aeval (update st l2 (aeval st a2)) a1 = aeval st a1) as l2nia1.
+  { symmetry. apply unused_var_does_not_matter. assumption. }
+  assert (aeval (update st l1 (aeval st a1)) a2 = aeval st a2) as l1nia2.
+  { symmetry. apply unused_var_does_not_matter. assumption. }
+  assert ((update (update st l1 (aeval st a1)) l2
+                    (aeval (update st l1 (aeval st a1)) a2))
+        = (update (update st l2 (aeval st a2)) l1
+                    (aeval (update st l2 (aeval st a2)) a1))) as states_same.
+  { rewrite l2nia1. rewrite l1nia2.
+    apply functional_extensionality.
+    intros.
+    apply update_permute. intro contra. contradiction. }
+  split; intro; inversion H2; inversion H5; inversion H8; subst;
+    clear H2 H5 H8; [ rewrite -> states_same | rewrite <- states_same ].
+  - apply E_Seq with (update st l2 (aeval st a2)); apply E_Ass.
+  - apply E_Seq with (update st l1 (aeval st a1)); apply E_Ass.
+Qed.
+
+(* END swap_noninterfering_assignments. *)
