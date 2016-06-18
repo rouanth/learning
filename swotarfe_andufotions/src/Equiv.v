@@ -887,4 +887,77 @@ Qed.
 
 (* END havoc_copy. *)
 
+(* Exercise: 5 stars, advanced (p1_p2_equiv) *)
+
+Definition p1 : com :=
+  WHILE (BNot (BEq (AId X) (ANum 0))) DO
+    HAVOC Y;;
+    X ::= APlus (AId X) (ANum 1)
+  END.
+
+Definition p2 : com :=
+  WHILE (BNot (BEq (AId X) (ANum 0))) DO
+    SKIP
+  END.
+
+Lemma p1_may_diverge : forall st st', st X <> 0 ->
+  not (p1 / st ⇓ st').
+Proof.
+  unfold not.
+  intros st st' HXnz contra.
+  remember p1.
+  generalize dependent HXnz.
+  induction contra; unfold p1 in Heqc; inversion Heqc; subst; intro.
+  - simpl in H.
+    apply false_beq_nat in HXnz. rewrite HXnz in H. inversion H.
+  - clear H. clear Heqc. apply IHcontra2.
+    + reflexivity.
+    + intro contra.
+      inversion contra1; inversion H1; inversion H4; subst.
+      simpl in contra.
+      rewrite update_eq in contra.
+      rewrite plus_comm in contra.
+      inversion contra.
+Qed.
+
+Lemma p2_may_diverge : forall st st', st X <> 0 ->
+  not (p2 / st ⇓ st').
+Proof.
+  unfold not.
+  intros st st' HXnz contra.
+  remember p2.
+  generalize dependent HXnz.
+  induction contra; unfold p2 in Heqc; inversion Heqc; subst; intro.
+  - simpl in H.
+    apply false_beq_nat in HXnz. rewrite HXnz in H. inversion H.
+  - clear H Heqc. apply IHcontra2.
+    + reflexivity.
+    + intro contra.
+      inversion contra1; subst.
+      contradiction.
+Qed.
+
+Theorem p1_p2_cequiv : cequiv p1 p2.
+Proof.
+  unfold p1. unfold p2.
+  intros st.
+  destruct (st X) eqn : stX.
+  - split; intro; inversion H; subst;
+    try (apply E_WhileEnd; assumption);
+      simpl in H2; destruct (beq_nat (st X) 0) eqn: bnX;
+        try inversion H2;
+        apply beq_nat_false in bnX; contradiction.
+  - assert (st X <> 0).
+    { intro contra. rewrite stX in contra. inversion contra. }
+    clear stX.
+    split; intro; inversion H0; subst; try (simpl in H5;
+      apply false_beq_nat in H; rewrite H in H5; inversion H5).
+    + remember p1_may_diverge as pmd; unfold p1 in pmd.
+      apply pmd with (st' := st') in H. contradiction.
+    + remember p2_may_diverge as pmd; unfold p2 in pmd.
+      apply pmd with (st' := st') in H. contradiction.
+Qed.
+
+(* END p1_p2_equiv. *)
+
 End Himp.
