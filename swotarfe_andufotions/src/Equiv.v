@@ -842,4 +842,49 @@ Qed.
 
 (* END havoc_swap. *)
 
+(* Exercise: 4 stars, optional (havoc_copy) *)
+
+Definition ptwice :=
+  HAVOC X ;; HAVOC Y.
+
+Definition pcopy :=
+  HAVOC X ;; Y ::= AId X.
+
+Theorem ptwice_cequiv_pcopy :
+  cequiv ptwice pcopy \/ not (cequiv ptwice pcopy).
+Proof.
+  right.
+  unfold ptwice. unfold pcopy. unfold cequiv. intro contra.
+  remember empty_state as st.
+  remember (update st X 1) as st'.
+  remember (update st' Y 2) as st''.
+  assert ((HAVOC X;; HAVOC Y) / st ⇓ st'').
+  { apply E_Seq with st'; subst; apply E_Havoc. }
+  rewrite contra in H.
+  inversion H; inversion H2; inversion H5; subst.
+  simpl in H12.
+  assert (update (update empty_state X n) Y (update empty_state X n X) Y =
+      update (update empty_state X 1) Y 2 Y).
+  { rewrite H12. trivial. }
+  assert (update (update empty_state X n) Y (update empty_state X n X) X =
+      update (update empty_state X 1) Y 2 X).
+  { rewrite H12. trivial. }
+  clear contra H H2 H5.
+  assert (update (update empty_state X n) Y (update empty_state X n X) X = n).
+  { reflexivity. }
+  assert (update (update empty_state X n) Y (update empty_state X n X) Y = n).
+  { reflexivity. }
+  assert (update (update empty_state X 1) Y 2 X = 1).
+  { reflexivity. }
+  assert (update (update empty_state X 1) Y 2 Y = 2).
+  { reflexivity. }
+  clear H12.
+  rewrite H0 in H2. rewrite H2 in H4.
+  rewrite H1 in H . rewrite H3 in H.
+  rewrite H4 in H.
+  inversion H.
+Qed.
+
+(* END havoc_copy. *)
+
 End Himp.
