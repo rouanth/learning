@@ -1012,4 +1012,80 @@ Qed.
 
 (* END p3_p4_inequiv. *)
 
+(* Exercise: 5 stars, advanced, optional (p5_p6_equiv) *)
+
+Definition p5 :=
+  WHILE (BNot (BEq (AId X) (ANum 1))) DO
+    HAVOC X
+  END.
+
+Definition p6 :=
+  X ::= ANum 1.
+
+Lemma CAss_helper :
+  forall st st' x n, st' = update st x (aeval st n) -> ((x ::= n) / st ⇓ st').
+Proof.
+  intros. subst. apply E_Ass. Qed.
+
+Lemma p5_X_1 :
+  forall st st', p5 / st ⇓ st' -> st' = update st X 1.
+Proof.
+  intros.
+  remember p5.
+  induction H; inversion Heqc; subst; simpl in H.
+  - clear Heqc.
+    assert (st X = 1).
+    { destruct (beq_nat (st X) 1) eqn: bqn.
+      + apply beq_nat_true in bqn. assumption.
+      + inversion H.
+    }
+    unfold update.
+    apply functional_extensionality.
+    intros x.
+    destruct (eq_id_dec X x).
+    + subst; assumption.
+    + trivial.
+  - clear IHceval1 Heqc H1.
+    assert (st'' = update st' X 1).
+    { apply IHceval2. reflexivity. }
+    clear IHceval2.
+    rewrite H1. clear H1 H.
+    inversion H0; subst.
+    apply functional_extensionality.
+    intros x.
+    apply update_shadow.
+Qed.
+
+Lemma p5_X_1_2 :
+  forall st, p5 / st ⇓ update st X 1.
+Proof.
+  intro.
+  destruct (eq_nat_dec (st X) 1).
+  - unfold p5.
+    replace (update st X 1) with st.
+    apply E_WhileEnd.
+    simpl. rewrite e. reflexivity.
+    apply functional_extensionality.
+    intros x. symmetry. apply update_same. assumption.
+  - unfold p5.
+    apply E_WhileLoop with (update st X 1).
+    + apply false_beq_nat in n. simpl. rewrite n. reflexivity.
+    + apply E_Havoc.
+    + apply E_WhileEnd.
+      reflexivity.
+Qed.
+
+Theorem p5_p6_cequiv :
+  cequiv p5 p6.
+Proof.
+  split; intros.
+  - apply p5_X_1 in H.
+    subst. unfold p6.
+    apply E_Ass.
+  - inversion H; subst. simpl. simpl in H.
+    apply p5_X_1_2.
+Qed.
+
+(* END p5_p6_equiv. *)
+
 End Himp.
