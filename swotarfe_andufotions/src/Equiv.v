@@ -1,5 +1,6 @@
-Require Export Imp.
 Require Import Coq.Logic.FunctionalExtensionality.
+Require Import Coq.omega.Omega.
+Require Export Imp.
 
 (* Exercise: 2 stars (equiv_classes) *)
 
@@ -808,5 +809,37 @@ Proof. apply E_Havoc. Qed.
 
 Definition cequiv (c1 c2 : com) : Prop :=
   forall st st', c1 / st ⇓ st' <-> c2 / st ⇓ st'.
+
+(* Exercise: 3 stars (havoc_swap) *)
+
+Definition pXY :=
+  HAVOC X ;; HAVOC Y.
+
+Definition pYX :=
+  HAVOC Y ;; HAVOC X.
+
+Theorem sym_havoc :
+  forall X Y st st', ((HAVOC X ;; HAVOC Y) / st ⇓ st')
+                  -> ((HAVOC Y ;; HAVOC X) / st ⇓ st').
+Proof.
+  intros X Y st st'.
+  intros; inversion H; inversion H2; inversion H5; subst.
+  destruct (eq_id_dec X Y).
+  - rewrite e. apply E_Seq with (update st Y n); apply E_Havoc.
+  - replace (update (update st X n) Y n0) with (update (update st Y n0) X n).
+    + apply E_Seq with (update st Y n0); apply E_Havoc.
+    + apply functional_extensionality. intro x. apply update_permute.
+      intro contra. apply n1. symmetry. assumption.
+Qed.
+
+Theorem pXY_cequiv_pYX :
+  cequiv pXY pYX \/ not (cequiv pXY pYX).
+Proof.
+  left.
+  unfold pXY. unfold pYX.
+  split; apply sym_havoc.
+Qed.
+
+(* END havoc_swap. *)
 
 End Himp.
