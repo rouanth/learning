@@ -1120,3 +1120,46 @@ Proof.
 Qed.
 
 (* END swap_noninterfering_assignments. *)
+
+(* Exercise: 4 stars, advanced, optional (capprox) *)
+
+Definition capprox (c1 c2 : com) := forall st st',
+  c1 / st ⇓ st' -> c2 / st ⇓ st'.
+
+Definition c3 : com := X ::= ANum 1.
+Definition c4 : com := X ::= ANum 2.
+
+Theorem c3_c4_different : not (capprox c3 c4) /\ not (capprox c4 c3).
+Proof.
+  remember empty_state as st.
+  remember (update st X (aeval st (ANum 1))) as c3_res.
+  remember (update st X (aeval st (ANum 2))) as c4_res.
+  assert (c3 / st ⇓ c3_res). subst. apply E_Ass.
+  assert (c4 / st ⇓ c4_res). subst. apply E_Ass.
+  unfold capprox.
+  split; intro contra;
+    [ apply contra in H; inversion H | apply contra in H0; inversion H0 ];
+    subst; simpl in H4;
+    assert ((update empty_state X 2) X = (update empty_state X 1) X);
+    try (rewrite H4; trivial); repeat rewrite update_eq in H1; inversion H1.
+Qed.
+
+Definition cmin : com := loop.
+
+Theorem cmin_minimal : forall c, capprox cmin c.
+Proof.
+  intros c st st' contra.
+  apply loop_never_stops in contra. inversion contra.
+Qed.
+
+Definition zprop (c : com) : Prop :=
+  exists st st', (c / st ⇓ st').
+
+Theorem zprop_preserving : forall c c',
+  zprop c -> capprox c c' -> zprop c'.
+Proof.
+  intros. inversion H. inversion H1. apply H0 in H2.
+  exists x. exists x0. apply H2.
+Qed.
+
+(* END capprox. *)
