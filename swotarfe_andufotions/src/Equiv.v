@@ -960,4 +960,56 @@ Qed.
 
 (* END p1_p2_equiv. *)
 
+(* Exercise: 4 stars, advanced (p3_p4_inequiv) *)
+
+Definition p3 :=
+  Z ::= ANum 1;;
+  WHILE (BNot (BEq (AId X) (ANum 0))) DO
+    HAVOC X;;
+    HAVOC Z
+  END.
+
+Definition p4 :=
+  X ::= ANum 0;;
+  Z ::= ANum 1.
+
+Theorem p3_p4_inequiv : not (cequiv p3 p4).
+Proof.
+  remember (update empty_state X 1) as st.
+  remember (update  st X 0) as st'.
+  remember (update st' Z 2) as st''.
+  assert (p3 / st ⇓ st'').
+  { unfold p3. apply E_Seq with (update st Z 1).
+    + subst. apply E_Ass.
+    + subst st' st''.
+      replace (update (update st X 0) Z 2) with
+              (update (update (update st Z 1) X 0) Z 2).
+      * apply E_WhileLoop with (update (update (update st Z 1) X 0) Z 2).
+        { subst. reflexivity. }
+        { apply E_Seq with (update (update st Z 1) X 0); apply E_Havoc. }
+        apply E_WhileEnd.
+        subst; reflexivity.
+      * apply functional_extensionality.
+        intros x.
+        subst.
+        unfold update.
+        destruct (eq_id_dec Z x); destruct (eq_id_dec X x); reflexivity.
+  }
+  assert (not (p4 / st ⇓ st'')).
+  { unfold p4. intro contra.
+    inversion contra; inversion H5; subst.
+    simpl in H9.
+    assert (update st'0 Z 1 Z = 1).
+      apply update_eq.
+    assert (update (update (update empty_state X 1) X 0) Z 2 Z = 2).
+      apply update_eq.
+    rewrite H9 in H0. rewrite H0 in H1. inversion H1.
+  }
+  intros contra.
+  apply contra in H.
+  contradiction.
+Qed.
+
+(* END p3_p4_inequiv. *)
+
 End Himp.
