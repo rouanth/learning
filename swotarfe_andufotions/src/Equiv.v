@@ -745,3 +745,68 @@ Proof.
 Qed.
 
 (* END inequiv_exercise. *)
+
+Module Himp.
+
+Inductive com :=
+  | CSkip : com
+  | CAss  : id   -> aexp -> com
+  | CSeq  : com  -> com  -> com
+  | CIf   : bexp -> com  -> com  -> com
+  | CWhile: bexp -> com  -> com
+  | CHavoc: id   -> com.
+
+Notation "'SKIP'" :=
+  CSkip.
+Notation "x '::=' a" :=
+  (CAss x a) (at level 60).
+Notation "c1 ;; c2" :=
+  (CSeq c1 c2) (at level 80, right associativity).
+Notation "'WHILE' b 'DO' c 'END'" :=
+  (CWhile b c) (at level 80, right associativity).
+Notation "'IFB' c1 'THEN' c2 'ELSE' c3 'FI'" :=
+  (CIf c1 c2 c3) (at level 80, right associativity).
+Notation "'HAVOC' l" := (CHavoc l) (at level 60).
+
+Reserved Notation "c1 '/' st '⇓' st'" (at level 40, st at level 39).
+
+(* Exercise: 2 stars (himp_ceval) *)
+
+Inductive ceval : com -> state -> state -> Prop :=
+  | E_Skip : forall st, SKIP / st ⇓ st
+  | E_Ass  : forall st x ae,  (x ::= ae) / st ⇓ (update st x (aeval st ae))
+  | E_Seq  : forall st st' st'' c1 c2,
+               c1 / st  ⇓ st'  ->
+               c2 / st' ⇓ st'' ->
+               (c1 ;; c2) / st ⇓ st''
+  | E_IfTrue  : forall st st' ct ce be,
+               beval st be = true ->
+               ct / st ⇓ st'   ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ st'
+  | E_IfFalse : forall st st' ct ce be,
+               beval st be = false ->
+               ce / st ⇓ st'    ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ st'
+  | E_WhileEnd : forall st c be,
+               beval st be = false ->
+               (WHILE be DO c END) / st ⇓ st
+  | E_WhileLoop : forall st st' st'' c be,
+               beval st be = true ->
+               c / st ⇓ st' ->
+               (WHILE be DO c END) / st' ⇓ st'' ->
+               (WHILE be DO c END) / st  ⇓ st''
+  | E_Havoc : forall st id n, (HAVOC id) / st ⇓ (update st id n)
+   where "c1 '/' st '⇓' st'" := (ceval c1 st st').
+
+Example havoc_example1 : (HAVOC X) / empty_state ⇓ update empty_state X 0.
+Proof. apply E_Havoc. Qed.
+
+Example havoc_example2 : (HAVOC Z) / empty_state ⇓ update empty_state Z 42.
+Proof. apply E_Havoc. Qed.
+
+(* END himp_ceval. *)
+
+Definition cequiv (c1 c2 : com) : Prop :=
+  forall st st', c1 / st ⇓ st' <-> c2 / st ⇓ st'.
+
+End Himp.
