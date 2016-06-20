@@ -50,7 +50,7 @@ Definition hoare_triple
         forall st st',
         c / st ⇓ st' ->
         P st ->
-        Q st.
+        Q st'.
 
 Notation "{{ P }} c {{ Q }}" := (hoare_triple P c Q) (at level 90,
         c at next level) : hoare_spec_scope.
@@ -91,3 +91,55 @@ Notation "{{ P }} c {{ Q }}" := (hoare_triple P c Q) (at level 90,
 
 (* END valid_triples. *)
 
+Theorem hoare_post_true : forall (P Q : Assertion) c,
+  (forall st, Q st) ->
+  {{ P }} c {{ Q }}.
+Proof.
+  unfold hoare_triple.
+  intros.
+  apply H.
+Qed.
+
+Theorem hoare_pre_false : forall (P Q : Assertion) c,
+  (forall st, not (P st)) ->
+  {{ P }} c {{ Q }}.
+Proof.
+  unfold not.
+  intros P Q c H st st' Hc Hp.
+  apply H in Hp.
+  inversion Hp.
+Qed.
+
+Definition assn_sub X a P : Assertion :=
+  fun (st : state) =>
+    P (update st X (aeval st a)).
+
+Notation "P [ X |-> a ]" := (assn_sub X a P) (at level 10).
+
+Theorem hoare_asgn : forall Q X a,
+  {{ Q [X |-> a] }} (X ::= a) {{ Q }}.
+Proof.
+  unfold assn_sub.
+  unfold hoare_triple.
+  intros Q X a st st' Hc Hp.
+  inversion Hc; subst.
+  assumption.
+Qed.
+
+(* Exercise: 2 stars (hoare_asgn_examples) *)
+
+Example assn_sub_ex1 :
+  {{ (fun st => st X <= 5) [ X |-> APlus (AId X) (ANum 1) ] }}
+      X ::= APlus (AId X) (ANum 1)
+  {{ fun st => st X <= 5 }}.
+Proof.
+  apply hoare_asgn.
+Qed.
+
+Example assn_sub_ex2 :
+  {{ (fun st => 0 <= st X /\ st X <= 5) [X |-> ANum 3] }}
+      X ::= ANum 3
+  {{ fun st => 0 <= st X /\ st X <= 5 }}.
+Proof. apply hoare_asgn. Qed.
+
+(* END hoare_asgn_examples. *)
