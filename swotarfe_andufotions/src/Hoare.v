@@ -85,3 +85,9 @@ Notation "{{ P }} c {{ Q }}" := (hoare_triple P c Q) (at level 90,
 
 (* END triples. *)
 
+(* Exercise: 1 star, optional (valid_triples) *)
+
+(* 1, 2, 3, 6, 7, 8. *)
+
+(* END valid_triples. *)
+
