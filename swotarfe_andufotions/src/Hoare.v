@@ -143,3 +143,27 @@ Example assn_sub_ex2 :
 Proof. apply hoare_asgn. Qed.
 
 (* END hoare_asgn_examples. *)
+
+(* Exercise: 2 stars (hoare_asgn_wrong) *)
+
+Definition hoare_asgn_wrong :=
+  forall X a, {{ fun st => True }} X ::= a {{ fun st => st X = aeval st a }}.
+
+Theorem hoare_asgn_wrong_is_wrong :
+  not hoare_asgn_wrong.
+Proof.
+  unfold hoare_asgn_wrong. unfold hoare_triple.
+  intro contra.
+  remember (APlus (AId X) (ANum 1)) as a.
+  remember (update empty_state X 2) as st.
+  remember (update (update empty_state X 2) X 3) as st'.
+  assert ((X ::= a) / st ⇓ st').
+  { subst; apply E_Ass. }
+  apply contra in H; try trivial.
+  subst.
+  simpl in H.
+  rewrite update_eq in H.
+  inversion H.
+Qed.
+
+(* END hoare_asgn_wrong. *)
