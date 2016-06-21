@@ -194,3 +194,30 @@ Proof.
 Qed.
 
 (* END hoare_asgn_fwd. *)
+
+(* Exercise: 2 stars, advanced (hoare_asgn_fwd_exists) *)
+
+Theorem hoare_asgn_fwd_exists :
+  (forall {X Y : Type} {f g : X -> Y},
+    (forall (x : X), f x = g x) -> f = g) ->
+  forall a P,
+  {{ fun st => P st }}
+    X ::= a
+  {{ fun st => exists m, P (update st X m) /\ st X = aeval (update st X m) a }}.
+Proof.
+  intros functional_extensionality a P st st' Hc Hp.
+  inversion Hc. subst.
+  exists (st X).
+  replace (update (update st X (aeval st a)) X (st X)) with st.
+  {
+    split.
+    - assumption.
+    - rewrite update_eq. trivial.
+  }
+  apply functional_extensionality. intros x.
+  unfold update.
+  destruct (eq_id_dec X x); subst; trivial.
+Qed.
+
+(* END hoare_asgn_fwd_exists. *)
+
