@@ -221,3 +221,40 @@ Qed.
 
 (* END hoare_asgn_fwd_exists. *)
 
+Theorem hoare_consequence_pre : forall (P P' Q : Assertion) c,
+  {{ P' }} c {{ Q }} ->
+  P ->> P' ->
+  {{ P  }} c {{ Q }}.
+Proof.
+  intros.
+  intros st st' Hc Hp.
+  unfold hoare_triple in H.
+  apply H with st.
+  - assumption.
+  - apply H0. assumption.
+Qed.
+
+Theorem hoare_consequence_post : forall (P Q Q' : Assertion) c,
+  {{ P }} c {{ Q' }} ->
+  Q' ->> Q ->
+  {{ P }} c {{ Q  }}.
+Proof.
+  intros.
+  intros st st' Hc Hp.
+  apply H0.
+  apply H with st; assumption.
+Qed.
+
+Theorem hoare_consequence : forall (P P' Q Q' : Assertion) c,
+  {{ P' }} c {{ Q' }} ->
+  P  ->> P' ->
+  Q' ->> Q  ->
+  {{ P  }} c {{ Q  }}.
+Proof.
+  intros.
+  intros st st' Hc Hp.
+  apply H1.
+  apply H with st.
+  - assumption.
+  - apply H0. assumption.
+Qed.
