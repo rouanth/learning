@@ -167,3 +167,30 @@ Proof.
 Qed.
 
 (* END hoare_asgn_wrong. *)
+
+(* Exercise: 3 stars, advanced (hoare_asgn_fwd) *)
+
+Theorem hoare_asgn_fwd :
+  (forall {X Y : Type} {f g : X -> Y},
+    (forall (x : X), f x = g x) -> f = g) ->
+  forall m a P,
+  {{ fun st => P st /\ st X = m }}
+    X ::= a
+  {{ fun st => P (update st X m) /\ st X = aeval (update st X m) a }}.
+Proof.
+  intros functional_extensionality m a P.
+  unfold hoare_triple.
+  intros st st' Hc Hp.
+  inversion Hc. destruct Hp. subst.
+  replace (update (update st X (aeval st a)) X (st X)) with st.
+  {
+  split.
+  - assumption.
+  - rewrite update_eq. trivial.
+  }
+  apply functional_extensionality. intros x.
+  unfold update.
+  destruct (eq_id_dec X x); subst; trivial.
+Qed.
+
+(* END hoare_asgn_fwd. *)
