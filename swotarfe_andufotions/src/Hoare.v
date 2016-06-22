@@ -258,3 +258,27 @@ Proof.
   - assumption.
   - apply H0. assumption.
 Qed.
+
+(* Exercise: 2 stars (hoare_asgn_examples_2) *)
+
+Example assn_sub_ex1' :
+  {{ fun st  => st X + 1 <= 5 }}
+    X ::= APlus (AId X) (ANum 1)
+  {{ fun st' => st' X    <= 5 }}.
+Proof.
+  eapply hoare_consequence_pre.
+  - apply hoare_asgn.
+  - intros st H. unfold assn_sub. simpl. rewrite update_eq. assumption.
+Qed.
+
+Example assn_sub_ex2' :
+  {{ fun st => 0 <= 3 /\ 3 <= 5 }}
+    X ::= ANum 3
+  {{ fun st => 0 <= st X /\ st X <= 5 }}.
+Proof.
+  eapply hoare_consequence_pre.
+  - apply hoare_asgn.
+  - intros st H. unfold assn_sub. simpl. rewrite update_eq. assumption.
+Qed.
+
+(* END hoare_asgn_examples_2. *)
