@@ -384,3 +384,32 @@ Proof.
 Qed.
 
 (* END swap_exercise. *)
+
+(* Exercise: 3 stars (hoarestate1) *)
+
+Definition hoarestate1 := forall a n,
+  {{ fun st => aeval st a = n }}
+    X ::= (ANum 3) ;; Y ::= a
+  {{ fun st => st Y = n }}.
+
+Theorem hoarestate1_false :
+  not hoarestate1.
+Proof.
+  unfold hoarestate1.
+  intros contra.
+  remember (update empty_state X 0) as stC.
+  remember (AId X) as aC.
+  assert ({{fun st : state => aeval st aC = 0}}
+          X ::= ANum 3;; Y ::= aC
+          {{fun st : state => st Y = 0}}).
+  { apply contra. }
+  assert ((X ::= ANum 3;; Y ::= aC) / stC ⇓
+          (update (update stC X 3) Y (aeval (update stC X 3) (AId X)))).
+  { subst. eapply E_Seq; apply E_Ass. }
+  unfold hoare_triple in H.
+  apply H in H0.
+  - simpl in H0. repeat rewrite update_eq in H0. inversion H0.
+  - subst. reflexivity.
+Qed.
+
+(* END hoarestate1. *)
