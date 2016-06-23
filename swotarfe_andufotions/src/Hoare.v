@@ -413,3 +413,31 @@ Proof.
 Qed.
 
 (* END hoarestate1. *)
+
+Definition bassn b : Assertion :=
+  fun st => (beval st b = true).
+
+Lemma bexp_eval_true : forall b st,
+  beval st b = true -> (bassn b) st.
+Proof.
+  intros. unfold bassn. assumption.
+Qed.
+
+Lemma bexp_eval_false : forall b st,
+  beval st b = false -> not ((bassn b) st).
+Proof.
+  intros. unfold bassn.
+  intros contra. rewrite H in contra. inversion contra.
+Qed.
+
+Theorem hoare_if : forall P Q b c1 c2,
+  {{ fun st => P st /\ bassn b st }}       c1 {{ Q }} ->
+  {{ fun st => P st /\ not (bassn b st) }} c2 {{ Q }} ->
+  {{ P }} IFB b THEN c1 ELSE c2 FI {{ Q }}.
+Proof.
+  intros P Q b c1 c2 Hc1 Hc2 st st' Hc Hp.
+  inversion Hc; subst;
+  [ apply bexp_eval_true in H4 ; apply Hc1 with st |
+    apply bexp_eval_false in H4; apply Hc2 with st ];
+    try split; assumption.
+Qed.
