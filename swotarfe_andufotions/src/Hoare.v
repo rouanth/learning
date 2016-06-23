@@ -441,3 +441,37 @@ Proof.
     apply bexp_eval_false in H4; apply Hc2 with st ];
     try split; assumption.
 Qed.
+
+(* Exercise: 2 stars (if_minus_plus) *)
+
+Theorem if_minus_plus :
+  {{ fun st => True }}
+    IFB (BLe (AId X) (AId Y))
+      THEN (Z ::= AMinus (AId Y) (AId X))
+      ELSE (Y ::= APlus  (AId X) (AId Z))
+    FI
+  {{ fun st => st Y = st X + st Z }}.
+Proof.
+  apply hoare_if.
+  - eapply hoare_consequence_pre.
+    + apply hoare_asgn.
+    + unfold bassn. intros st H. destruct H.
+      unfold assn_sub. simpl.
+      rewrite update_neq. rewrite update_eq. rewrite update_neq.
+      simpl in H0.
+      assert (forall a b, b <= a -> a = b + (a - b)).
+      { intros. omega. }
+      apply H1. apply ble_nat_true. assumption.
+      intros contra; inversion contra.
+      intros contra; inversion contra.
+  - eapply hoare_consequence_pre.
+    + apply hoare_asgn.
+    + unfold bassn. intros st H. destruct H.
+      unfold assn_sub. simpl. rewrite update_eq.
+      rewrite update_neq. rewrite update_neq.
+      trivial.
+      intros contra; inversion contra.
+      intros contra; inversion contra.
+Qed.
+
+(* END if_minus_plus. *)
