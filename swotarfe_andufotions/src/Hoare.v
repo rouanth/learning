@@ -349,3 +349,38 @@ Proof.
 Qed.
 
 (* END hoare_asgn_example4. *)
+
+(* Exercise: 3 stars (swap_exercise) *)
+
+Definition swap_program : com :=
+  Z ::= AId X;;
+  X ::= AId Y;;
+  Y ::= AId Z.
+
+Theorem swap_exercise :
+  {{ fun st => st X <= st Y }}
+    swap_program
+  {{ fun st => st Y <= st X }}.
+Proof.
+  unfold swap_program.
+  eapply hoare_seq.
+  eapply hoare_seq.
+  - apply hoare_asgn.
+  - apply hoare_asgn.
+  - eapply hoare_consequence_pre.
+    + apply hoare_asgn.
+    + intros st H.
+      unfold assn_sub.
+      rewrite update_eq.
+      rewrite update_permute.
+      rewrite update_eq. simpl.
+      rewrite update_permute.
+      rewrite update_eq.
+      rewrite update_neq.
+      assumption.
+      intros contra; inversion contra.
+      intros contra; inversion contra.
+      intros contra; inversion contra.
+Qed.
+
+(* END swap_exercise. *)
