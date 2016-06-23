@@ -282,3 +282,9 @@ Proof.
 Qed.
 
 (* END hoare_asgn_examples_2. *)
+
+Theorem hoare_skip : forall P,
+  {{ P }} SKIP {{ P }}.
+Proof.
+  unfold hoare_triple. intros. inversion H. subst. assumption.
+Qed.
