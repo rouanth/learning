@@ -39,11 +39,12 @@ End ExAssertions.
 Definition assert_implies (P Q : Assertion) : Prop :=
   forall st, P st -> Q st.
 
-Notation "P ->> Q" := (assert_implies P Q)
-        (at level 80) : hoare_spec_scope.
+Notation "P ->> Q" := (assert_implies P Q) (at level 80)
+  : hoare_spec_scope.
 Open Scope hoare_spec_scope.
 
-Notation "P <<->> Q" := (P ->> Q /\ Q ->> Q) (at level 80) : hoare_spec_scope.
+Notation "P <<->> Q" := (P ->> Q /\ Q ->> Q) (at level 80)
+  : hoare_spec_scope.
 
 Definition hoare_triple
         (P : Assertion) (c : com) (Q : Assertion) : Prop :=
@@ -147,7 +148,10 @@ Proof. apply hoare_asgn. Qed.
 (* Exercise: 2 stars (hoare_asgn_wrong) *)
 
 Definition hoare_asgn_wrong :=
-  forall X a, {{ fun st => True }} X ::= a {{ fun st => st X = aeval st a }}.
+  forall X a,
+  {{ fun st => True }}
+    X ::= a
+  {{ fun st => st X = aeval st a }}.
 
 Theorem hoare_asgn_wrong_is_wrong :
   not hoare_asgn_wrong.
@@ -203,7 +207,8 @@ Theorem hoare_asgn_fwd_exists :
   forall a P,
   {{ fun st => P st }}
     X ::= a
-  {{ fun st => exists m, P (update st X m) /\ st X = aeval (update st X m) a }}.
+  {{ fun st => exists m, P (update st X m) /\
+                         st X = aeval (update st X m) a }}.
 Proof.
   intros functional_extensionality a P st st' Hc Hp.
   inversion Hc. subst.
@@ -288,3 +293,59 @@ Theorem hoare_skip : forall P,
 Proof.
   unfold hoare_triple. intros. inversion H. subst. assumption.
 Qed.
+
+Theorem hoare_seq : forall P Q R c1 c2,
+  {{ Q }} c2 {{ R }} ->
+  {{ P }} c1 {{ Q }} ->
+  {{ P }} c1 ;; c2 {{ R }}.
+Proof.
+  intros P Q R c1 c2 Hc2 Hc1.
+  intros st st' HSeq Hp.
+  inversion HSeq; subst.
+  apply Hc1 in H1. apply H1 in Hp.
+  apply Hc2 in H4. apply H4 in Hp.
+  assumption.
+Qed.
+
+Example hoare_asgn_example3 : forall a n,
+  {{ fun st => aeval st a = n }}
+    (X ::= a ;; SKIP)
+  {{ fun st => st X = n }}.
+Proof.
+  intros. eapply hoare_seq.
+  - apply hoare_skip.
+  - eapply hoare_consequence_pre.
+    + apply hoare_asgn.
+    + intros st H. subst. reflexivity.
+Qed.
+
+(* Exercise: 2 stars (hoare_asgn_example4) *)
+
+Example hoare_asgn_example4 :
+  {{ fun st => True }} (X ::= (ANum 1);; Y ::= (ANum 2))
+  {{ fun st => st X = 1 /\ st Y = 2 }}.
+Proof.
+  intros.
+  assert ({{ fun _ => 1 = 1 }} X ::= ANum 1 {{ fun st => st X = 1 }} ).
+  { eapply hoare_consequence_pre.
+    - apply hoare_asgn.
+    - intros st H. reflexivity. }
+  assert ({{ fun st => st X = 1 /\ 2 = 2 }} Y ::= ANum 2
+          {{ fun st => st X = 1 /\ st Y = 2 }}).
+  { eapply hoare_consequence_pre.
+    - eapply hoare_asgn.
+    - intros st H'. unfold assn_sub. destruct H'.
+      split.
+      + rewrite update_neq. assumption. intros contra. inversion contra.
+      + rewrite update_eq. reflexivity. }
+  eapply hoare_seq.
+  - eapply hoare_consequence_post.
+    + eapply H0.
+    + intros st H'. assumption.
+  - eapply hoare_consequence.
+    + eapply H.
+    + intros st H'. reflexivity.
+    + intros st H'. split. assumption. reflexivity.
+Qed.
+
+(* END hoare_asgn_example4. *)
