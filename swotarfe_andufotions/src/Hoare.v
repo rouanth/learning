@@ -740,7 +740,28 @@ Theorem hoare_repeat : forall P Q b c,
   {{ P }} c {{ Q }} ->
   {{ fun st => Q st /\ ~ bassn b st }} c {{ Q }} ->
   {{ P }} REPEAT c UNTIL b END {{ fun st => Q st /\ bassn b st }}.
-Proof. Admitted.
+Proof.
+  intros P Q b c Hfi Hni st st' Hc Hp.
+  inversion Hc; subst.
+  - apply bexp_eval_true in H4.
+    split; try assumption.
+    apply Hfi with st; try assumption.
+  - assert (Q st'0).
+    { apply Hfi with st; assumption. }
+    clear Hp Hfi Hc H1.
+    remember (REPEAT c UNTIL b END) as rcom.
+    apply bexp_eval_false in H2.
+    induction H5; inversion Heqrcom; subst.
+    + apply bexp_eval_true in H0. split.
+      * apply Hni with st0; try split; assumption.
+      * assumption.
+    + clear IHceval1 Heqrcom.
+      apply bexp_eval_false in H0.
+      apply IHceval2.
+      * assumption.
+      * trivial.
+      * apply Hni with st0; try split; assumption.
+Qed.
 
 (* OLD RULES *)
 
