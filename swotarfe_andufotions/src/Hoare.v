@@ -866,3 +866,81 @@ Qed.
 (* END hoare_repeat. *)
 
 End RepeatExercise.
+
+Module Himp.
+
+Inductive com :=
+  | CSkip  : com
+  | CAss   : id   -> aexp -> com
+  | CSeq   : com  -> com  -> com
+  | CIf    : bexp -> com  -> com  -> com
+  | CWhile : bexp -> com  -> com
+  | CHavoc : id   -> com.
+
+Notation "'SKIP'" :=
+  CSkip.
+Notation "x '::=' a" :=
+  (CAss x a) (at level 60).
+Notation "c1 ;; c2" :=
+  (CSeq c1 c2) (at level 80, right associativity).
+Notation "'WHILE' b 'DO' c 'END'" :=
+  (CWhile b c) (at level 80, right associativity).
+Notation "'IFB' c1 'THEN' c2 'ELSE' c3 'FI'" :=
+  (CIf c1 c2 c3) (at level 80, right associativity).
+Notation "'HAVOC' i" :=
+  (CHavoc i) (at level 60).
+
+Reserved Notation "c1 '/' st '⇓' st'" (at level 40, st at level 39).
+
+Inductive ceval : com -> state -> state -> Prop :=
+  | E_Skip : forall st, SKIP / st ⇓ st
+  | E_Ass  : forall st x ae,  (x ::= ae) / st ⇓ (update st x (aeval st ae))
+  | E_Seq  : forall st st' st'' c1 c2,
+               c1 / st  ⇓ st'  ->
+               c2 / st' ⇓ st'' ->
+               (c1 ;; c2) / st ⇓ st''
+  | E_IfTrue  : forall st st' ct ce be,
+               beval st be = true ->
+               ct / st ⇓ st'   ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ st'
+  | E_IfFalse : forall st st' ct ce be,
+               beval st be = false ->
+               ce / st ⇓ st'    ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ st'
+  | E_WhileEnd : forall st c be,
+               beval st be = false ->
+               (WHILE be DO c END) / st ⇓ st
+  | E_WhileLoop : forall st st' st'' c be,
+               beval st be = true ->
+               c / st ⇓ st' ->
+               (WHILE be DO c END) / st' ⇓ st'' ->
+               (WHILE be DO c END) / st  ⇓ st''
+  | E_Havoc : forall st X n, (HAVOC X) / st ⇓ (update st X n)
+   where "c1 '/' st '⇓' st'" := (ceval c1 st st').
+
+Definition hoare_triple
+        (P : Assertion) (c : com) (Q : Assertion) : Prop :=
+        forall st st',
+        c / st ⇓ st' ->
+        P st ->
+        Q st'.
+
+Notation "{{ P }} c {{ Q }}" := (hoare_triple P c Q) (at level 90,
+        c at next level) : hoare_spec_scope.
+
+(* Exercise: 3 stars (himp_hoare) *)
+
+Definition havoc_pre (X : id) (Q : Assertion) : Assertion :=
+  fun st => forall n, Q (update st X n).
+
+Theorem hoare_havoc : forall Q X,
+  {{ havoc_pre X Q }} HAVOC X {{ Q }}.
+Proof.
+  intros Q X st st' Hc Hp.
+  inversion Hc; subst.
+  apply Hp.
+Qed.
+
+(* END himp_hoare. *)
+
+End Himp.
