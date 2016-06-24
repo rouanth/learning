@@ -617,3 +617,18 @@ Qed.
 End If1.
 
 (* END if1_hoare. *)
+
+Lemma hoare_while : forall P b c,
+  {{ fun st => P st /\ bassn b st }} c {{ P }} ->
+  {{ P }} WHILE b DO c END {{ fun st => P st /\ ~ bassn b st }}.
+Proof.
+  intros P b c Hb st st' Hc Hp.
+  remember (WHILE b DO c END) as Wh.
+  induction Hc; inversion HeqWh; subst.
+  - apply bexp_eval_false in H. split; assumption.
+  - clear IHHc1 HeqWh.
+    apply bexp_eval_true in H.
+    apply IHHc2.
+    + trivial.
+    + apply Hb with st; try split; assumption.
+Qed.
