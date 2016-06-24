@@ -74,7 +74,7 @@ Notation "{{ P }} c {{ Q }}" := (hoare_triple P c Q) (at level 90,
 
    5) {{X = m}}
       c
-      {{Y = real_fact m}}    
+      {{Y = real_fact m}}
    `c` assigns to Y the result of applying `real_fact` to X.
 
    6) {{True}}
@@ -475,3 +475,145 @@ Proof.
 Qed.
 
 (* END if_minus_plus. *)
+
+
+Module If1.
+
+Inductive com :=
+  | CSkip : com
+  | CAss  : id   -> aexp -> com
+  | CSeq  : com  -> com  -> com
+  | CIf   : bexp -> com  -> com  -> com
+  | CWhile: bexp -> com  -> com
+  | CIf1  : bexp -> com  -> com.
+
+(* Exercise: 4 stars (if1_hoare) *)
+
+
+Notation "'SKIP'" :=
+  CSkip.
+Notation "x '::=' a" :=
+  (CAss x a) (at level 60).
+Notation "c1 ;; c2" :=
+  (CSeq c1 c2) (at level 80, right associativity).
+Notation "'WHILE' b 'DO' c 'END'" :=
+  (CWhile b c) (at level 80, right associativity).
+Notation "'IFB' c1 'THEN' c2 'ELSE' c3 'FI'" :=
+  (CIf c1 c2 c3) (at level 80, right associativity).
+Notation "'IF1' b 'THEN' c 'FI'" :=
+  (CIf1 b c) (at level 80, right associativity).
+
+Reserved Notation "c1 '/' st '⇓' st'" (at level 40, st at level 39).
+
+Inductive ceval : com -> state -> state -> Prop :=
+  | E_Skip : forall st, SKIP / st ⇓ st
+  | E_Ass  : forall st x ae,  (x ::= ae) / st ⇓ (update st x (aeval st ae))
+  | E_Seq  : forall st st' st'' c1 c2,
+               c1 / st  ⇓ st'  ->
+               c2 / st' ⇓ st'' ->
+               (c1 ;; c2) / st ⇓ st''
+  | E_IfTrue  : forall st st' ct ce be,
+               beval st be = true ->
+               ct / st ⇓ st'   ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ st'
+  | E_IfFalse : forall st st' ct ce be,
+               beval st be = false ->
+               ce / st ⇓ st'    ->
+               (IFB be THEN ct ELSE ce FI) / st ⇓ st'
+  | E_WhileEnd : forall st c be,
+               beval st be = false ->
+               (WHILE be DO c END) / st ⇓ st
+  | E_WhileLoop : forall st st' st'' c be,
+               beval st be = true ->
+               c / st ⇓ st' ->
+               (WHILE be DO c END) / st' ⇓ st'' ->
+               (WHILE be DO c END) / st  ⇓ st''
+  | E_If1True  : forall st st' c b, beval st b = true ->
+               c / st ⇓ st' ->
+               (IF1 b THEN c FI) / st ⇓ st'
+  | E_If1False : forall st c b, beval st b = false ->
+               (IF1 b THEN c FI) / st ⇓ st
+   where "c1 '/' st '⇓' st'" := (ceval c1 st st').
+
+Definition hoare_triple
+        (P : Assertion) (c : com) (Q : Assertion) : Prop :=
+        forall st st',
+        c / st ⇓ st' ->
+        P st ->
+        Q st'.
+
+Notation "{{ P }} c {{ Q }}" := (hoare_triple P c Q) (at level 90,
+        c at next level) : hoare_spec_scope.
+
+Theorem hoare_if1 : forall P Q b c,
+  {{ fun st => P st /\ bassn b st }} c {{ Q }} ->
+  (fun st => P st /\ ~ bassn b st) ->> Q ->
+  {{ P }} IF1 b THEN c FI {{ Q }}.
+Proof.
+  intros P Q b c Ht Hf st st' Hc Hp.
+  inversion Hc; subst;
+    [ apply bexp_eval_true  in H1; apply Ht with st |
+      apply bexp_eval_false in H3; apply Hf]; try split; assumption.
+Qed.
+
+(* OLD RULES *)
+
+Theorem hoare_consequence_pre : forall (P P' Q : Assertion) c,
+  {{ P' }} c {{ Q }} ->
+  P ->> P' ->
+  {{ P  }} c {{ Q }}.
+Proof.
+  intros.
+  intros st st' Hc Hp.
+  unfold hoare_triple in H.
+  apply H with st.
+  - assumption.
+  - apply H0. assumption.
+Qed.
+
+Definition assn_sub X a P : Assertion :=
+  fun (st : state) =>
+    P (update st X (aeval st a)).
+
+Notation "P [ X |-> a ]" := (assn_sub X a P) (at level 10).
+
+Theorem hoare_asgn : forall Q X a,
+  {{ Q [X |-> a] }} (X ::= a) {{ Q }}.
+Proof.
+  unfold assn_sub.
+  unfold hoare_triple.
+  intros Q X a st st' Hc Hp.
+  inversion Hc; subst.
+  assumption.
+Qed.
+
+(* / OLD RULES *)
+
+Lemma hoare_if1_good :
+  {{ fun st => st X + st Y = st Z }}
+    IF1 BNot (BEq (AId Y) (ANum 0)) THEN
+      X ::= APlus (AId X) (AId Y)
+    FI
+  {{ fun st => st X = st Z }}.
+Proof.
+  apply hoare_if1.
+  - eapply hoare_consequence_pre.
+    + apply hoare_asgn.
+    + intros st H. destruct H.
+      unfold assn_sub. simpl.
+      rewrite update_eq. rewrite update_neq.
+      * assumption.
+      * intros contra; inversion contra.
+  - intros st H. destruct H.
+    rewrite <- H.
+    unfold not in H0. unfold bassn in H0.
+    simpl in H0.
+    destruct (beq_nat (st Y) 0) eqn: nzY.
+    + apply beq_nat_true in nzY. rewrite nzY. rewrite <- plus_n_O.
+      trivial.
+    + simpl in H0. apply ex_falso_quodlibet. apply H0. trivial.
+Qed.
+
+End If1.
+
+(* END if1_hoare. *)
