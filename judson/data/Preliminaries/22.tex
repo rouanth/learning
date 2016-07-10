@@ -1,0 +1,47 @@
+\begin{description}
+\item[Problem] Let $f : A \rightarrow B$ and $g : B \rightarrow C$ be maps.
+\begin{enumerate}
+\item If $f$ and $g$ are both one-to-one functions, show that $g \circ f$ is
+one-to-one.
+\item If $g \circ f$ is onto, show that $g$ is onto.
+\item If $g \circ f$ is one-to-one, show that $f$ is one-to-one.
+\item If $g \circ f$ is one-to-one and $f$ is onto, show that $g$ is
+        one-to-one.
+\item If $g \circ f$ is onto and $g$ is one-to-one, show that $f$ is onto.
+\end{enumerate}
+\item[Proof]
+\begin{enumerate}
+\item Since $g$ is injective, for every $c = g(b), b \in B$ there exists only
+one pre-image $b$. By the same logic, for every image $b$ of $f$ there is only
+a single pre-image $a$. It is easy to show that for every $c = (g \circ f)(a)$
+there exists one pre-image $a$, and thus $g \circ f$ is injective.
+
+\item If $g \circ f$ is onto, then for every $c \in C$ there exists $a \in A$
+such that $c = (g \circ f)(a)$. Let's assume that $g$ is not onto. Then there
+exists such $c'$ that there is no $b \in B$ such that $c' = g(b)$. Let $a'$ be
+the pre-image of $c'$ under $g \circ f$. Since $f$ is a map, there exists
+$b' = f(a')$. But then $c'$ must be equal to $g(b')$ which under our assumption
+is impossible. We arrive at a contradiction, thus $g$ is onto.
+
+\item Let $a$ and $a'$ in $A$ be two pre-images of some $b \in B$. Since $g
+\circ f$ is a map, there exist $c$ and $c'$ such that $(g \circ f)(a) = c$ and
+$(g \circ f)(a') = c'$. But $c = (g \circ f)(a) = g(f(a)) = g(b)$, and $c' = (g
+\circ f)(a') = g(f(a')) = g(b)$, that is, $c$ and $c'$ must be equal.  And
+since $g \circ f$ is injective, $a$ and $a'$ must also be equal. Thus, every $b
+\in B$ has a unique pre-image in $A$, and $f$ is injective.  
+
+\item Let $b$, $b'$ be two pre-images of some $c \in C$ in $B$. Since $f$ is
+onto, there exist $a$ and $a'$ such that $b = f(a)$, $b' = f(a')$. But since $g
+\circ f$ is injective, from $c = (g \circ f)(a) = (g \circ f)(a')$ follows $a =
+a'$. Then, since $f$ is a mapping, $f(a) = f(a')$, and $b = b'$. Each $c$ has
+only one pre-image in $B$, thus $g$ is injective.
+
+\item Let some $b$ not have a pre-image in $A$. Let $g(b) = c$. Since
+$g \circ f$ is onto, there exists $a \in A, (g \circ f)(a) = c$, i.\ e.
+$g (f(a)) = c$. But since $g$ is injective, from $g(b) = g(f(a))$ follows
+$b = f(a)$--- $a$ is a pre-image of $b$ in $A$. We arrive at a contradiction,
+thus $f$ is onto.
+
+\end{enumerate}
+\end{description}
+

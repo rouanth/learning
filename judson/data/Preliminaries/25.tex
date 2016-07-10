@@ -1,0 +1,26 @@
+\begin{description}
+\item[Problem]
+Determine whether or not the following relations are equivalence relations on
+the given set. If the relation is an equivalence relation, describe the
+partition given by it. If the relation is not an equivalence relation, state
+why it fails to be one.
+\begin{multicols}{2}
+\begin{enumerate}
+\item $x \sim y$ in $\mathbb{R}$ if $x \ge y$
+\item $m \sim n$ in $\mathbb{Z}$ if $mn > 0$
+\item $x \sim y$ in $\mathbb{R}$ if $|x - y| \le 4$
+\item $m \sim n$ in $\mathbb{Z}$ if $m \equiv n \pmod 6$
+\end{enumerate}
+\end{multicols}
+\item[Solution]
+\begin{enumerate}
+\item It isn't symmetrical: if $x > y$, then $x \sim y$, but $y \not\sim x$.
+\item It isn't reflexive for $m = n = 0$, that is, $0 \cdot 0 \not > 0$, and
+$0 \not\sim 0$.
+\item It isn't transitive: for example, for $x = 0$, $y = 4$, $z = 8$ we have
+$x \sim y$ and $y \sim z$, but $x \not\sim z$.
+\item It is an equivalence relation which partitions $\mathbb{Z}$ into six
+classes, each of which contains all the numbers $6k + b, k \in \mathbb{Z}$,
+with $b \in [0; 5]$ uniquely defining the class.
+\end{enumerate}
+\end{description}

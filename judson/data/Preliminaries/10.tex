@@ -1,0 +1,24 @@
+\begin{description}
+\item[Problem]
+Prove $A \cup B = (A \cap B) \cup (A \setminus B) \cup (B \setminus A)$.
+
+\item[Proof]
+
+We must show that if $A \cup B \subset (A \cap B) \cup (A \setminus B) \cup
+(B \setminus A)$ and $(A \cap B) \cup (A \setminus B) \cup (B \setminus A)
+\subset A \cup B$.
+
+Let $x \in A \cup B$. If it's in the intersection of $A$ and $B$, then, by
+definition, it's in $A \cap B$; otherwise, it is present either in $A$ and not
+$B$ or in $B$ and not $A$--- that is, in $A \setminus B$ or $B \setminus A$.
+Thus, any element that is in $A \cup B$ is also in $(A \cap B) \cup (A
+\setminus B) \cup (B \setminus A)$.
+
+For the reverse, suppose that $x \in A \cap B$, $y \in A \setminus B$, and $z
+\in B \setminus A$. $x$ is present, by definition, in both $A$ and $B$, and is
+thus in $A \cup B$. $y$ is present in $A$ and not in $B$, but $A \cup B$
+includes such elements also. By following the same argument for $z$, we
+conclude that $(A \cap B) \cup (A \setminus B) \cup (B \setminus A) \subset A
+\cup B$
+
+\end{description}

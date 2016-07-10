@@ -1,0 +1,16 @@
+\begin{description}
+\item[Problem] Find the error in the following argument by providing a
+counterexample. ``The reflexive property is redundant in the axioms for an
+equivalence relation. If $x \sim y$, then $y \sim x$ by the symmetric
+property. Using the transitive property, we can deduce that $x \sim x$.''
+\item[Solution] This argument doesn't take the classes with a single element
+into account. If there is not such $y$ that $x \sim y$ for a given $x$, then
+it's possible that $x \not\sim x$ even for symmetric and transitive relations.
+
+An example is the relation mentioned above and defined as such: $m \sim n$ in
+$\mathbb{Z}$ if $mn > 0$. It is transitive, because if $ab > 0$ and $bc > 0$,
+than all three numbers are non-zero and have the same sign, thus $ac > 0$ as
+well. It is symmetric, because $ab = ba$, and from $ab > 0$ follows $ba > 0$.
+Nevertheless, the relation is not an equivalence relation since $0$ doesn't
+belong to any of the classes.
+\end{description}

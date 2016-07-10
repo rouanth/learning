@@ -1,0 +1,25 @@
+\begin{description}
+\item[Problem]
+Prove $A \cap (B \setminus C) = (A \cap B) \setminus (A \cap C)$.
+
+\item[Proof]~\\
+\begin{equation*}
+\begin{aligned}
+A \cap (B \setminus C)
+        &= \left\{ x : x \in A \land x \in (B \setminus C)\right\} \\
+        &= \left\{ x : x \in A \land x \in B \land x \not \in C\right\} \\
+        &= \left\{ x : (x \in A \land x \in B \land x \not \in C) \lor
+           \mathbf{false}\right\} \\
+        &= \left\{ x : (x \in A \land x \in B \land x \not \in C) \lor
+           (x \in A \land x \in B \land x \not \in A)\right\} \\
+        &= \left\{ x : x \in A \land x \in B \land (x \not \in C \lor x \not
+           \in A) \right\} \\
+        &= \left\{ x : (x \in A \land x \in B) \land \neg (x \in C \land x \in
+           A) \right\} \\
+        &= \left\{ x : x \in A \land x \in B \right\} \setminus 
+           \left\{ x : x \in C \land x \in A \right\} \\
+        &= (A \cap B) \setminus (A \cap C)
+\end{aligned}
+\end{equation*}
+
+\end{description}

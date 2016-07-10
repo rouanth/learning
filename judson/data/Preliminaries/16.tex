@@ -1,0 +1,31 @@
+\begin{description}
+\item[Problem]
+Prove $(A \setminus B) \cup (B \setminus A) = (A \cup B) \setminus (A \cap B)$.
+
+\item[Proof]~\\
+\begin{equation*}
+\begin{aligned}
+(A \setminus B) \cup (B \setminus A)
+        &= \left\{ x : x \in (A \setminus B) \lor x \in (B \setminus A)
+           \right\} \\
+        &= \left\{ x : x \in A \land x \not \in B \lor x \in B \land x \not
+           \in A\right\} \\
+        &\begin{aligned}
+         = \{ x : &(x \in A \land x \not \in B) \lor
+                  (x \in B \land x \not \in A) \lor \\
+                  &(x \in A \land x \not \in A) \lor
+                  (x \in B \land x \not \in B)\}
+        \end{aligned}\\
+        &= \left\{ x : (x \in A \land (x \not \in A \lor x \not \in B)) \lor
+                       (x \in B \land (x \not \in A \lor x \not \in B))
+           \right\} \\
+        &= \left\{ x : (x \in A \lor x \in B) \land (x \not \in A \lor x
+           \not \in B)\right\} \\
+        &= \left\{ x : (x \in A \lor x \in B) \land \neg (x \in A \land x
+           \in B)\right\} \\
+        &= \left\{ x : x \in A \lor  x \in B\right\} \setminus
+           \left\{ x : x \in A \land x \in B\right\} \\
+        &= (A \cup B) \setminus (A \cap B)
+\end{aligned}
+\end{equation*}
+\end{description}
