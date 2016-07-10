@@ -1,0 +1,22 @@
+\begin{description}
+\item[Problem]
+Prove $(A \cup B) \setminus B = A \setminus B$.
+
+\item[Proof]~\\
+\begin{equation*}
+\begin{aligned}
+(A \cup B) \setminus B
+                 &= \left\{ x : x \in (A \cup B)\ \text{and}\ x \not \in B
+                    \right\} \\
+                 &= \left\{ x : (x \in A\ \text{or}\ x \in B)\ \text{and}\ x
+                    \not \in B\right\} \\
+                 &= \left\{ x : (x \in A\ \text{and}\ x \not \in B\ 
+                    \text{or}\ x \in B\ \text{and}\ x \not \in B\right\} \\
+                 &= \left\{ x : (x \in A\ \text{and}\ x \not \in B\right\}
+                    \cup
+                    \left\{ x : (x \in B\ \text{and}\ x \not \in B\right\} \\
+                 &= (A \setminus B) \cup \emptyset = A \setminus B
+\end{aligned}
+\end{equation*}
+
+\end{description}

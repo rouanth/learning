@@ -1,0 +1,42 @@
+\begin{description}
+\item[Problem] Which of the following relations $f : \mathbb{Q} \rightarrow
+\mathbb{Q}$ define a mapping? In each case, supply a reason why $f$ is or is
+not a mapping.
+
+\begin{multicols}{2}
+\begin{enumerate}
+\item $f(p / q) = \dfrac{p + 1}{p - 2}$
+\item $f(p / q) = \dfrac{3p}{3q}$
+\item $f(p / q) = \dfrac{p + q}{q^2}$
+\item $f(p / q) = \dfrac{3p^2}{7q^2} - \dfrac{p}{q}$
+\end{enumerate}
+\end{multicols}
+
+\item[Solution]
+
+Relation $f$ is a mapping if for equivalent elements it maps to equivalent
+images. The elements $(p / q), (n / m) \in \mathbb{Q}$ are equivalent if and
+only if, with $k = \gcd(p, n), r = \gcd(q, m)$, $\frac{p}{k} = \frac{q}{r}$ and
+$\frac{n}{k} = \frac{m}{r}$. For example, $\frac{20}{14}$ and $\frac{30}{21}$
+are equivalent since $\frac{\gcd(20, 30)}{\gcd(14, 21)} = \frac{10}{7}$,
+$\frac{20}{14} = \frac{2 \cdot 10}{2 \cdot 7}$, and $\frac{30}{21} = \frac{3
+\cdot 10}{3 \cdot 7}$.
+
+Thus, $f$ is a mapping if and only if $f(p / q) = f(kp / kq)$.
+
+\begin{enumerate}
+\item $f(kp / kq) = \dfrac{kp + 1}{kp - 2} = \dfrac{kp - 2 + 3}{kp + 1} =
+  1 + \dfrac{3}{kp + 1}$\\
+  This can't be reduced anymore, and it depends on $k$. That is, for different
+  representations of $q \in \mathbb{Q}$ this relation yields different images.
+\item $f(kp / kq) = \dfrac{3kp}{3kq} = \dfrac{3p}{3q} = f(p / q)$\\
+  This relation is a mapping.
+\item $f(kp / kq) = \dfrac{kp + kq}{(kq)^2} = \dfrac{k(p + q)}{kkq^2} =
+  \dfrac{p + q}{kq^2}$\\
+  It depends on $k$, so it's not a mapping.
+\item $f(kp / kq) = \dfrac{3(kp)^2}{7(kq)^2} - \dfrac{kp}{kq} =
+  \dfrac{3p^2}{7q^2} - \dfrac{p}{q} = f(p / q)$\\
+  It is a mapping.
+\end{enumerate}
+
+\end{description}

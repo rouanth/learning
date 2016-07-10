@@ -1,0 +1,23 @@
+\begin{description}
+\item[Problem]
+Prove $A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)$.
+
+\item[Proof]~\\
+\begin{equation*}
+\begin{aligned}
+A \setminus (B \cup C)
+                 &= \left\{ x : x \in A\ \text{and}\ x \not \in (B \cup C)
+                    \right\} \\
+                 &= \left\{ x : x \in A\ \text{and}\ x \not \in B\ 
+                    \text{and}\ x \not \in C\right\} \\
+                 &= \left\{ x : (x \in A\ \text{and}\ x \not \in B)\ 
+                    \text{and}\ (x \in A\ \text{and}\ x \not \in C)\right\} \\
+                 &= \left\{ x : (x \in A\ \text{and}\ x \not \in B)\right\}
+                    \cap
+                    \left\{ x : (x \in A\ \text{and}\ x \not \in C)\right\} \\
+                 &= (A \setminus B) \cap (A \setminus C)
+\end{aligned}
+\end{equation*}
+
+\end{description}
+
