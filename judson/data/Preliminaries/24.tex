@@ -42,5 +42,40 @@ $f^{-1}(B) = \left\{x \in X : f(x) \in B\right\}$.
                         \emptyset$, but $f(A_1) \cap f(A_2) = \mathbb{N} \cap
                         \mathbb{N} = \mathbb{N}$.
 
+                \item \begin{equation*}\begin{aligned}
+                                f^{-1} (B_1 \cup B_2)
+                                &= \left\{x \in X : f(x) \in B_1 \cup
+                                B_2\right\} \\
+                                &= \left\{x \in X : f(x) \in B_1 \lor
+                                f(x) \in B_1\right\} \\
+                                &= \left\{x \in X : f(x) \in B_1\right\} \cup
+                                \left\{x \in X : f(x) \in B_2\right\} \\
+                                &= f^{-1} (B_1) \cup f^{-1} (B_2)
+                \end{aligned}\end{equation*}
+
+                \item \begin{equation*}\begin{aligned}
+                                f^{-1} (B_1 \cap B_2)
+                                &= \left\{x \in X : f(x) \in B_1 \cap
+                                B_2\right\} \\
+                                &= \left\{x \in X : f(x) \in B_1 \land
+                                f(x) \in B_1\right\} \\
+                                &= \left\{x \in X : f(x) \in B_1\right\} \cap
+                                \left\{x \in X : f(x) \in B_2\right\} \\
+                                &= f^{-1} (B_1) \cap f^{-1} (B_2)
+                \end{aligned}\end{equation*}
+
+                \item \begin{equation*}\begin{aligned}
+                                f^{-1} (Y \setminus B_1)
+                                &= \left\{x \in X : f(x) \in Y \setminus
+                                B_1\right\} \\
+                                &= \left\{x \in X : f(x) \in Y \land
+                                f(x) \not\in B_1\right\} \\
+                                &= \left\{x \in X : f(x) \in Y\right\}
+                                \setminus
+                                \left\{x \in X : f(x) \in B_1\right\} \\
+                                &= f^{-1} (Y) \setminus f^{-1} (B_1) \\
+                                &= X \setminus f^{-1} (B_1)
+                \end{aligned}\end{equation*}
+
         \end{enumerate}
 \end{description}
