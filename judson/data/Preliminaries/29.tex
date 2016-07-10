@@ -1,0 +1,26 @@
+\begin{description}
+\item[Problem] (Projective Real Line) Define a relation on $\mathbb{R}^2
+\setminus \{(0, 0)\}$ by letting $(x_1, y_1) \sim (x_2, y_2)$ if there exists
+a nonzero real number $\lambda$ such that $(x_1, y_1) = (\lambda x_2, \lambda
+y_2)$. Prove that $\sim$ defines an equivalence relation on $\mathbb{R}^2
+\setminus (0, 0)$. What are the corresponding equivalence classes? This
+equivalence relation defines the projective line, denoted by
+$\mathbb{P}(\mathbb{R})$, which is very important in geometry.
+
+\item[Proof] First, to prove that this defines an equivalence relation:
+\begin{description}
+\item[Reflexivity] $(x, y) \sim (x, y)$ since $(x, y) = (\lambda x, \lambda
+y)$ by setting $\lambda = 1$.
+\item[Symmetry] If $(x_1, y_1) = (\lambda_1 x_2, \lambda_1 y_2)$, then $(x_2,
+y_2) = (\lambda_2 x_1, \lambda_2 y_2)$ by setting $\lambda_2 =
+\frac{1}{\lambda_1}$.
+\item[Transitivity] If $(x_1, y_1) = (\lambda_{12} x_2, \lambda_{12} y_2)$,
+and $(x_2, y_2) = (\lambda_{23} x_3, \lambda_{23} y_3)$, then $(x_1, y_1) =
+(\lambda_{13} x_3, \lambda_{13} y_3)$ by setting $\lambda_{13} = \lambda_{12}
+\lambda_{23}$.
+\end{description}
+
+Each equivalence class contains all the position vectors that form a particular
+angle with an arbitrary axis and is uniquely defined by that angle.
+
+\end{description}
