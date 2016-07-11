@@ -1,4 +1,4 @@
-CHAPTERS=Preliminaries
+CHAPTERS=Preliminaries Integers
 BNAME=Book
 
 REFDIR=.tmp/
@@ -18,11 +18,13 @@ TMPAUX=$(TMPDIR)$(BNAME).aux
 
 all: $(RESPDF)
 
-$(REFDIR)%.tex: data/%/*.tex
-	printf '%s' '\section{$*}'       > $@
-	printf '%s' '\begin{enumerate}' >> $@
-	for f in `ls $^`; do printf '%s' "\item \input{$$f}" >> $@; done
-	printf '%s' '\end{enumerate}'   >> $@
+$(REFDIR)%.tex: data/%/title data/%/*.tex
+	printf '%s' '\section{'           > $@
+	cat    '$<'                      >> $@
+	printf '%s' '}\begin{enumerate}' >> $@
+	for f in `ls data/$*/*.tex`; \
+		do printf '%s' "\item \input{$$f}" >> $@; done
+	printf '%s' '\end{enumerate}'    >> $@
 
 $(TMPTEX): $(HEADTEMPL) $(CHREFS) $(TAILTEMPL)
 	cat $^ > $@
