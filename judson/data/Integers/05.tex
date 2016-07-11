@@ -1,0 +1,20 @@
+\begin{description}
+\item[Problem] Prove that $10^{n+1} + 10^n + 1$ is divisible by 3 for $n \in
+\mathbb{N}$.
+
+\item[Proof] $10^{1 + 1} + 10^1 + 1 = 111$ is divisible by 3, so the statement
+holds for $n = 1$.
+
+Next, we'll assume that $3 | 10^{n+1} + 10^n + 1$ and prove the statement for
+$n' = n + 1$:
+\begin{equation*}\begin{aligned}
+3 &| 10^{n'+1} + 10^{n'} + 1 \\
+3 &| 10^{n+2} + 10^{n+1} + 1 \\
+3 &| 10^{n+2} + 10^{n+1} + 1 + 10 - 10 \\
+3 &| 10 \left(10^{n+1} + 10^n + 1\right) + (-9)
+\end{aligned}\end{equation*}
+
+Since 3 divides both $10 \left(10^{n+1} + 10^n + 1\right)$ by the induction
+hypothesis and $-9$, it divides their sum as well.
+
+\end{description}
