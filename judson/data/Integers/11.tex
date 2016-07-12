@@ -1,0 +1,24 @@
+\begin{description}
+\item[Problem] If $x$ is a non-negative real number, then show that $(1 + x)^n
+- 1 \ge nx$ for $n = 0, 1, 2, \dots$.
+
+\item[Proof] For $n = 1$, we have $1 + x - 1 \ge x$, that is, $x \ge x$, which
+is true.
+
+We need to prove that, if $(1 + x)^n - 1 \ge nx$, then, for $n' = n + 1$,
+$(1 + x)^{n'} - 1 \ge n' x$.
+
+\begin{align*}
+(1 + x)^{n + 1} - 1 &\ge (n + 1) x \\
+(1 + x) (1 + x)^n - 1 &\ge n x + x \\
+(1 + x) (1 + x)^n - (1 + x) &\ge n x \\
+(1 + x) \left((1 + x)^n - 1\right) &\ge n x \\
+(1 + x) \left((1 + x)^n - 1 - n x + n x\right) &\ge n x \\
+(1 + x) \left((1 + x)^n - 1 - n x\right) + (1 + x) n x &\ge n x \\
+(1 + x) \left((1 + x)^n - 1 - n x\right) + x^2 n &\ge 0
+\end{align*}
+
+$(1 + x)^n - 1 - nx$ is non-negative by the induction hypothesis, $x^2 n$ and
+$1 + x$ are non-negative by the ranges given, so the whole statement is true.
+
+\end{description}
