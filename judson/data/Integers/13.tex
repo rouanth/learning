@@ -1,0 +1,27 @@
+\begin{description}
+\item[Problem] Prove that the two principles of mathematical induction are
+equivalent.
+
+\item[Proof] The two principles are equivalent if each one implies the other.
+
+Let's show that the First Principle implies the Second. First, it implies the
+Principle of Well-Ordering, and we'll use that. We shall assume that the Second
+Principle of Mathematical Induction is wrong~--- that is, if $S(n_0)$ is true
+for some $n_0$ and if $S(n_0), S(n_0 + 1), \dots, S(k)$ imply $S(k+1)$ for $k
+\ge n_0$, there still exist integers of set $A$ that are greater than $n_0$ for
+which $S$ isn't true. By the Principle of Well-Ordering, there is a least
+integer in $A$, let's call it $a$. Then $S(n_0), S(n_0 + 1), \dots, S(a - 1)$
+are true: none of the integers $n_0, n_0 + 1, \dots, a - 1$ can be in $A$ since
+they are less then $a$. But $S(n_0), S(n_0 + 1), \dots, S(a - 1)$ imply $S(a)$,
+so $S(a)$ is also true. We arrive at a contradiction, thus proving the Second
+Principle of Mathematical Induction with the First.
+
+Proving the reverse is more simple. We need to prove that if $S(k)$ implies
+$S(k+1)$ for $k \ge n_0$ and $S(n_0)$ is true, then $S(n)$ is true for $n \ge
+n_0$. We know that if $S(n_0)$ is true, then it is sufficient to prove that
+$S(n_0), S(n_0 + 1), \dots, S(k)$ imply $S(k+1)$ in order to prove $S(n)$ for
+$n \ge n_0$. But proving this is trivial since even just $S(k)$ implies
+$S(k+1)$, and so the stronger statement~--- that $S(n_0), S(n_0 + 1), \dots,
+S(k)$ imply $S(k+1)$~--- holds as well.
+
+\end{description}
