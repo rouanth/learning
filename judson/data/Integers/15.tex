@@ -1,0 +1,149 @@
+\begin{description}
+\item[Problem] For each of the following pairs of numbers $a$ and $b$,
+calculate $\gcd(a, b)$ and find integers $r$ and $s$ such that $\gcd(a, b) =
+ra + sb$.
+\begin{multicols}{2}\begin{enumerate}
+\item 14 and 39
+\item 234 and 165
+\item 1739 and 9923
+\item 471 and 562
+\item $23,771$ and $19,945$
+\item $-4357$ and 3754
+\end{enumerate}\end{multicols}
+
+\item[Solution]
+\begin{enumerate}
+\item
+\begin{align*}
+\gcd(14, 39) &= \gcd(14, 14 \cdot 2 + 11) = \\
+\gcd(14, 11) &= \gcd(11 \cdot 1 + 3, 11) = \\
+\gcd(3, 11)  &= \gcd(3, 3 \cdot 3 + 2) = \\
+\gcd(3, 2)   &= \gcd(2 \cdot 1 + 1, 3) = \\
+\gcd(1, 3)   &= \gcd(1, 1 \cdot 3 + 0) = 1
+\end{align*}
+\begin{align*}
+1 &= 3 - 2 \cdot 1 = 3 - (11 - 3 \cdot 3) \cdot 1 \\
+  &= 3 \cdot 4 + 11 \cdot (-1) = (14 - 11 \cdot 1) \cdot 4 + 11 \cdot (-1) \\
+  &= 14 \cdot 4 + 11 \cdot (-5) = 14 \cdot 4 + (39 - 14 \cdot 2) \cdot (-5) \\
+  &= 14 \cdot 14 + 39 \cdot (-5)
+\end{align*}
+\item
+\begin{align*}
+\gcd(234, 165) &= \gcd(165 \cdot 1 + 69, 165) = \\
+\gcd(69, 165)  &= \gcd(69, 69 \cdot 2 + 27) = \\
+\gcd(69, 27)   &= \gcd(27 \cdot 2 + 15, 27) = \\
+\gcd(15, 27)   &= \gcd(15, 15 \cdot 1 + 12) = \\
+\gcd(15, 12)   &= \gcd(12 \cdot 1 + 3, 12) = \\
+\gcd(3, 12)    &= \gcd(3, 3 \cdot 4 + 0) = 3
+\end{align*}
+\begin{align*}
+3 &= 15 - 12 \cdot 1 = 15 - (27 - 15 \cdot 1) \cdot 1 \\
+  &= 15 \cdot 2 + 27 \cdot (-1) = (69 - 27 \cdot 2) \cdot 2 + 27 \cdot (-1) \\
+  &= 69 \cdot 2 + 27 \cdot (-5) = 69 \cdot 2 + (165 - 69 \cdot 2) \cdot (-5) \\
+  &= 69 \cdot 12 + 165 \cdot (-5) = (234 - 165) \cdot 12 + 165 \cdot (-5) \\
+  &= 234 \cdot 12 + 165 \cdot (-17)
+\end{align*}
+\item
+\begin{align*}
+\gcd(1739, 9923) &= \gcd(1739, 1739 \cdot 5 + 1228) = \\
+\gcd(1739, 1228) &= \gcd(1228 \cdot 1 + 511, 1228) = \\
+\gcd(511, 1228) &= \gcd(511, 511 \cdot 2 + 206) = \\
+\gcd(511, 206) &= \gcd(206 \cdot 2 + 99, 206) = \\
+\gcd(99, 206) &= \gcd(99, 99 \cdot 2 + 8) = \\
+\gcd(99, 8) &= \gcd(8 \cdot 12 + 3, 8) = \\
+\gcd(3, 8) &= \gcd(3, 3 \cdot 2 + 2) = \\
+\gcd(3, 2) &= \gcd(2 \cdot 1 + 1, 2) = \\
+\gcd(1, 2) &= \gcd(1, 1 \cdot 2 + 0) = 1
+\end{align*}
+\begin{align*}
+1 &= 3 - 2 \cdot 1 = 3 - (8 - 3 \cdot 2) \cdot 1 \\
+  &= 8 \cdot (-1) + 3 \cdot 3 = 8 \cdot (-1) + (99 - 8 \cdot 12) \cdot 3 \\
+  &= 99 \cdot 3 + 8 \cdot (-37) = 99 \cdot 3 + (206 - 99 \cdot 2) \cdot (-37)\\
+  &= 206 \cdot (-37) + 99 \cdot 77 = 206 \cdot (-37) + (511 - 206 \cdot 2)
+     \cdot 77 \\
+  &= 511 \cdot 77 + 206 \cdot (- 191) = 511 \cdot 77 + (1228 - 511 \cdot 2)
+     \cdot (-191) \\
+  &= 1228 \cdot (-191) + 511 \cdot 459 = 1228 \cdot (-191) +
+     (1739 - 1228 \cdot 1) \cdot 459 \\
+  &= 1739 \cdot 459 + 1228 \cdot (-650) = 1739 \cdot 459 +
+     (9923 - 1739 \cdot 5) \cdot (-650) \\
+  &= 9923 \cdot (-650) + 1739 \cdot 3709
+\end{align*}
+\item
+\begin{align*}
+\gcd(471, 562) &= \gcd(471, 471 \cdot 1 + 91) = \\
+\gcd(471, 91)  &= \gcd(91 \cdot 5 + 16, 91) = \\
+\gcd(16, 91)   &= \gcd(16, 16 \cdot 5 + 11) = \\
+\gcd(16, 11)   &= \gcd(11 \cdot 1 + 5, 11) = \\
+\gcd(5, 11)    &= \gcd(5, 5 \cdot 2 + 1) = \\
+\gcd(5, 1)     &= \gcd(1 \cdot 5 + 0, 1) = 1
+\end{align*}
+\begin{align*}
+1 &= 11 - 5 \cdot 2 = 11 + (16 - 11 \cdot 1) \cdot (-2) \\
+  &= 16 \cdot (-2) + 11 \cdot 3 = 16 \cdot (-2) + (91 - 16 \cdot 5) \cdot 3 \\
+  &= 91 \cdot 3 + 16 \cdot (-17) = 91 \cdot 3 + (471 - 91 \cdot 5) \cdot (-17)
+     \\
+  &= 471 \cdot (-17) + 91 \cdot 88 = 471 \cdot (-17) + (562 - 471 \cdot 1)
+     \cdot 88 \\
+  &= 562 \cdot 88 + 471 \cdot (-105)
+\end{align*}
+\item $\gcd(23771, 19945)$
+\begin{align*}
+\gcd(23771, 19945) &= \gcd(19945 \cdot 1 + 3826, 19945) \\
+\gcd(3826, 19945)  &= \gcd(3826, 3826 \cdot 5 + 815) \\
+\gcd(3826, 815)    &= \gcd(815 \cdot 4 + 566, 815) \\
+\gcd(566,  815)    &= \gcd(566, 566 \cdot 1 + 249) \\
+\gcd(566,  249)    &= \gcd(249 \cdot 2 + 68, 249) \\
+\gcd(68,   249)    &= \gcd(68, 68 \cdot 3 + 45) \\
+\gcd(68,    45)    &= \gcd(45 \cdot 1 + 23, 45) \\
+\gcd(23,    45)    &= \gcd(23, 23 \cdot 1 + 22) \\
+\gcd(23, 22)        &= \gcd(22 \cdot 1 + 1, 22) \\
+\gcd(1,  22)        &= \gcd(1, 1 \cdot 22 + 0) = 1
+\end{align*}
+\begin{align*}
+1 &= 23 - 22 \cdot 1 = 23 + (45 - 23 \cdot 1) \cdot (-1) \\
+  &= 45 \cdot (-1) + 23 \cdot 2 = 45 \cdot (-1) + (68 - 45) \cdot 2 \\
+  &= 68 \cdot 2 + 45 \cdot (-3) = 68 \cdot 2 + (249 - 68 \cdot 3) \cdot (-3) \\
+  &= 249 \cdot (-3) + 68 \cdot 11 = 249 \cdot (-3) + (566 - 249 \cdot 2) \cdot
+     11 \\
+  &= 566 \cdot 11 + 249 \cdot (-25) = 566 \cdot 11 + (815 - 566) \cdot (-25) \\
+  &= 815 \cdot (-25) + 566 \cdot 36 = 815 \cdot (-25) + (3826 - 815 \cdot 4)
+     \cdot 36 \\
+  &= 3826 \cdot 36 + 815 \cdot (-169) = 3826 \cdot 36 + (19945 - 3826 \cdot 5)
+     \cdot (-169) \\
+  &= 19945 \cdot (-169) + 3826 \cdot 881 = 19945 \cdot (-169) + (23771 -
+     19945) \cdot 881 \\
+  &= 23771 \cdot 881 + 19945 \cdot (-1050)
+\end{align*}
+\item
+\begin{align*}
+\gcd(-4357, 3754) &= \gcd(3754 \cdot (-2) + 3151, 3754) = \\
+\gcd(3151, 3754)  &= \gcd(3151, 3151 \cdot 1 + 603) = \\
+\gcd(3151, 603)   &= \gcd(603 \cdot 5 + 136, 603) = \\
+\gcd(136, 603)    &= \gcd(136, 136 \cdot 4 + 59) = \\
+\gcd(136, 59)     &= \gcd(59 \cdot 2 + 18, 59) = \\
+\gcd(18, 59)      &= \gcd(18, 18 \cdot 3 + 5) = \\
+\gcd(18, 5)       &= \gcd(5 \cdot 3 + 3, 5) = \\
+\gcd(3, 5)        &= \gcd(3, 3 \cdot 1 + 2) = \\
+\gcd(3, 2)        &= \gcd(2 \cdot 1 + 1, 2) = \\
+\gcd(1, 2)        &= \gcd(1, 1 \cdot 2 + 0) = 1 \\
+\end{align*}
+\begin{align*}
+1 &= 3 - 2 = 3 - (5 - 3) \\
+  &= 5 \cdot (-1) + 3 \cdot 2 = 5 \cdot (-1) + (18 - 5 \cdot 3) \cdot 2 \\
+  &= 18 \cdot 2 + 5 \cdot (-7) = 18 \cdot 2 + (59 - 18 \cdot 3) \cdot (-7) \\
+  &= 59 \cdot (-7) + 18 \cdot 23 = 59 \cdot (-7) + (136 - 59 \cdot 2) \cdot 23
+     \\
+  &= 136 \cdot 23 + 59 \cdot (-53) = 136 \cdot 23 + (603 - 136 \cdot 4) \cdot
+     (-53) \\
+  &= 603 \cdot (-53) + 136 \cdot 235 = 603 \cdot (-53) + (3151 - 603 \cdot 5)
+     \cdot 235 \\
+  &= 3151 \cdot 235 + 603 \cdot (-1228) = 3151 \cdot 235 + (3754 - 3151)
+     \cdot (-1228) \\
+  &= 3754 \cdot (-1228) + 3151 \cdot 1463 = 3754 \cdot (-1228) + (-4357 -
+     3754 \cdot (-2)) \cdot 1463 \\
+  &= -4357 \cdot 1463 + 3754 \cdot 1698
+\end{align*}
+\end{enumerate}
+
+\end{description}
