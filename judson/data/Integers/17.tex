@@ -1,0 +1,111 @@
+\begin{description}
+\item[Problem] (Fibonacci Numbers) The Fibonacci numbers are
+$$1, 1, 2, 3, 5, 8, 13, 21, \dots$$
+We can define them inductively by $f_1 = 1$, $f_2 = 1$, and $f_{n+2} = f_{n+1}
++ f_n$ for $n \in \mathbb{N}$.
+\begin{enumerate}
+\item Prove that $f_n < 2^n$.
+\item Prove that $f_{n+1} f_{n-1} = f_n^2 + (-1)^n, n \ge 2$.
+\item Prove that $f_n = \left[(1 + \sqrt 5)^n - (1 - \sqrt 5)^n\right]/2^n
+\sqrt 5$.
+\item Show that $\lim_{n\to\infty} f_n / f_{n+1} = (\sqrt 5 - 1) / 2$.
+\item Prove that $f_n$ and $f_{n+1}$ are relatively prime.
+\end{enumerate}
+
+\item[Proof]
+\begin{enumerate}
+\item $f_1 < 2^1$. Now, let's assume that for every $k \le n$, $f_k < 2^k$.
+We need to prove that $f_{n+1} < 2^{n+1}$.
+\begin{align*}
+f_{n+1} &< 2^{n+1} \\
+f_{n-1} + f_n &< 2 \cdot 2^n \\
+f_{n-1} + f_n &< 2^n + 2^n
+\end{align*}
+$f_n < 2^n$, $f_{n-1} < 2^{n-1} < 2^n$ by the induction hypothesis. It follows
+that $f_n + f_{n-1} < 2^n + 2^n$, and the theorem is proved.
+
+\item For $n = 2$,
+\begin{align*}
+f_3 f_1 &= f_2^2 + (-1)^2
+2 \cdot 1 &= 1^2 + 1
+2 &= 2
+\end{align*}
+
+Let's assume that the statement holds for $n$. Then we shall prove that
+$f_{n+2} f_n = f_{n+1}^2 + (-1)^{n+1}$.
+
+\begin{align*}
+f_{n+2} f_n &= f_{n+1}^2 + (-1)^{n+1} \\
+f_{n+1} f_n + f_n^2 &= f_{n+1}^2 - (-1)^n \\
+f_n^2 + (-1)^n &= f_{n+1}^2 - f_{n+1} f_n \\
+f_n^2 + (-1)^n &= f_{n+1} (f_{n+1} - f_n) \\
+f_n^2 + (-1)^n &= f_{n+1} f_{n-1}
+\end{align*}
+
+This corresponds to the induction hypothesis.
+
+\item For the induction base,
+
+\begin{align*}
+f_1 &= \left[(1 + \sqrt 5)^1 - (1 - \sqrt 5)^1\right] / 2^1 \sqrt 5 \\
+1 &= \left[2\sqrt5\right] / 2\sqrt5 \\
+1 &= 1
+\end{align*}
+
+We'll use the Second Principle of Mathematical Induction, that is, prove that
+the statement holds for $n+1$ if it holds for every $k \le n$.
+
+\begin{align*}
+f_{n+1} =& \dfrac{(1 + \sqrt 5)^{n+1} -
+           (1 - \sqrt 5)^{n+1}} {2^{n+1} \sqrt 5} \\
+f_n + f_{n-1} =& \dfrac{(1 + \sqrt 5) (1 + \sqrt 5)^n -
+           (1 - \sqrt 5)(1 - \sqrt 5)^n} {2 \cdot 2^n \sqrt 5} \\
+f_n + f_{n-1} =& \dfrac{(1 + \sqrt 5)^n + \sqrt 5 (1 + \sqrt 5)^n + \sqrt 5
+           (1 - \sqrt 5)^n - (1 - \sqrt 5)^n }{2 \cdot 2^n \sqrt 5} \\
+f_n + f_{n-1} =& \dfrac{(1 + \sqrt 5)^n - (1 - \sqrt 5)^n} {2^n \sqrt 5} + \\
+              &  \dfrac{-(1 + \sqrt 5)^n + \sqrt 5 (1 + \sqrt 5)^n + \sqrt 5
+           (1 - \sqrt 5)^n + (1 - \sqrt 5)^n }{2 \cdot 2^n \sqrt 5} \\
+f_{n-1} =& \dfrac{-(1 + \sqrt 5)^n + \sqrt 5 (1 + \sqrt 5)^n + \sqrt 5
+           (1 - \sqrt 5)^n + (1 - \sqrt 5)^n }{2 \cdot 2^n \sqrt 5} \\
+f_{n-1} =& \dfrac{(\sqrt 5 - 1) (1 + \sqrt 5)^n + (1 + \sqrt 5)
+           (1 - \sqrt 5)^n}{4 \cdot 2^{n-1} \sqrt 5} \\
+f_{n-1} =& \dfrac{(\sqrt 5 - 1)(\sqrt 5 + 1) (1 + \sqrt 5)^{n-1} +
+           (1 + \sqrt 5)(1 - \sqrt 5)
+           (1 - \sqrt 5)^{n-1}}{4 \cdot 2^{n-1} \sqrt 5} \\
+f_{n-1} =& \dfrac{4 (1 + \sqrt 5)^{n-1} -4 (1 - \sqrt 5)^{n-1}}
+           {4 \cdot 2^{n-1} \sqrt 5} \\
+f_{n-1} =& \dfrac{(1 + \sqrt 5)^{n-1} - (1 - \sqrt 5)^{n-1}}
+           {\cdot 2^{n-1} \sqrt 5} \\
+\end{align*}
+
+Which is true by the induction hypothesis.
+
+\item Using the previous lemma,
+
+\begin{align*}
+\lim_{n\to\infty} f_n / f_{n+1} &= 
+\lim_{n\to\infty} \dfrac
+{\frac{(1 + \sqrt 5)^n - (1 - \sqrt 5)^n} {2^n \sqrt 5}}
+{\frac{(1 + \sqrt 5)^{n+1} - (1 - \sqrt 5)^{n+1}} {2^{n+1} \sqrt 5}} \\
+&= \lim_{n\to\infty} 2 \dfrac{(1 + \sqrt 5)^n - (1 - \sqrt 5)^n}
+{(1 + \sqrt 5)^{n+1} - (1 - \sqrt 5)^{n+1}} \\
+&= \lim_{n\to\infty} 2 \dfrac{(1 + \sqrt 5)^n - 0} {(1 + \sqrt 5)^{n+1} - 0} \\
+&= \lim_{n\to\infty} \dfrac{2} {1 + \sqrt 5} = \dfrac{2} {1 + \sqrt 5} \\
+&= \dfrac{2 (\sqrt 5 - 1)} {(1 + \sqrt 5) (\sqrt 5 - 1)}
+ = \dfrac{2 (\sqrt 5 - 1)} {4} = \dfrac{\sqrt 5 - 1} {2}
+\end{align*}
+
+\item We know that $\gcd(f_1, f_2) = \gcd(1, 1) = 1$.
+
+Let's assume that $\gcd(f_n, f_{n+1}) = 1$ and prove that $\gcd(f_{n+1},
+f_{n+2}) = 1$. Let $d = \gcd(f_{n+1}, f_{n+2})$, then $f_{n+1} = da$, $f_{n+2}
+= db$, where $a$ and $b$ are some integers. By definition, $f_{n+2} = f_n +
+f_{n+1}$. Then $f_n = f_{n+2} - f_{n+1} = db - da = d(b - a)$. Then $d$ divides
+$f_n$~--- but also $f_{n+1}$. Given that $f_n$ and $f_{n+1}$ are relatively
+prime, the only number that divides them both is $1$, thus $d = 1$,
+$\gcd(f_{n+1}, f_{n+2}) = d = 1$, and $f_{n+1}$ is relatively prime with
+$f_{n+2}$.
+
+\end{enumerate}
+
+\end{description}
