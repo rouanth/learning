@@ -1,0 +1,42 @@
+\begin{description}
+\item[Problem] Suppose that $a, b, r, s$ are pairwise relatively prime and that
+\begin{align*}
+a^2 &+ b^2 &= r^2 \\
+a^2 &- b^2 &= s^2.
+\end{align*}
+
+Prove that $a$, $r$, and $s$ are odd and $b$ is even.
+
+\item[Proof]
+
+First off, as we witnessed in the previous exercise, squaring a number
+preserves its oddness.
+
+If $r$ is even, then $a$ and $b$ are either both even or both odd. They can't
+be both even, because then they would have $2$ as their common divisor. Then
+they're odd~--- but this also can't be, because $a^2 - b^2$, and, consequently,
+$s^2$ would also be even and it would have a common divisor with $r$. Thus, $r$
+can only be odd.
+
+Then either $a$ or $b$ must be odd, while the other one is even, because $r^2$
+can't be odd if it's the sum of two odds or two evens. Then $s$ is also odd,
+because otherwise it wouldn't be relatively prime to whichever of $a$ and $b$
+is even.
+
+Next, adding both equations, we get 
+
+\begin{align*}
+a^2 + b^2 + a^2 - b^2 &= r^2 + s^2 \\
+a^2 &= \frac{r^2 + s^2} 2
+\end{align*}
+
+Since $r$ and $s$ are both odd, we can represent $r^2$ as $4n^2 + 1$ and $s^2$
+as $4m^2 + 1$:
+
+\begin{align*}
+a^2 &= \frac{4n^2 + 1 + 4m^2 + 1} 2 = 2n^2 + 2m^2 + 1
+\end{align*}
+
+Obviously, $a^2$ and, thus, $a$ is odd. Then $b$ must be the even one.
+
+\end{description}
