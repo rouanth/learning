@@ -1,0 +1,22 @@
+\begin{description}
+
+\item[Problem] Define the \textbf{\textit{least common multiple}} of two
+nonzero integers $a$ and $b$, denoted by $\text{lcm}(a, b)$, to be the
+non-negative integer $m$ such that both $a$ and $b$ divide $m$, and if $a$ and
+$b$ divide any other integer $n$, them $m$ also divides $n$. Prove that any two
+integers $a$ and $b$ have a unique least common multiple.
+
+\item[Proof] Let $d = \gcd(a,b)$. Then $a = da'$, $b = db'$, where $a'$ and
+$b'$ are relatively prime integers which are also both relatively prime with
+$d$.
+
+A common multiple of $a$ and $b$ is $|a'b'|d$. $a$ divides $|a'b'|d = |ab'|$,
+and $b$ divides $|a'b'd| = |a'b|$. We need to prove that $|a'b'|d$ is the least
+common divisor, that is, it divides each common divisor of $a$ and $b$. $a'$
+and $d$ must divide every common divisor of $a$ and $b$ in order for it to be a
+multiple of $a$, and likewise $b'$ and $d$ must divide it so $b$ would divide
+it as well. But then, since $a'$, $b'$ and $d$ are pairwise relatively prime,
+$|a'b'|d$ must divide each common multiple. Hence, $|a'b'|d$, also possibly
+written as $\frac{|ab|}{\gcd a b}$, is the least common multiple.
+
+\end{description}
