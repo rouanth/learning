@@ -1,0 +1,19 @@
+\begin{description}
+\item[Problem] Prove that there are an infinite number of primes of the form
+$4n - 1$.
+
+\item[Proof] Similarly to the previous exercise, by using the Division
+Algorithm we arrive at conclusion that the prime numbers greater that $2$ can
+only be of the forms $4n + 1$ or $4n + 3$. But $4n + 3$ is the same as $4(n+1)
+-1$. If we replace $n+1$ in this notation with $n$, nothing changes, the same
+numbers are present in the class defined by $4n-1$. So all we have to do is
+prove that there are an infinite number of primes of the form $4n+3$.
+
+We shall analyze the number $q = 3 + 4\prod_{i=3}^k p_i$ where $p_k$ is the
+highest known prime number of the form $4n+3$. $q$ is not divided by any prime
+number of the form $4n + 3$. It also can't be factored solely into prime
+numbers of the form $4n + 1$, because multiplying them produced only the
+numbers of the same form: $(4n_1+1)(4n_2+1) = 4 (4 n_1 n_2 + n_1 + n_2) + 1$.
+Hence, $q$ must be the next prime number of the form $4n + 3$.
+
+\end{description}
