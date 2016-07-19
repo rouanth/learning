@@ -1,0 +1,20 @@
+\begin{description}
+\item[Problem] Let $a, b, c \in \mathbb Z$. Prove that if $\gcd(a,b) = 1$ and
+$a | bc$, then $a | c$.
+
+\item[Proof] If $a | bc$, then for some $k \in Z$, $ka = bc$. Since $\gcd(a, b)
+= 1$, there exist $r, s \in \mathbb Z$ such that $ra + sb = 1$. Then $b =
+\dfrac{1 - r a}s$.
+
+\begin{align*}
+k a &= b c \\
+k a &= \dfrac{1 - r a} s c \\
+s k a &= (1 - r a) c \\
+s k a &= c - r a c \\
+s k a + r c a &= c \\
+a (s k + r c) &= c
+\end{align*}
+
+Hence, $a$ divides $c$.
+
+\end{description}
