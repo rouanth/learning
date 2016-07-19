@@ -1,0 +1,19 @@
+\begin{description}
+\item[Problem] (Power Sets) Let $X$ be a set. Define the \textit{\textbf{power
+set}} of $X$, denoted $\wp (X)$, to be the set of all subsets of $X$. For
+example,
+$$\wp\left(\{a, b\}\right) = \{\emptyset, \{a\}, \{b\}, \{a, b\}\}$$
+
+For every positive integer $n$, show that a set with exactly $n$ elements has
+a power set with exactly $2^n$ elements.
+
+\item[Proof] If there is a single element $a$, the power set consists of $|\{
+\emptyset, a\}| = 2 = 2^1$ elements.
+
+If a set has $n + 1$ elements, then it has $n$ elements and some additional
+element $b$. Then its power set contains all the elements from the power set
+for $n$ elements and them once again, but this time with $b$ added to each.
+Then there are two times as many elements in the power set for $n + 1$ elements
+as there are in the power set for $n$ elements.
+
+\end{description}

@@ -1,0 +1,24 @@
+\begin{description}
+\item[Problem] Using the fact that 2 is prime, show that there do not exist
+integers $p$ and $q$ such that $p^2 = 2q^2$. Demonstrate that therefore $\sqrt
+2$ cannot be a rational number.
+
+\item[Proof] Due to the Fundamental Theorem of Arithmetics, $p$ and $q$ can be
+uniquely represented as products of the primes comprising them. Let $r_i$ be a
+prime number with index $i$, and $\phi_a(i)$ be a function which corresponds to
+the number of occurrences of $r_i$ in a factorization of number $a$.
+
+\begin{align*}
+p^2 &= 2q^2 \\
+\left(\prod_i r_i^{\phi_p(i)}\right)^2 &= 2 \cdot \left(\prod_i
+r_i^{\phi_q(i)}\right)^2 \\
+\prod_i r_i^{2\phi_p(i)} &= 2 \cdot \prod_i r_i^{2\phi_q(i)} \\
+2\phi_p(2) &= 2 \phi_q(i) + 1 \\
+\phi_p(2) - \phi_q(i) &= \frac 1 2
+\end{align*}
+
+But since $p$ and $q$ are integers, $\phi_p(i)$ and $\phi_q(i)$ can only be
+integers for all $i$. Subtraction of any integers can't produce a fraction,
+hence $p^2 \ne 2q^2$ for all integers $p$ and $q$.
+
+\end{description}

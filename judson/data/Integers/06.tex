@@ -1,0 +1,22 @@
+\begin{description}
+\item[Problem] Prove that $4 \cdot 10^{2n} + 9 \cdot 10^{2n-1} + 5$ is
+divisible by $99$ for $n \in \mathbb{N}$.
+
+\item[Proof] We'll prove by induction on $n$.
+
+For $n = 1$, $$4 \cdot 10^{2 \cdot 1} + 9 \cdot 10^{2 \cdot 1 - 1} + 5 = 495 =
+5 \cdot 99$$ which is divisible by $99$.
+
+For $n' = n + 1$,
+\begin{align*}
+4 \cdot 10^{2 \cdot n'} + 9 \cdot 10^{2 \cdot n' - 1} + 5 &= \\
+4 \cdot 10^{2 \cdot (n + 1)} + 9 \cdot 10^{2 \cdot (n + 1) - 1} + 5 &= \\
+4 \cdot 10^{2n + 2} + 9 \cdot 10^{2n + 1} + 5 &= \\
+400 \cdot 10^{2n} + 900 \cdot 10^{2n - 1} + 500 - 500 + 5 &= \\
+100 \left(4 \cdot 10^{2n} + 9 \cdot 10^{2n - 1} + 5\right) + (- 495)
+\end{align*}
+
+Both $-495$ and $4 \cdot 10^{2n} + 9\cdot 10^{2n - 1}$ are divisible by $99$,
+and so is their sum.
+
+\end{description}

@@ -1,0 +1,24 @@
+\begin{description}
+\item[Problem] Prove that there are an infinite number of primes of the form
+$6n+5$.
+
+\item[Proof] Due to the Division Algorithm, every number can be represented as
+one of: $6n, 6n+1, 6n+2, 6n+3, 6n+4, 6n+5$. Let us analyze these variations for
+$n \ge 1$. Then $6n$, $6n+2$, and $6n+4$ are divided by 2, so they aren't
+prime. $6n + 3$, similarly, is divided by 3. So all the prime numbers that
+aren't 2 or 3 can only be represented as $6n+1$ or $6n+5$.
+
+Now, let's assume that there is only a finite number of prime numbers of the
+form $6n+5$. Let the greatest of them be $p_k$. We need to analyze the number
+$q = 5 + 6\prod_{i=4}^k p_k = 5 + 6 \cdot 7 \cdot 11 \cdot 13 \cdots p_k$. It's
+easy to verify that for any $i \le k$, $q \not\equiv 0 \pmod p_i$, because
+$\gcd(5, 6 \cdot 7 \cdot 11 \cdot 13 \cdots p_k) = 1$. This means that $q$ does
+not divide any prime number of the form $6n + 5$. It also can't be a prime
+itself since it is greater than $p_k$ and would also be of the form $6n + 5$.
+Then it must be a product of multiple prime numbers of the form $6n + 1$. But
+it's easy to verify that $(6 n_1 + 1) (6 n_2 + 1) = 6 (6 n_1 n_2 + n_1 + n_2) +
+1$, i.e.  multiplying only numbers which can be represented as $6n+1$ can't
+yield a number of the form $6n+5$. We arrive at a contradiction, hence the
+number of primes of the form $6n+5$ can't be finite.
+
+\end{description}

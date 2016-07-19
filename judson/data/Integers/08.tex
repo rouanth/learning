@@ -1,0 +1,40 @@
+\begin{description}
+\item[Problem] Prove the Leibniz rules for $f^{(n)} (x)$, where $f^{(x)}$ is
+the $n$th derivative of $f$; that is, show that
+$$(fg)^{(n)}(x) = \sum\limits_{k = 0}^n {n \choose k} f^{(k)}(x)g^{(n-k)}(x).$$
+
+\item[Proof] For $n = 1$,
+\begin{align*}
+(fg)'(x) &= \sum\limits_{k = 0}^1 {1 \choose k} f^{(k)}(x)g^{(1-k)}(x) \\
+(fg)'(x) &= f(x)g'(x) + f'(x)g(x)
+\end{align*}
+
+As the induction hypothesis, we'll assume that the statement is correct for
+$n$th derivative of product of any two functions. Then, for $n' = n + 1$,
+
+\begin{align*}
+(fg)^{(n')}(x) &= \sum\limits_{k = 0}^{n'} {n' \choose k}
+f^{(k)}(x)g^{(n'-k)}(x) \\
+(fg)^{(n+1)}(x) &= \sum\limits_{k = 0}^{n+1} {n+1 \choose k}
+f^{(k)}(x)g^{(n+1-k)}(x) \\
+\left((fg)^{(n)}\right)'(x) &=
+\sum\limits_{k = 0}^{n+1} \left({n \choose k} + {n \choose k - 1}\right)
+f^{(k)}(x)g^{(n+1-k)}(x) \\
+\left((fg)^{(n)}\right)'(x) &=
+\sum\limits_{k = 0}^{n+1} {n \choose k} f^{(k)}(x)g^{(n+1-k)}(x) +
+\sum\limits_{k = 0}^{n+1} {n \choose k - 1} f^{(k)}(x)g^{(n+1-k)}(x) \\
+\left((fg)^{(n)}\right)'(x) &=
+\sum\limits_{k = 0}^{n} {n \choose k} f^{(k)}(x)g^{(n+1-k)}(x) +
+\sum\limits_{k = 1}^{n+1} {n \choose k - 1} f^{(k)}(x)g^{(n+1-k)}(x) \\
+\left((fg)^{(n)}\right)'(x) &=
+\sum\limits_{k = 0}^{n} {n \choose k} f^{(k)}(x)g^{(n+1-k)}(x) +
+\sum\limits_{k = 0}^{n} {n \choose k} f^{(k + 1)}(x)g^{(n-k)}(x) \\
+\left((fg)^{(n)}\right)'(x) &=
+\sum\limits_{k = 0}^{n} {n \choose k} f^{(k)}(x)(g')^{(n-k)}(x) +
+\sum\limits_{k = 0}^{n} {n \choose k} (f')^{(k)}(x)g^{(n-k)}(x) \\
+\left((fg)^{(n)}\right)'(x) &= (f(g'))^{(n)}(x) + ((f')g)^{(n)}(x) \\
+((fg)')^{(n)}(x) &= \left(f(x)g'(x) + f'(x)g(x)\right)^{(n)} \\
+((fg)')^{(n)}(x) &= ((fg)')^{(n)}(x)
+\end{align*}
+
+\end{description}

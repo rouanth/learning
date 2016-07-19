@@ -1,0 +1,21 @@
+\begin{description}
+\item[Problem] Let $x, y \in \mathbb{N}$ be relatively prime. If $xy$ is a
+perfect square, prove that $x$ and $y$ must both be perfect squares.
+
+\item[Proof] If a number is a perfect square, it can be represented as $k^2,
+k \in \mathbb{N}$. Due to the Fundamental Theorem of Arithmetics, $k$ can be
+represented uniquely as a product of primes: $k = \prod p_i^{\phi(i)}$. Then
+$k^2 = \left(\prod p_i^{\phi(i)}\right)^2 = \prod p_i^{2\phi(i)}$.
+
+Since $xy$ is a perfect square, it, too, can be written as $\prod
+p_{i}^{2\phi_k(i)}$. Also $xy = \prod p_i^{\phi_x(i)} \cdot \prod
+p_i^{\phi_y(i)} = \prod p_i^{\phi_x(i) + \phi_y(i)}$. Then $2\phi_k(i) =
+\phi_x(i) + \phi_y(i)$.
+
+But if $\phi_x(i) \ne 0$, then $\phi_y(i) = 0$, and vice versa, because
+otherwise $x$ and $y$ would have $p_i$ as their common divisor. Then, for each
+$i$, either $\phi_x(i) = 0, \phi_y(i) = 2 \phi_k(i)$ or $\phi_y(i) = 0,
+\phi_x(i) = 2 \phi_k(i)$. Either way, both $\phi_x(i)$ and $\phi_y(i)$ are
+even for every $i$, and so both $x$ and $y$ are perfect squares.
+
+\end{description}

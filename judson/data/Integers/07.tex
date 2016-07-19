@@ -1,0 +1,86 @@
+\begin{description}
+\item[Problem] Show that
+$$\sqrt[n]{a_1 a_2 \cdots a_n} \le \dfrac 1 n \sum\limits_{k = 1}^n a_k.$$
+
+\item[Proof] We shall use induction on $n$.
+
+First, for $n = 1$,
+\begin{align*}
+\sqrt[1]{1} &\le \dfrac 1 1 \sum\limits_{k = 1}^1 a_k \\
+1 &\le 1
+\end{align*}
+
+Next, for $n' = n + 1$,
+\begin{align*}
+\sqrt[n']{a_1 a_2 \cdots a_n a_{n'}} &\le
+\dfrac 1 {n'} \sum\limits_{k = 1}^{n'} a_k \\
+\sqrt[n+1]{\left(\sqrt[n]{a_1 a_2 \cdots a_n}\right)^n a_{n+1}} &\le
+\dfrac 1 {n+1} \left(n \cdot \left(\dfrac 1 n \sum\limits_{k=1}^n a_n\right) +
+a_{n+1}\right)
+\end{align*}
+
+Let $p = \sqrt[n]{a_1 a_2 \cdots a_n}$, $q = \dfrac 1 n \sum\limits_{k=1}^n
+a_n$, $r = a_{n+1}$. The induction hypothesis is $p \le q$. Substitution gives
+us
+
+$$\sqrt[n+1]{p^n r} \le \dfrac{nq + r}{n + 1}$$
+
+Next, if $p = 0$, the proof is trivial:
+
+$$0 \le \dfrac{nq + r}{n + 1}$$
+
+Since all the variables are non-negative, this statement is correct.
+
+If $p \ne 0$, we can divide by it:
+
+$$\sqrt[n+1]{\dfrac{r}{p}} \le \dfrac{\frac{nq}{p} + \frac{r}{p}}{n+1}$$
+
+Let $b = \dfrac r p$ and $k = \frac q p$.
+
+\begin{align*}
+\sqrt[n+1] b &\le \dfrac{kn + b}{n+1} \\
+(n+1) \sqrt[n+1] b &\le kn + b \\
+(n+1) \sqrt[n+1] b &\le kn + b \\
+(n+1)^{n+1} b &\le (kn + b)^{n+1} \\
+(kn + b)^{n+1} - (n+1)^{n+1} b &\ge 0
+\end{align*}
+
+In order to prove this, we shall find the absolute extrema of $(kn + b)^{n+1} -
+(n+1)^{n+1} b$ with respect to $b$.
+
+\begin{align*}
+\left((kn + b)^{n+1} - (n+1)^{n+1} b\right)' &= 0 \\
+(n+1) (kn+b)^n - (n+1)^{n+1} &= 0 \\
+(n+1) (kn+b)^n &= (n+1)^{n+1} \\
+(kn +b)^n &= (n+1)^n \\
+kn + b = n + 1 \\
+b = n + 1 - kn
+\end{align*}
+
+The function has a single extremum at $b = n + 1 - kn$. Next, we'll use the
+second derivative test to prove that it's a minimum. The second derivative is
+
+\begin{align*}
+\left((kn + b)^{n+1} - (n+1)^{n+1} b\right)'' &= \\
+\left((n+1) (kn+b)^n - (n+1)^{n+1}\right)' &= \\
+(n+1) n (kn+b)^{n-1}
+\end{align*}
+
+At $b = (n + 1 - kn)$ it is
+
+$$(n+1) n (kn +b)^{n-1} = (n+1)n(kn + n + 1 - kn)^{n-1} = n (n+1)^n$$
+
+This is clearly a positive value, so $b = n + 1 - kn$ is indeed a minimum.
+
+Next, we need to prove that even at the minimum this expression is greater
+than $0$, and thus is positive everywhere.
+
+\begin{align*}
+(kn + (n + 1 - kn))^{n+1} - (n+1)^{n+1} (n + 1 - kn) &\ge 0 \\
+n (n + 1)^{n+1} (k - 1) &\ge 0 \\
+k &\ge 1
+\end{align*}
+
+This is true by the induction hypothesis.
+
+\end{description}

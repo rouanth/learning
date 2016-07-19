@@ -1,0 +1,20 @@
+\begin{description}
+\item[Problem] Let $p \ge 2$. Prove that if $2^p - 1$ is prime, then $p$ must
+also be prime.
+
+\item[Proof] We need to prove first that $a - 1$ divides $a^n - 1$ for all $a,
+n \in \mathbb Z$. Let's do it by induction. $a - 1$ obviously divides $a^1 - 1
+= a - 1$, so the statement holds for the base. Now we need to prove that
+$a^{n+1} - 1$ is divided by $a - 1$ if $a-1$ divides $a^n - 1$. But $a^{n+1}-1
+= a \cdot a^n - 1 = a \cdot a^n - a^n + a^n - 1 = a^n (a - 1) + (a^n - 1)$.  By
+the induction hypothesis, $a^n - 1 = k(a-1)$ for some $k \in \mathbb Z$, so $a
+- 1 | a^n (a - 1) + (a^n - 1) \iff a - 1 | a^n (a-1) + k(a-1) \iff a - 1 | (a -
+1) (a^n + k)$, which is true.
+
+Next, let $p = nm$. Then $2^{nm} - 1 = \left(2^n\right)^m - 1$ is prime. But
+then $2^n - 1$ must divide $2^p - 1$.  We know that $2^p - 1$ is a prime, so it
+can only be divided by itself or $1$. If $2^n - 1 = 2^p - 1$, then $n = p$ and
+$m = 1$. If $2^n - 1 = 1$, then $2^n = 2$, and $n = 1$, while $m = p$. Thus,
+$p$ can't be a composite number.
+
+\end{description}

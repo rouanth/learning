@@ -1,0 +1,20 @@
+\begin{description}
+\item[Problem] Prove that $n! > 2^n$ for $n \ge 4$.
+\item[Proof] For $n = 4$,
+\begin{equation*}\begin{aligned}
+4! > 2^4
+24 > 16
+\end{aligned}\end{equation*}
+
+Given that $n! > 2^n$, we need to prove that $n'! > 2^{n'}$ for $n' = n + 1$.
+\begin{equation*}\begin{aligned}
+n'! &> 2^{n'} \\
+(n+1)! &> 2^{n+1} \\
+(n+1)n! &> 2 \cdot 2^n
+\end{aligned}\end{equation*}
+
+Now, with $n \ge 4$ we have $n + 1 > 2$, and $n! > 2^n$ by the induction
+hypothesis. Since both factors on the left side are greater than the
+corresponding factors on the right side, the product is greater as well.
+
+\end{description}

@@ -1,0 +1,21 @@
+\begin{description}
+\item[Problem] Show that the Principle of Well-Ordering for the natural numbers
+implies that 1 is the smallest natural number. Use this result to show that the
+Principle of Well-Ordering implies the Principle of Mathematical Induction;
+that is, show that if $S \subset \mathbb{N}$ such that $1 \in S$ and $n + 1 \in
+S$ whenever $n \in S$, then $S = \mathbb{N}$.
+
+\item[Proof] First, due to the Principle of Well-Ordering, natural numbers,
+being a subset of themselves, have a smallest element. If it's not 1, then it
+can be expressed as $n + 1$, with $n$ being less than the element in question,
+which contradicts our assumption. So 1 must be the smallest natural number.
+
+Next, we need to prove that if $1 \in S$ and $n + 1 \in S$ whenever $n \in S$,
+then $S = \mathbb{N}$. Let's assume the contrary: even if all the conditions
+are met, there exists a set $A$ of natural numbers that are not in $S$. Then
+there is a least element in $A$, let's call it $a$. $a$ can't be $1$ since $1$
+is known to be in $S$. Then it can be expressed as $n + 1$. But since $n \in
+S$, $n + 1$ must also be in $S$. We arrive at a contradiction, proving the
+Principle of Mathematical Induction.
+
+\end{description}
