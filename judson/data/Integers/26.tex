@@ -1,0 +1,21 @@
+\begin{description}
+\item[Problem] Prove that $\gcd(a,c) = \gcd(b,c) = 1$ if and only if $\gcd(ab,
+c) = 1$ for integers $a$, $b$, and $c$.
+
+\item[Proof] On one hand,
+\begin{align*}
+\gcd(a, c) = 1, \gcd(b, c) = 1 &\iff \\
+r_a a + s_a c = 1, r_b b + s_b c = 1 &\iff \\
+a = \dfrac{1 - s_a c} {r_a}, b = \dfrac{1 - s_b c} {r_b} &\iff \\
+ab = \dfrac{(1 - s_a c) (1 - s_b c)} {r_a r_b} &\iff \\
+r_a r_b a b = 1 - (s_a + s_b) c + s_a s_b c^2 &\iff \\
+(r_a r_b) a b + (s_a + s_b - s_a s_b c) c = 1 &\Rightarrow \\
+\gcd(ab, c) = 1
+\end{align*}
+
+On the other hand, let $d = \gcd(a, c)$. Then $a = da'$, $c = dc'$, and
+$\gcd(ab, c) = \gcd(da'b, dc') = 1$. Then $r da'b + s d c' = 1$, and $d(r a' b
++ s c') = 1$. $d$ must divide $1$, hence $d = 1$. Then $a$ and $c$ are
+relatively prime. The proof that $\gcd(b, c) = 1$ is exactly the same.
+
+\end{description}
