@@ -66,3 +66,72 @@ Require Import Hoare.
 *)
 
 (* END add_slowly_decoration. *)
+
+Fixpoint parity x :=
+  match x with
+    | 0 => 0
+    | 1 => 1
+    | S (S x') => parity x'
+  end.
+
+Lemma parity_ge_2 : forall x,
+  2 <= x ->
+  parity (x - 2) = parity x.
+Proof.
+  intros.
+  inversion H; subst.
+  * trivial.
+  * inversion H0; subst.
+    + trivial.
+    + simpl. rewrite <- minus_n_O. trivial.
+Qed.
+
+Lemma parity_lt_2 : forall x,
+  ~ 2 <= x ->
+  parity x = x.
+Proof.
+  intros.
+  destruct x; try destruct x; try trivial.
+  assert (2 <= S (S x)). { intros. omega. }
+  contradiction.
+Qed.
+
+(* Exercise: 3 stars, optional (parity_formal) *)
+
+Theorem parity_correct : forall m,
+  {{ fun st => st X = m }}
+  (* parity X = parity m *)
+  WHILE BLe (ANum 2) (AId X) DO
+    (* {{ parity X = parity m /\ X >= 2 }} -> *)
+    (* {{ parity (X - 2) = parity m     }}    *)
+    X ::= AMinus (AId X) (ANum 2)
+    (* {{ parity X = parity m           }}    *)
+  END
+  (* {{ parity X = parity m /\ X <= 2   }} -> *)
+  {{ fun st => st X = parity m }}.
+Proof.
+  intros.
+  eapply hoare_consequence with (P' := fun st => parity (st X) = parity m).
+  - apply hoare_while.
+    eapply hoare_consequence_pre.
+    + apply hoare_asgn.
+    + unfold assert_implies. intros.
+      destruct H. unfold assn_sub. simpl. rewrite update_eq.
+      rewrite <- H.
+      apply parity_ge_2.
+      unfold bassn in H0. simpl in H0.
+      clear H.
+      destruct (st X); try destruct n; inversion H0. omega.
+  - unfold assert_implies. intros. rewrite H. trivial.
+  - simpl. unfold assert_implies. intros. destruct H.
+    unfold bassn in H0. simpl in H0.
+    rewrite <- H. clear H.
+    symmetry.
+    apply parity_lt_2.
+    destruct (st X); try destruct n.
+    + intro; inversion H.
+    + intro; inversion H; inversion H2.
+    + intro. apply H0. trivial.
+Qed.
+
+(* END parity_formal. *)
