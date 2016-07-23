@@ -47,3 +47,22 @@ Require Import Hoare.
 *)
 
 (* END slow_assignment. *)
+
+(* Exercise: 3 stars, optional (add_slowly_decoration) *)
+
+(*
+        {{ X = m /\ Z = n            }} ->
+        {{ X + Z = m + n             }}
+      WHILE X ≠ 0 DO
+        {{ X + Z = m + n /\ X ≠ 0    }} ->
+        {{ (X - 1) + (Z + 1) = m + n }}
+         Z ::= Z + 1;;
+        {{ (X - 1) + Z = m + n       }}
+         X ::= X - 1
+        {{ X + Z = m + n             }}
+      END
+        {{ X + Z = m + n /\ X = 0    }}
+        {{ Z = n + m                 }}
+*)
+
+(* END add_slowly_decoration. *)
