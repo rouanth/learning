@@ -135,3 +135,24 @@ Proof.
 Qed.
 
 (* END parity_formal. *)
+
+(* Exercise: 3 stars (factorial) *)
+
+(*
+    {{ X = m }} ⇾
+    {{ 1 * X! = m!                          }}
+  Y ::= 1;;
+    {{ Y * X! = m!                          }}
+  WHILE X ≠ 0
+  DO   {{ Y * X! = m! /\ X ≠ 0                 }} ⇾
+       {{ (Y * X) * (X - 1)! = m!              }}
+     Y ::= Y * X;;
+       {{ Y * (X - 1)! = m!                    }}
+     X ::= X - 1
+       {{ Y * X! = m!                          }}
+  END
+    {{ Y * X! = m! /\ X = 0                    }} ⇾
+    {{ Y = m! }}
+*)
+
+(* END factorial. *)
