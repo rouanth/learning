@@ -1,0 +1,117 @@
+\begin{description}
+\item[Problem] Find all $x \in \mathbb Z$ satisfying each of the following
+equations.
+
+\begin{multicols}{2}
+\begin{enumerate}
+\item $3x \equiv 2 \pmod 7$
+\item $5x + 1 \equiv 13 \pmod {23}$
+\item $5x + 1 \equiv 13 \pmod {26}$
+\item $9x \equiv 3 \pmod 5$
+\item $5x \equiv 1 \pmod 6$
+\item $3x \equiv 1 \pmod 6$
+\end{enumerate}
+\end{multicols}
+
+\item[Solution] We need first to establish a set of tools to work with these
+problems.
+
+\begin{align*}
+ax + b \equiv c \pmod n &\iff \\
+ax \equiv c - b \pmod n &\iff
+\end{align*}
+
+Next, let $d = \gcd(a, n)$, $a = a' d$, $n = n' d$. Let's show that solutions
+exist only if $c - b$ is a multiple of $d$.
+
+\begin{align*}
+ax - c + b &= kn, k \in \mathbb Z \\
+a' d x - k n' d &= c - b \\
+d (x a' - k n') &= c - b
+\end{align*}
+
+Then, if solutions exist, $c - b = b' d$, where $b'$ is an integer.
+
+We must solve $ax \equiv c - b \pmod n$. It is the same as solving $a'x \equiv
+b' \pmod {n'}$, because
+
+\begin{align*}
+n | a - (c - b) &\iff \\
+d n' | d a' x - db' &\iff \\
+n' | a' x - b'
+\end{align*}
+
+If $n'$ divides $a' x - b'$, then there exists some integer $k$ such that $n' k
+= a' x - b'$. Then $x = \frac 1 {a'} (n' k + b')$.
+
+Next, we should consider what values of $k$ are valid for $x \in [0; n')$,
+because $x \in [0; n')$ is a solution to the equation if and only if for all $k
+\in \mathbb Z, x + kn$ is also a solution. Therefore, we only need to find all
+the $x < n'$.
+
+We'll only cover positive $a'$ here, and if that isn't the case, simply
+multiply both sides of equivalence by $-1$. The largest possible $k$
+corresponds to $x = n' - 1$, that is, $n' k = a' (n' - 1) - b'$, and $k = a' -
+\frac {a' + b'} {n'}$. Next, if the fraction isn't integral, then the largest
+$k$ for which $x$ is in the defined range is the nearest integer less than this
+result, i.e. $k = a' - \left\lceil\frac{a' + b'}{n'}\right\rceil$. But we know
+that $a' \in (0; n'), b' \in [0; n')$, hence $a' + b' \in (0; 2n')$. Thus, if
+$a' + b' > n'$, the maximal $k = a' - 2$, otherwise $k = a' - 1$. The least $k$
+corresponds to $x = 0$ and $k = - \frac {b'} {n'}$. Since $b \in [0; n')$, this
+is obviously a fraction in $(-1; 0]$. But we need the least integral $k$ for
+which $x$ is in $[0; n')$, which is just $0$ in all cases. Thus, we only need
+to check $k \in [0; a' - 2]$ if $a' + b' > n$ and $k \in [0; a' - 1]$
+otherwise.
+
+\begin{enumerate}
+\item $3x \equiv 2 \pmod 7$
+The numbers are pairwise relatively prime, thus $a' = a = 3$, $b' = b = 2$, and
+$n' = n = 7$.
+
+Let's check the values of $k \in [0; 2]$ since $3 + 2 < 7$.
+
+\begin{tabular}{|c|c c c|}
+\hline
+$k$         & 0  & 1  & 2  \\
+\hline
+$n' k + b'$ & 2  & 9  & 16 \\
+$x$         & -  & 3  & -  \\
+\hline
+\end{tabular}
+
+The solution is $x = kn + 3, k \in \mathbb Z$.
+
+Let's check some simple examples.
+
+\begin{itemize}
+\item $3 \cdot 3 \equiv 2 \pmod 7$
+\item $3 \cdot (-7 + 3) \equiv 2 \pmod 7$
+\item $3 \cdot (14 + 3) \equiv 2 \pmod 7$
+\end{itemize}
+
+Computation shows that these solutions hold.
+
+\item $5x + 1 \equiv 13 \pmod {23}$
+
+$a = 5$, $c - b = 13 - 1 = 12$, and $n = 23$ are pairwise relatively prime,
+thus $a' = 5$, $b' = 12$, and $n' = 23$.
+
+We must consider the values of $k \in [0; 21]$.
+
+\begin{tabular}{|c|c c c c c c c c c c c c c c c c c c c c c c|}
+\hline
+$k$         & 0  & 1  & 2  & 3  & 4  & 5  & 6  & 7  & \\
+\hline
+$n' k + b'$ & 12 & 35 & 58 & \\
+$x$         & -  & 7  & -  & \\
+\hline
+\end{tabular}
+
+\item $5x + 1 \equiv 13 \pmod {26}$
+\item $9x \equiv 3 \pmod 5$
+\item $5x \equiv 1 \pmod 6$
+\item $3x \equiv 1 \pmod 6$
+
+\end{enumerate}
+
+\end{description}

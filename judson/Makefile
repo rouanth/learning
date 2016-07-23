@@ -1,4 +1,4 @@
-CHAPTERS=Preliminaries Integers
+CHAPTERS=Preliminaries Integers Groups
 BNAME=Book
 
 REFDIR=.tmp/
