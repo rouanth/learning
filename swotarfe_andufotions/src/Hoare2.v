@@ -25,3 +25,25 @@ Require Import Hoare.
 *)
 
 (* END if_minus_plus_reloaded. *)
+
+(* Exercise: 2 stars (slow_assignment) *)
+
+(*
+        {{ X = m               }} ->
+        {{ X + 0 = m           }}
+      Y ::= 0;;
+        {{ X + Y = m           }}
+      WHILE X ≠ 0 DO
+        {{ X + Y = m /\ X ≠ 0  }} ->
+        {{ (X - 1) + Y = m - 1 }}
+        X ::= X - 1;;
+        {{ X + Y = m - 1       }} ->
+        {{ X + (Y + 1) = m     }}
+        Y ::= Y + 1
+        {{ X + Y = m           }}
+      END
+        {{ X + Y = m /\ X = 0  }} ->
+        {{ Y = m               }}
+*)
+
+(* END slow_assignment. *)
