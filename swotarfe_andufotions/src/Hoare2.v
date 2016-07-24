@@ -328,4 +328,173 @@ Proof.
   apply H with st; try assumption. constructor.
 Qed.
 
+End Himp2.
+
 (* END hoare_havoc_weakest. *)
+
+Inductive dcom : Type :=
+  | DCSkip : Assertion -> dcom
+  | DCSeq  : dcom -> dcom -> dcom
+  | DCAsgn : id -> aexp -> Assertion -> dcom
+  | DCIf   : bexp -> Assertion -> dcom
+                  -> Assertion -> dcom
+                  -> Assertion -> dcom
+  | DCWhile : bexp -> Assertion -> dcom -> Assertion -> dcom
+  | DCPre   : Assertion -> dcom -> dcom
+  | DCPost  : dcom -> Assertion -> dcom.
+
+Notation "'SKIP' {{ P }}" :=
+  (DCSkip P) (at level 10) : dcom_scope.
+Notation "l '::=' a {{ P }}" :=
+  (DCAsgn l a P) (at level 60, a at next level) : dcom_scope.
+Notation "'WHILE' b 'DO' {{ Pbody }} d 'END' {{ Ppost }}" :=
+  (DCWhile b Pbody d Ppost) (at level 80, right associativity) : dcom_scope.
+Notation "'IFB' b 'THEN' {{ P }} d 'ELSE' {{ P' }} d' 'FI' {{ Q }}" :=
+  (DCIf b P d P' d' Q) (at level 80, right associativity) : dcom_scope.
+Notation "'->>' {{ P }} d" :=
+  (DCPre P d) (at level 90, right associativity) : dcom_scope.
+Notation "{{ P }} d" :=
+  (DCPre P d) (at level 90) : dcom_scope.
+Notation "d '->>' {{ P }}" :=
+  (DCPost d P) (at level 80, right associativity) : dcom_scope.
+Notation " d ;; d' " :=
+  (DCSeq d d') (at level 80, right associativity) : dcom_scope.
+
+Delimit Scope dcom_scope with dcom.
+
+Fixpoint extract (d : dcom) : com :=
+  match d with
+    | DCSkip _ => SKIP
+    | DCSeq d1 d2 => (extract d1) ;; (extract d2)
+    | DCAsgn i a _ => i ::= a
+    | DCIf b _ t _ e _ => IFB b THEN (extract t) ELSE (extract e) FI
+    | DCWhile b _ d _ => WHILE b DO (extract d) END
+    | DCPre _ d => extract d
+    | DCPost d _ => extract d
+  end.
+
+Fixpoint post (d : dcom) : Assertion :=
+  match d with
+    | DCSkip P => P
+    | DCSeq _ d => post d
+    | DCAsgn _ _ q => q
+    | DCIf _ _ _ _ _ q => q
+    | DCWhile _ _ _ q => q
+    | DCPre _ d => post d
+    | DCPost _ q => q
+  end.
+
+Fixpoint pre (d : dcom) : Assertion :=
+  match d with
+    | DCSkip P => fun st => True
+    | DCSeq d _ => pre d
+    | DCAsgn _ _ _ => fun st => True
+    | DCIf _ _ _ _ _ _ => fun st => True
+    | DCWhile _ _ _ _ => fun st => True
+    | DCPre q _ => q
+    | DCPost d _ => pre d
+  end.
+
+Definition dec_correct (d : dcom) :=
+  {{pre d}} (extract d) {{post d}}.
+
+Fixpoint verification_conditions (P : Assertion) (d : dcom) : Prop :=
+  match d with
+    | DCSkip q => P ->> q
+    | DCSeq d1 d2 => (verification_conditions P d1) /\
+                     (verification_conditions (post d1) d2)
+    | DCAsgn i a q => P ->> q [i |-> a]
+    | DCIf b qt t qe e qp => ((fun st => P st /\ bassn b st) ->> qt)
+                          /\ ((fun st => P st /\ ~ bassn b st) ->> qe)
+                          /\ (qp <<->> post t) /\ (qp <<->> post e)
+                          /\ (verification_conditions qt t)
+                          /\ (verification_conditions qe e)
+    | DCWhile b qb d qp => P ->> post d
+                          /\ ((fun st => post d st /\ bassn b st) <<->> qb)
+                          /\ ((fun st => post d st /\ ~ bassn b st) <<->> qp)
+                          /\ (verification_conditions qb d)
+    | DCPre q d => P ->> q /\ verification_conditions q d
+    | DCPost d q => verification_conditions P d /\ (post d ->> q)
+  end.
+
+Theorem verification_correct : forall d P,
+  verification_conditions P d -> {{ P }} (extract d) {{ post d }}.
+Proof.
+  induction d; simpl; intros P H.
+  - eapply hoare_consequence_pre. apply hoare_skip. assumption.
+  - destruct H. eapply hoare_seq; [apply IHd2 | apply IHd1]; assumption.
+  - eapply hoare_consequence_pre. eapply hoare_asgn. assumption.
+  - destruct H. destruct H0. destruct H1. destruct H2. destruct H3.
+    destruct H1. destruct H2.
+    apply hoare_if; eapply hoare_consequence;
+      try apply IHd1; try apply IHd2; try eassumption.
+  - destruct H. destruct H0. destruct H0. destruct H1. destruct H1.
+    eapply hoare_consequence.
+    + apply hoare_while. eapply hoare_consequence_pre; try apply IHd;
+        eassumption.
+    + assumption.
+    + assumption.
+  - destruct H. eapply hoare_consequence_pre.
+    + apply IHd. eassumption.
+    + assumption.
+  - destruct H. eapply hoare_consequence_post; try apply IHd; assumption.
+Qed.
+
+Tactic Notation "verify" :=
+  apply verification_correct;
+  repeat split;
+  simpl; unfold assert_implies;
+  unfold bassn in *; unfold beval in *; unfold aeval in *;
+  unfold assn_sub; intros;
+  repeat rewrite update_eq;
+  repeat (rewrite update_neq; [| (intro X; inversion X)]);
+  simpl in *;
+  repeat match goal with [H : _ /\ _ |- _] => destruct H end;
+  repeat rewrite not_true_iff_false in *;
+  repeat rewrite not_false_iff_true in *;
+  repeat rewrite negb_true_iff in *;
+  repeat rewrite negb_false_iff in *;
+  repeat rewrite beq_nat_true_iff in *;
+  repeat rewrite beq_nat_false_iff in *;
+  repeat rewrite leb_iff in *;
+  repeat rewrite leb_iff_conv in *;
+  try subst;
+  repeat
+    match goal with
+      [st : state |- _] =>
+        match goal with
+          [H : st _ = _ |- _] => rewrite -> H in *; clear H
+        | [H : _ = st _ |- _] => rewrite <- H in *; clear H
+        end
+    end;
+  try eauto; try omega.
+
+(* Exercise: 3 stars, advanced (slow_assignment_dec) *)
+
+Example slow_assignment_dec (m:nat) : dcom :=
+  (
+        {{ fun st => st X = m     }} ->>
+        {{ fun st => st X + 0 = m }}
+      Y ::= ANum 0
+        {{ fun st => st X + st Y = m }} ;;
+      WHILE (BNot (BEq (AId X) (ANum 0))) DO
+        {{ fun st => st X + st Y = m /\
+           bassn (BNot (BEq (AId X) (ANum 0))) st }}
+        {{ fun st => (st X - 1) + st Y = m - 1 /\ m > 0 }}
+        X ::= AMinus (AId X) (ANum 1)
+        {{ fun st => st X + st Y = m - 1 /\ m > 0 }} ;; ->>
+        {{ fun st => st X + (st Y + 1) = m     }}
+        Y ::= APlus (AId Y) (ANum 1)
+        {{ fun st => st X + st Y = m           }}
+      END
+        {{ fun st => st X + st Y = m /\ st X = 0  }} ->>
+        {{ fun st => st Y = m               }}
+)%dcom.
+
+Theorem slow_assignment_dec_correct : forall m,
+  dec_correct (slow_assignment_dec m).
+Proof.
+  intros. verify.
+Qed.
+
+(* END slow_assignment_dec. *)
