@@ -271,3 +271,31 @@ Qed.
 *)
 
 (* END wp. *)
+
+Definition is_wp P c Q :=
+  {{ P }} c {{ Q }} /\
+  forall P', {{ P' }} c {{ Q }} -> (P' ->> P).
+
+(* Exercise: 3 stars, advanced, optional (is_wp_formal) *)
+
+Theorem is_wp_example :
+  is_wp (fun st => st Y <= 4)
+    (X ::= APlus (AId Y) (ANum 1))
+    (fun st => st X <= 5).
+Proof.
+  unfold is_wp. split.
+  - eapply hoare_consequence_pre.
+    + apply hoare_asgn.
+    + unfold assn_sub. unfold assert_implies. intros.
+      simpl.
+      rewrite update_eq.
+      omega.
+  - unfold hoare_triple.
+    unfold assert_implies.
+    intros.
+    apply H with (st' := update st X (st Y + 1)) in H0.
+    + rewrite update_eq in H0. omega.
+    + constructor.
+Qed.
+
+(* END is_wp_formal. *)
