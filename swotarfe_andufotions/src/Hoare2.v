@@ -313,3 +313,19 @@ Proof.
 Qed.
 
 (* END hoare_asgn_weakest. *)
+
+(* Exercise: 2 stars, advanced, optional (hoare_havoc_weakest) *)
+
+Module Himp2.
+Import Himp.
+
+Lemma hoare_havoc_weakest : forall (P Q : Assertion) (X : id),
+  {{ P }} HAVOC X {{ Q }} ->
+  P ->> havoc_pre X Q.
+Proof.
+  unfold hoare_triple. unfold assert_implies. unfold havoc_pre.
+  intros.
+  apply H with st; try assumption. constructor.
+Qed.
+
+(* END hoare_havoc_weakest. *)
