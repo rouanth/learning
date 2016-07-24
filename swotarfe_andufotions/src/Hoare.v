@@ -43,7 +43,7 @@ Notation "P ->> Q" := (assert_implies P Q) (at level 80)
   : hoare_spec_scope.
 Open Scope hoare_spec_scope.
 
-Notation "P <<->> Q" := (P ->> Q /\ Q ->> Q) (at level 80)
+Notation "P <<->> Q" := (P ->> Q /\ Q ->> P) (at level 80)
   : hoare_spec_scope.
 
 Definition hoare_triple
