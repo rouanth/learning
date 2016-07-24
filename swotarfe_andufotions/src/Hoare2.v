@@ -29,20 +29,20 @@ Require Import Hoare.
 (* Exercise: 2 stars (slow_assignment) *)
 
 (*
-        {{ X = m               }} ->
+        {{ X = m               }} ->>
         {{ X + 0 = m           }}
       Y ::= 0;;
         {{ X + Y = m           }}
       WHILE X ≠ 0 DO
-        {{ X + Y = m /\ X ≠ 0  }} ->
+        {{ X + Y = m /\ X ≠ 0  }} ->>
         {{ (X - 1) + Y = m - 1 }}
         X ::= X - 1;;
-        {{ X + Y = m - 1       }} ->
+        {{ X + Y = m - 1       }} ->>
         {{ X + (Y + 1) = m     }}
         Y ::= Y + 1
         {{ X + Y = m           }}
       END
-        {{ X + Y = m /\ X = 0  }} ->
+        {{ X + Y = m /\ X = 0  }} ->>
         {{ Y = m               }}
 *)
 
@@ -51,10 +51,10 @@ Require Import Hoare.
 (* Exercise: 3 stars, optional (add_slowly_decoration) *)
 
 (*
-        {{ X = m /\ Z = n            }} ->
+        {{ X = m /\ Z = n            }} ->>
         {{ X + Z = m + n             }}
       WHILE X ≠ 0 DO
-        {{ X + Z = m + n /\ X ≠ 0    }} ->
+        {{ X + Z = m + n /\ X ≠ 0    }} ->>
         {{ (X - 1) + (Z + 1) = m + n }}
          Z ::= Z + 1;;
         {{ (X - 1) + Z = m + n       }}
@@ -102,12 +102,12 @@ Theorem parity_correct : forall m,
   {{ fun st => st X = m }}
   (* parity X = parity m *)
   WHILE BLe (ANum 2) (AId X) DO
-    (* {{ parity X = parity m /\ X >= 2 }} -> *)
-    (* {{ parity (X - 2) = parity m     }}    *)
+    (* {{ parity X = parity m /\ X >= 2 }} ->> *)
+    (* {{ parity (X - 2) = parity m     }}     *)
     X ::= AMinus (AId X) (ANum 2)
-    (* {{ parity X = parity m           }}    *)
+    (* {{ parity X = parity m           }}     *)
   END
-  (* {{ parity X = parity m /\ X <= 2   }} -> *)
+  (* {{ parity X = parity m /\ X <= 2   }} ->> *)
   {{ fun st => st X = parity m }}.
 Proof.
   intros.
