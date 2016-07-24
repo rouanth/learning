@@ -56,3 +56,14 @@ Proof.
 Qed.
 
 (* END hoare_proof_sound. *)
+
+Definition wp (c : com) (Q : Assertion) : Assertion :=
+  fun s => forall s', c / s ⇓ s' -> Q s'.
+
+(* Exercise: 1 star (wp_is_precondition) *)
+
+Lemma wp_is_precondition : forall c Q,
+  {{ wp c Q }} c {{ Q }}.
+Proof. unfold hoare_triple. auto. Qed.
+
+(* END wp_is_precondition. *)
