@@ -406,12 +406,12 @@ Fixpoint verification_conditions (P : Assertion) (d : dcom) : Prop :=
     | DCAsgn i a q => P ->> q [i |-> a]
     | DCIf b qt t qe e qp => ((fun st => P st /\ bassn b st) ->> qt)
                           /\ ((fun st => P st /\ ~ bassn b st) ->> qe)
-                          /\ (qp <<->> post t) /\ (qp <<->> post e)
+                          /\ (post t ->> qp) /\ (post e ->> qp)
                           /\ (verification_conditions qt t)
                           /\ (verification_conditions qe e)
     | DCWhile b qb d qp => P ->> post d
-                          /\ ((fun st => post d st /\ bassn b st) <<->> qb)
-                          /\ ((fun st => post d st /\ ~ bassn b st) <<->> qp)
+                          /\ ((fun st => post d st /\ bassn b st)   ->> qb)
+                          /\ ((fun st => post d st /\ ~ bassn b st) ->> qp)
                           /\ (verification_conditions qb d)
     | DCPre q d => P ->> q /\ verification_conditions q d
     | DCPost d q => verification_conditions P d /\ (post d ->> q)
@@ -425,10 +425,9 @@ Proof.
   - destruct H. eapply hoare_seq; [apply IHd2 | apply IHd1]; assumption.
   - eapply hoare_consequence_pre. eapply hoare_asgn. assumption.
   - destruct H. destruct H0. destruct H1. destruct H2. destruct H3.
-    destruct H1. destruct H2.
     apply hoare_if; eapply hoare_consequence;
       try apply IHd1; try apply IHd2; try eassumption.
-  - destruct H. destruct H0. destruct H0. destruct H1. destruct H1.
+  - destruct H. destruct H0. destruct H1.
     eapply hoare_consequence.
     + apply hoare_while. eapply hoare_consequence_pre; try apply IHd;
         eassumption.
@@ -498,3 +497,43 @@ Proof.
 Qed.
 
 (* END slow_assignment_dec. *)
+
+(* Exercise: 4 stars, advanced (factorial_dec) *)
+
+Fixpoint real_fact (n:nat) : nat :=
+  match n with
+  | O => 1
+  | S n' => n * (real_fact n')
+  end.
+
+Example factorial_dec (n : nat) : dcom :=
+(
+  {{ fun st => st X = n           }}
+    Y ::= ANum 1
+  {{ fun st => st Y * real_fact (st X) = real_fact n }} ;;
+    WHILE (BNot (BEq (AId X) (ANum 0))) DO
+      {{ fun st => st Y * (st X * real_fact (st X - 1)) = real_fact n
+         /\ ~ st X = 0 }} ->>
+      {{ fun st => (st Y * st X) * real_fact (st X - 1) = real_fact n
+         /\ ~ st X = 0 }}
+        Y ::= AMult (AId Y) (AId X)
+      {{ fun st => st Y * real_fact (st X - 1) = real_fact n
+         /\ st X <> 0 }} ;;
+        X ::= AMinus (AId X) (ANum 1)
+      {{ fun st => st Y * real_fact (st X) = real_fact n }}
+    END
+  {{ fun st => st Y * real_fact (st X) = real_fact n /\ st X = 0 }} ->>
+  {{ fun st => st Y = real_fact n }}
+) % dcom.
+
+Theorem factorial_dec_correct : forall n,
+  dec_correct (factorial_dec n).
+Proof.
+  intros. verify.
+  - destruct (st X). apply ex_falso_quodlibet. apply H0. trivial.
+    simpl in *. rewrite <- minus_n_O. assumption.
+  - rewrite <- H. rewrite mult_assoc. trivial.
+  - rewrite <- H. simpl. rewrite mult_1_r. trivial.
+Qed.
+
+(* END factorial_dec. *)
