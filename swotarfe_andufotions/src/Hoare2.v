@@ -247,3 +247,27 @@ Qed.
 *)
 
 (* END dpow2_down. *)
+
+(* Exercise: 1 star, optional (wp) *)
+
+(*
+  1) {{ X = 5 }}  SKIP  {{ X = 5 }}
+
+  2) {{ Y + Z = 5 }}  X ::= Y + Z {{ X = 5 }}
+
+  3) {{ True }}  X ::= Y  {{ X = Y }}
+
+  4) {{ X = 0 /\ Z + 1 = 5 \/ X <> 0 /\ W + 2 = 5 }}
+     IFB X == 0 THEN Y ::= Z + 1 ELSE Y ::= W + 2 FI
+     {{ Y = 5 }}
+
+  5) {{ False }}
+     X ::= 5
+     {{ X = 0 }}
+
+  6) {{ False }}
+     WHILE True DO X ::= 0 END
+     {{ X = 0 }} 
+*)
+
+(* END wp. *)
