@@ -183,3 +183,38 @@ Qed.
 *)
 
 (* END Min_Hoare. *)
+
+(* Exercise: 3 stars (two_loops) *)
+
+(*
+    {{ True }} ⇾
+    {{ c = 0 + 0 + c                          }}
+  X ::= 0;;
+    {{ c = X + 0 + c                          }}
+  Y ::= 0;;
+    {{ c = X + Y + c                          }}
+  Z ::= c;;
+    {{ Z = X + Y + c                          }}
+  WHILE X ≠ a DO
+      {{ Z = X + Y + c /\ X ≠ a                 }} ⇾
+      {{ Z + 1 = (X + 1) + Y + c                }}
+    X ::= X + 1;;
+      {{ Z + 1 = X + Y + c                      }}
+    Z ::= Z + 1
+      {{ Z = X + Y + c                          }}
+  END;;
+    {{ Z = X + Y + c /\ X = a                 }} ⇾
+    {{ Z = a + Y + c                          }}
+  WHILE Y ≠ b DO
+      {{ Z = a + Y + c /\ Y ≠ b                 }} ⇾
+      {{ Z + 1 = a + (Y + 1) + c                }}
+    Y ::= Y + 1;;
+      {{ Z + 1 = a + Y + c                      }}
+    Z ::= Z + 1
+      {{ Z = a + Y + c                          }}
+  END
+    {{ Z = a + Y + c /\ Y = b                   }} ⇾
+    {{ Z = a + b + c }} 
+*)
+
+(* END two_loops. *)
