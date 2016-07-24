@@ -77,3 +77,53 @@ Proof.
 Qed.
 
 (* END wp_is_weakest. *)
+
+(* Exercise: 5 stars (hoare_proof_complete) *)
+
+Theorem hoare_proof_complete : forall P c Q,
+  {{ P }} c {{ Q }} -> hoare_proof P c Q.
+Proof.
+  intros P c. generalize dependent P.
+  induction c; intros P Q HT.
+  - (* SKIP *)
+    eapply H_Consequence.
+    + constructor.
+    + intros st H. apply H.
+    + intros st H. eapply HT. constructor. assumption.
+  - (* i ::= a *)
+    eapply H_Consequence_pre.
+    + constructor.
+    + intros st H. eapply HT. constructor. assumption.
+  - (* c1 ;; c2 *)
+    unfold hoare_triple in HT. apply H_Seq with (wp c2 Q);
+      [apply IHc1 | apply IHc2]; unfold hoare_triple.
+    + unfold wp. intros.
+      apply HT with st; try apply E_Seq with st'; assumption.
+    + auto.
+  - (* IFB *)
+    apply H_If;
+      [ apply H_Consequence_pre with (wp c1 Q) |
+        apply H_Consequence_pre with (wp c2 Q) ];
+      unfold hoare_triple in IHc1; unfold hoare_triple in IHc2; auto;
+      clear IHc1 IHc2; intros st [H H0] s' H'; apply HT with st; auto.
+    + apply E_IfTrue; auto.
+    + apply E_IfFalse; auto.
+      destruct (beval st b) eqn : bevalb. contradiction. trivial.
+  - (* WHILE *)
+    unfold hoare_triple in HT.
+    remember (wp (WHILE b DO c END) Q) as R.
+    apply H_Consequence with (P' := R) (Q' := fun st => R st /\ ~ bassn b st).
+    + apply H_While. apply IHc.
+      unfold hoare_triple. intros. destruct H0. subst.
+      unfold wp in H0. unfold wp. intros s' H'.
+      apply H0.
+      apply E_WhileLoop with st'; assumption.
+    + intros st H. subst. intros st' H'. apply HT with st; assumption.
+    + intros st [H h']. subst. apply H.
+      apply E_WhileEnd.
+      destruct (beval st b) eqn: bevalb.
+      * contradiction.
+      * trivial.
+Qed.
+
+(* END hoare_proof_complete. *)
