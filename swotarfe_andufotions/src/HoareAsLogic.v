@@ -67,3 +67,13 @@ Lemma wp_is_precondition : forall c Q,
 Proof. unfold hoare_triple. auto. Qed.
 
 (* END wp_is_precondition. *)
+
+(* Exercise: 1 star (wp_is_weakest) *)
+
+Lemma wp_is_weakest : forall c Q P',
+  {{ P' }} c {{ Q }} -> forall st, P' st -> wp c Q st.
+Proof.
+  unfold hoare_triple. unfold wp. eauto.
+Qed.
+
+(* END wp_is_weakest. *)
