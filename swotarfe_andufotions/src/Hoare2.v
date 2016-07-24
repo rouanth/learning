@@ -299,3 +299,17 @@ Proof.
 Qed.
 
 (* END is_wp_formal. *)
+
+(* Exercise: 2 stars, advanced, optional (hoare_asgn_weakest) *)
+
+Theorem hoare_asgn_weakest : forall Q X a,
+  is_wp (Q [X |-> a]) (X ::= a) Q.
+Proof.
+  split.
+  - apply hoare_asgn.
+  - unfold hoare_triple. unfold assert_implies. unfold assn_sub.
+    intros.
+    apply H with st; try assumption. constructor.
+Qed.
+
+(* END hoare_asgn_weakest. *)
