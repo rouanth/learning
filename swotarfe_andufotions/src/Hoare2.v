@@ -156,3 +156,30 @@ Qed.
 *)
 
 (* END factorial. *)
+
+(* Exercise: 3 stars (Min_Hoare) *)
+
+(*
+  {{ True }} ⇾
+  {{ 0 + min a b = min a b }}
+  X ::= a;;
+  {{ 0 + min X b = min a b }}
+  Y ::= b;;
+  {{ 0 + min X Y = min a b }}
+  Z ::= 0;;
+  {{ Z + min X Y = min a b }}
+  WHILE (X ≠ 0 /\ Y ≠ 0) DO
+  {{ Z + min X Y = min a b /\ X ≠ 0 /\ Y ≠ 0 }} ⇾
+  {{ (Z + 1) + min (X - 1) (Y - 1) = min a b }}
+  X := X - 1;;
+  {{ (Z + 1) + min X (Y - 1) = min a b }}
+  Y := Y - 1;;
+  {{ (Z + 1) + min X Y = min a b }}
+  Z := Z + 1
+  {{ Z + min X Y = min a b }}
+  END
+  {{ Z + min X Y = min a b /\ (X = 0 \/ X = 0) }} ⇾
+  {{ Z = min a b }}
+*)
+
+(* END Min_Hoare. *)
