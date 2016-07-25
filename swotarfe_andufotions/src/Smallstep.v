@@ -18,18 +18,18 @@ Fixpoint evalF (t : tm) : nat :=
 
 Module SimpleArith1.
 
-Reserved Notation " t '=>' t' " (at level 40).
+Reserved Notation " t '==>' t' " (at level 40).
 
 Inductive step : tm -> tm -> Prop :=
   | ST_PlusConstConst : forall n1 n2,
-    P (C n1) (C n2) => C (n1 + n2)
+    P (C n1) (C n2) ==> C (n1 + n2)
   | ST_Plus1 : forall t1 t1' t2,
-    t1 => t1' ->
-    P t1 t2 => P t1' t2
+    t1 ==> t1' ->
+    P t1 t2 ==> P t1' t2
   | ST_Plus2 : forall n t2 t2',
-    t2 => t2' ->
-    P (C n) t2 => P (C n) t2'
-  where " t '=>' t' " := (step t t').
+    t2 ==> t2' ->
+    P (C n) t2 ==> P (C n) t2'
+  where " t '==>' t' " := (step t t').
 
 (* Exercise: 1 star (test_step_2) *)
 
@@ -39,7 +39,7 @@ Example test_step_2 :
         (P
           (C 2)
           (P (C 0) (C 3)))
-      =>
+      ==>
       P
         (C 0)
         (P
@@ -55,19 +55,19 @@ End SimpleArith1.
 Inductive value : tm -> Prop :=
   | v_const : forall n, value (C n).
 
-Reserved Notation "t '=>' t'" (at level 40).
+Reserved Notation "t '==>' t'" (at level 40).
 
 Inductive step : tm -> tm -> Prop :=
   | ST_PlusConstConst : forall n1 n2,
-      P (C n1) (C n2) => C (n1 + n2)
+      P (C n1) (C n2) ==> C (n1 + n2)
   | ST_Plus1 : forall t1 t1' t2,
-      t1 => t1' ->
-      P t1 t2 => P t1' t2
+      t1 ==> t1' ->
+      P t1 t2 ==> P t1' t2
   | ST_Plus2 : forall v1 t2 t2',
       value v1 ->
-      t2 => t2' ->
-      P v1 t2 => P v1 t2'
-  where "t '=>' t'" := (step t t').
+      t2 ==> t2' ->
+      P v1 t2 ==> P v1 t2'
+  where "t '==>' t'" := (step t t').
 
 (* Exercise: 3 stars, recommended (redo_determinism) *)
 
@@ -86,7 +86,7 @@ Qed.
 (* END redo_determinism. *)
 
 Theorem strong_progress : forall t,
-  value t \/ (exists t', t => t').
+  value t \/ (exists t', t ==> t').
 Proof.
   induction t.
   - left. constructor.
@@ -107,7 +107,7 @@ Proof.
   unfold normal_form.
   split; intros.
   - (* nf -> value *)
-    assert (value t \/ exists t', t => t'). { apply strong_progress. }
+    assert (value t \/ exists t', t ==> t'). { apply strong_progress. }
     destruct H0.
     + assumption.
     + contradiction.
@@ -121,21 +121,21 @@ Module Temp2.
 Inductive value : tm -> Prop :=
   | v_const : forall n, value (C n).
 
-Reserved Notation "t '=>' t'" (at level 40).
+Reserved Notation "t '==>' t'" (at level 40).
 
 Inductive step : tm -> tm -> Prop :=
   | ST_Funny : forall n,
-      C n => P (C n) (C 0)
+      C n ==> P (C n) (C 0)
   | ST_PlusConstConst : forall n1 n2,
-      P (C n1) (C n2) => C (n1 + n2)
+      P (C n1) (C n2) ==> C (n1 + n2)
   | ST_Plus1 : forall t1 t1' t2,
-      t1 => t1' ->
-      P t1 t2 => P t1' t2
+      t1 ==> t1' ->
+      P t1 t2 ==> P t1' t2
   | ST_Plus2 : forall v1 t2 t2',
       value v1 ->
-      t2 => t2' ->
-      P v1 t2 => P v1 t2'
-  where "t '=>' t'" := (step t t').
+      t2 ==> t2' ->
+      P v1 t2 ==> P v1 t2'
+  where "t '==>' t'" := (step t t').
 
 (* Exercise: 2 stars, optional (value_not_same_as_normal_form) *)
 
@@ -160,15 +160,15 @@ Module Temp3.
 Inductive value : tm -> Prop :=
   | v_const : forall n, value (C n).
 
-Reserved Notation "t '=>' t'" (at level 40).
+Reserved Notation "t '==>' t'" (at level 40).
 
 Inductive step : tm -> tm -> Prop :=
   | ST_PlusConstConst : forall n1 n2,
-      P (C n1) (C n2) => C (n1 + n2)
+      P (C n1) (C n2) ==> C (n1 + n2)
   | ST_Plus1 : forall t1 t1' t2,
-      t1 => t1' ->
-      P t1 t2 => P t1' t2
-  where "t '=>' t'" := (step t t').
+      t1 ==> t1' ->
+      P t1 t2 ==> P t1' t2
+  where "t '==>' t'" := (step t t').
 
 (* Exercise: 3 stars, optional (value_not_same_as_normal_form') *)
 
@@ -197,25 +197,25 @@ Inductive value : tm -> Prop :=
   | v_true  : value ttrue
   | v_false : value tfalse.
 
-Reserved Notation "t '=>' t'" (at level 40).
+Reserved Notation "t '==>' t'" (at level 40).
 
 Inductive step : tm -> tm -> Prop :=
   | ST_IfTrue : forall t1 t2,
-      tif ttrue  t1 t2 => t1
+      tif ttrue  t1 t2 ==> t1
   | ST_IfFalse : forall t1 t2,
-      tif tfalse t1 t2 => t2
+      tif tfalse t1 t2 ==> t2
   | ST_If : forall t t' t1 t2,
-      t => t' ->
-      tif t t1 t2 => tif t' t1 t2
-  where "t '=>' t'" := (step t t').
+      t ==> t' ->
+      tif t t1 t2 ==> tif t' t1 t2
+  where "t '==>' t'" := (step t t').
 
 Definition bool_step_prop1 :=
-  tfalse => tfalse.
+  tfalse ==> tfalse.
 
 Definition bool_step_prop2 :=
   tif ttrue
     (tif ttrue ttrue ttrue)
-    (tif tfalse tfalse tfalse) =>
+    (tif tfalse tfalse tfalse) ==>
   ttrue.
 
 Definition bool_step_prop3 :=
@@ -223,7 +223,7 @@ Definition bool_step_prop3 :=
     (tif ttrue ttrue ttrue)
     (tif ttrue ttrue ttrue)
     tfalse
-  =>
+  ==>
   tif
     ttrue
     (tif ttrue ttrue ttrue)
@@ -257,7 +257,7 @@ Qed.
 (* Exercise: 3 stars, optional (progress_bool) *)
 
 Theorem strong_progress : forall t,
-  value t \/ (exists t', t => t').
+  value t \/ (exists t', t ==> t').
 Proof.
   intros.
   induction t; try (left; constructor); right.
@@ -284,22 +284,22 @@ Module Temp5.
 
 (* Exercise: 2 stars (smallstep_bool_shortcut) *)
 
-Reserved Notation "t '=>' t'" (at level 40).
+Reserved Notation "t '==>' t'" (at level 40).
 
 Inductive step : tm -> tm -> Prop :=
   | ST_IfTrue : forall t1 t2,
-      tif ttrue  t1 t2 => t1
+      tif ttrue  t1 t2 ==> t1
   | ST_IfFalse : forall t1 t2,
-      tif tfalse t1 t2 => t2
+      tif tfalse t1 t2 ==> t2
   | ST_If : forall t t' t1 t2,
-      t => t' ->
-      tif t t1 t2 => tif t' t1 t2
+      t ==> t' ->
+      tif t t1 t2 ==> tif t' t1 t2
   | ST_Same : forall t t',
-      tif t t' t' => t'
-  where "t '=>' t'" := (step t t').
+      tif t t' t' ==> t'
+  where "t '==>' t'" := (step t t').
 
 Definition bool_step_prop4 :=
-  tif (tif ttrue ttrue ttrue) tfalse tfalse => tfalse.
+  tif (tif ttrue ttrue ttrue) tfalse tfalse ==> tfalse.
 
 Example bool_step_prop4_holds :
   bool_step_prop4.
@@ -320,7 +320,7 @@ Proof.
 Qed.
 
 Theorem strong_progress : forall t,
-  value t \/ (exists t', t => t').
+  value t \/ (exists t', t ==> t').
 Proof.
   induction t; try (left; constructor); right.
   destruct IHt1; inversion H; subst;
@@ -331,16 +331,16 @@ Qed.
 Theorem step_deterministic : ~ deterministic step.
 Proof.
   unfold deterministic. intros CONTRA.
-  assert (tif (tif ttrue ttrue ttrue) ttrue ttrue => ttrue) by constructor.
-  assert (tif (tif ttrue ttrue ttrue) ttrue ttrue => tif ttrue ttrue ttrue)
+  assert (tif (tif ttrue ttrue ttrue) ttrue ttrue ==> ttrue) by constructor.
+  assert (tif (tif ttrue ttrue ttrue) ttrue ttrue ==> tif ttrue ttrue ttrue)
     by repeat constructor.
   assert (ttrue = tif ttrue ttrue ttrue) by
    (apply CONTRA with (tif (tif ttrue ttrue ttrue) ttrue ttrue); assumption).
   solve by inversion.
 Qed.
 
-(* Removing ST_If causes strong progress to fail since `tif` is not a value but
-at the same time `tif i t e` won't, if `t` and `e` don't form a shortcut,
+(* Removing ST_If causes strong progress to fail since `tif` is not a value
+but at the same time `tif i t e` won't, if `t` and `e` don't form a shortcut,
 be able to make a step. *)
 
 (* END properties_of_altered_step. *)
@@ -355,7 +355,7 @@ Inductive multi {X : Type} (R : relation X) : relation X :=
                    multi R y z ->
                    multi R x z.
 
-Notation " t '=>*' t' " := (multi step t t') (at level 40).
+Notation " t '==>*' t' " := (multi step t t') (at level 40).
 
 Theorem multi_R : forall (X : Type) (R : relation X) (x y : X),
   R x y -> (multi R) x y.
@@ -375,7 +375,7 @@ Qed.
 (* Exercise: 1 star, optional (test_multistep_2) *)
 
 Lemma test_multistep_2:
-  C 3 =>* C 3.
+  C 3 ==>* C 3.
 Proof.
   apply multi_refl.
 Qed.
@@ -386,7 +386,7 @@ Qed.
 
 Lemma test_multistep_3 :
   P (C 0) (C 3)
-=>*
+==>*
   P (C 0) (C 3).
 Proof.
   apply multi_refl.
@@ -402,7 +402,7 @@ Lemma test_multistep_4:
         (P
           (C 2)
           (P (C 0) (C 3)))
-  =>*
+  ==>*
       P
         (C 0)
         (C (2 + (0 + 3))).
@@ -414,7 +414,7 @@ Qed.
 (* END test_multistep_4. *)
 
 Definition normal_form_of (t t' : tm) :=
-  (t =>* t') /\ (normal_form step t').
+  (t ==>* t') /\ (normal_form step t').
 
 (* Exercise: 3 stars, optional (normal_forms_unique) *)
 
@@ -429,13 +429,13 @@ Proof.
   induction P11; intros.
   - unfold normal_form in P12.
     inversion P21; subst; trivial.
-    assert (exists x' : tm, x => x') by (exists y; assumption).
+    assert (exists x' : tm, x ==> x') by (exists y; assumption).
     contradiction.
   - apply IHP11 in P22; subst; trivial.
     clear IHP11.
     inversion P21; subst.
     + unfold normal_form in P22.
-      assert (exists x' : tm, y2 => x') by (exists y; assumption).
+      assert (exists x' : tm, y2 ==> x') by (exists y; assumption).
       contradiction.
     + assert (deterministic step) by apply step_deterministic.
       unfold deterministic in H2.
@@ -449,8 +449,8 @@ Definition normalizing { X : Type } (R : relation X) :=
   forall t, exists t', multi R t t' /\ normal_form R t'.
 
 Lemma multistep_congr_1 : forall t1 t1' t2,
-  t1 =>* t1' ->
-  P t1 t2 =>* P t1' t2.
+  t1 ==>* t1' ->
+  P t1 t2 ==>* P t1' t2.
 Proof.
   intros. induction H; subst.
   - constructor.
@@ -461,8 +461,8 @@ Qed.
 
 Lemma multistep_congr_2 : forall t1 t2 t2',
   value t1 ->
-  t2 =>* t2' ->
-  P t1 t2 =>* P t1 t2'.
+  t2 ==>* t2' ->
+  P t1 t2 ==>* P t1 t2'.
 Proof.
   intros. induction H0.
   - constructor.
@@ -473,9 +473,9 @@ Qed.
 
 Lemma multistep_congr_ultimate :
   forall t1 t2 n1 n2,
-    t1 =>* C n1 ->
-    t2 =>* C n2 ->
-    P t1 t2 =>* C (n1 + n2).
+    t1 ==>* C n1 ->
+    t2 ==>* C n2 ->
+    P t1 t2 ==>* C (n1 + n2).
 Proof.
   intros.
   apply multi_trans with (P (C n1) t2).
@@ -517,7 +517,7 @@ Inductive eval : tm -> nat -> Prop :=
 (* Exercise: 3 stars (eval__multistep) *)
 
 Theorem eval__multistep : forall t n,
-  t ⇓ n -> t =>* C n.
+  t ⇓ n -> t ==>* C n.
 Proof.
   intros.
   induction H.
@@ -531,20 +531,20 @@ Qed.
 
 (* We shall use induction on "t ⇓ n".
 
-First, it could be produced by E_Const. Then be need to prove that
-(C n) =>* (C n) for all `n`. This is true by the reflexive property of `multi`.
+First, it could be produced by E_Const. Then be need to prove that (C n) ==>*
+(C n) for all `n`. This is true by the reflexive property of `multi`.
 
 Next, t ⇓ n could be a result of E_Plus. Then it has a form `P t1 t2 ⇓ n`. By
-the induction hypothesis, t1 =>* C n1, t2 =>* C n2, and we have to prove that
-P (C n1) (C n2) =>* C (n1 + n2).
+the induction hypothesis, t1 ==>* C n1, t2 ==>* C n2, and we have to prove
+that P (C n1) (C n2) ==>* C (n1 + n2).
 
-By transitivity of `multi`, we have to prove that P t1 t2 =>* P (C n1) t2,
-P (C n1) t2 =>* P (C n1) (C n2), and P (C n1) (C n2) =>* C (n1 + n2) in order
-to prove that P t1 t2 =>* C (n1 + n2).
+By transitivity of `multi`, we have to prove that P t1 t2 ==>* P (C n1) t2,
+P (C n1) t2 ==>* P (C n1) (C n2), and P (C n1) (C n2) ==>* C (n1 + n2) in
+order to prove that P t1 t2 ==>* C (n1 + n2).
 
 The first is true by multistep_congr_1, the second is true by
-multistep_congr_2. P t1 t2 =>* C (n1 + n2) can be transformed by multi_R into
-P t1 t2 => C (n1 + n2), which is just ST_PlusConstConst.
+multistep_congr_2. P t1 t2 ==>* C (n1 + n2) can be transformed by multi_R into
+P t1 t2 ==> C (n1 + n2), which is just ST_PlusConstConst.
 *)
 
 (* END eval__multistep_inf. *)
@@ -552,7 +552,7 @@ P t1 t2 => C (n1 + n2), which is just ST_PlusConstConst.
 (* Exercise: 3 stars (step__eval) *)
 
 Lemma step_eval : forall t t' n,
-  t => t' ->
+  t ==> t' ->
   t' ⇓ n  ->
   t  ⇓ n.
 Proof.
@@ -567,10 +567,10 @@ Qed.
 
 (* Exercise: 3 stars (multistep__eval) *)
 
-Lemma t_to_num : forall t, exists n, t =>* C n.
+Lemma t_to_num : forall t, exists n, t ==>* C n.
 Proof.
   intros.
-  assert (exists t', t =>* t' /\ normal_form step t')
+  assert (exists t', t ==>* t' /\ normal_form step t')
     by apply step_normalizing.
   destruct H as [t' [t_to_t' nf] ].
   apply nf_same_as_value in nf. inversion nf; subst.
@@ -589,10 +589,10 @@ Proof.
       * trivial.
       * constructor.
     + inversion H.
-  - assert (exists n', t1 =>* C n') by apply t_to_num.
-    assert (exists n', t2 =>* C n') by apply t_to_num.
+  - assert (exists n', t1 ==>* C n') by apply t_to_num.
+    assert (exists n', t2 ==>* C n') by apply t_to_num.
     destruct H; destruct H0.
-    assert (P t1 t2 =>* C (x + x0))
+    assert (P t1 t2 ==>* C (x + x0))
       by (apply multistep_congr_ultimate; assumption).
     assert (deterministic normal_form_of) by apply normal_forms_unique.
     unfold normal_form_of in H2. unfold deterministic in H2.
@@ -637,35 +637,35 @@ Inductive value : tm -> Prop :=
   | v_true  : value ttrue
   | v_false : value tfalse.
 
-Reserved Notation "t '=>' t'" (at level 40).
+Reserved Notation "t '==>' t'" (at level 40).
 
 Inductive step : tm -> tm -> Prop :=
   | ST_PlusConstConst : forall n1 n2,
-      P (C n1) (C n2) => C (n1 + n2)
+      P (C n1) (C n2) ==> C (n1 + n2)
   | ST_Plus1 : forall t1 t1' t2,
-      t1 => t1' ->
-      P t1 t2 => P t1' t2
+      t1 ==> t1' ->
+      P t1 t2 ==> P t1' t2
   | ST_Plus2 : forall v1 t2 t2',
       value v1 ->
-      t2 => t2' ->
-      P v1 t2 => P v1 t2'
+      t2 ==> t2' ->
+      P v1 t2 ==> P v1 t2'
   | ST_IfTrue : forall t1 t2,
-      tif ttrue  t1 t2 => t1
+      tif ttrue  t1 t2 ==> t1
   | ST_IfFalse : forall t1 t2,
-      tif tfalse t1 t2 => t2
+      tif tfalse t1 t2 ==> t2
   | ST_If : forall t t' t1 t2,
-      t => t' ->
-      tif t t1 t2 => tif t' t1 t2
-  where "t '=>' t'" := (step t t').
+      t ==> t' ->
+      tif t t1 t2 ==> tif t' t1 t2
+  where "t '==>' t'" := (step t t').
 
 (* Exercise: 4 stars (combined_properties) *)
 
 Theorem lack_of_strong_progress :
-  ~ (forall t, value t \/ (exists t', t => t')).
+  ~ (forall t, value t \/ (exists t', t ==> t')).
 Proof.
   intro CONTRA.
   remember (P (C 0) ttrue) as Cex.
-  assert (value Cex \/ (exists t' : tm, Cex => t')) by apply CONTRA.
+  assert (value Cex \/ (exists t' : tm, Cex ==> t')) by apply CONTRA.
   subst. destruct H as [ H | [ t H ]]; solve by inversion 2.
 Qed.
 
@@ -687,3 +687,4 @@ Qed.
 (* END combined_properties. *)
 
 End Combined.
+
