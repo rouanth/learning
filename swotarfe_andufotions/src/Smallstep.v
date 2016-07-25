@@ -148,3 +148,34 @@ Qed.
 (* END value_not_same_as_normal_form. *)
 
 End Temp2.
+
+Module Temp3.
+
+Inductive value : tm -> Prop :=
+  | v_const : forall n, value (C n).
+
+Reserved Notation "t '=>' t'" (at level 40).
+
+Inductive step : tm -> tm -> Prop :=
+  | ST_PlusConstConst : forall n1 n2,
+      P (C n1) (C n2) => C (n1 + n2)
+  | ST_Plus1 : forall t1 t1' t2,
+      t1 => t1' ->
+      P t1 t2 => P t1' t2
+  where "t '=>' t'" := (step t t').
+
+(* Exercise: 3 stars, optional (value_not_same_as_normal_form') *)
+
+Lemma value_not_same_as_normal_form :
+  exists t, ~ value t /\ normal_form step t.
+Proof.
+  exists (P (C 0) (P (C 1) (C 2))).
+  split.
+  - intro CONTRA. inversion CONTRA.
+  - unfold normal_form. unfold not. intro CONTRA.
+    solve by inversion 3.
+Qed.
+
+(* END value_not_same_as_normal_form'. *)
+
+End Temp3.
