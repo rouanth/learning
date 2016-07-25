@@ -10,6 +10,12 @@ Inductive tm : Type :=
   | C : nat -> tm
   | P : tm  -> tm  -> tm.
 
+Fixpoint evalF (t : tm) : nat :=
+  match t with
+    | C n => n
+    | P t1 t2 => evalF t1 + evalF t2
+  end.
+
 Module SimpleArith1.
 
 Reserved Notation " t '=>' t' " (at level 40).
@@ -604,3 +610,15 @@ Proof.
 Qed.
 
 (* END multistep_eval. *)
+
+(* Exercise: 3 stars, optional (interp_tm) *)
+
+Theorem evalF_eval : forall t n,
+  evalF t = n <-> t ⇓ n.
+Proof.
+  split; intro.
+  - subst; induction t; simpl; constructor; assumption.
+  - induction H; subst; reflexivity.
+Qed.
+
+(* END interp_tm. *)
