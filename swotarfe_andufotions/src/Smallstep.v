@@ -341,3 +341,68 @@ be able to make a step. *)
 
 End Temp5.
 End Temp4.
+
+Inductive multi {X : Type} (R : relation X) : relation X :=
+  | multi_refl : forall x, multi R x x
+  | multi_step : forall x y z,
+                   R x y ->
+                   multi R y z ->
+                   multi R x z.
+
+Notation " t '=>*' t' " := (multi step t t') (at level 40).
+
+Theorem multi_R : forall (X : Type) (R : relation X) (x y : X),
+  R x y -> (multi R) x y.
+Proof.
+  intros. econstructor. eassumption. constructor.
+Qed.
+
+Theorem multi_trans : forall X (R : relation X) (x y z : X),
+  multi R x y -> multi R y z -> multi R x z.
+Proof.
+  intros. induction H.
+  - assumption.
+  - apply IHmulti in H0. generalize dependent H0. generalize dependent H.
+    apply multi_step.
+Qed.
+
+(* Exercise: 1 star, optional (test_multistep_2) *)
+
+Lemma test_multistep_2:
+  C 3 =>* C 3.
+Proof.
+  apply multi_refl.
+Qed.
+
+(* END test_multistep_2. *)
+
+(* Exercise: 1 star, optional (test_multistep_3) *)
+
+Lemma test_multistep_3 :
+  P (C 0) (C 3)
+=>*
+  P (C 0) (C 3).
+Proof.
+  apply multi_refl.
+Qed.
+
+(* END test_multistep_3. *)
+
+(* Exercise: 2 stars (test_multistep_4) *)
+
+Lemma test_multistep_4:
+      P
+        (C 0)
+        (P
+          (C 2)
+          (P (C 0) (C 3)))
+  =>*
+      P
+        (C 0)
+        (C (2 + (0 + 3))).
+Proof.
+  apply multi_step with (P (C 0) (P (C 2) (C (0 + 3)))); repeat constructor.
+  apply multi_step with (P (C 0) (C (2 + (0 + 3)))); repeat constructor.
+Qed.
+
+(* END test_multistep_4. *)
