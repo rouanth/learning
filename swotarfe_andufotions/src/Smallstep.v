@@ -248,4 +248,18 @@ Qed.
 
 (* END smallstep_bools. *)
 
+(* Exercise: 3 stars, optional (progress_bool) *)
+
+Theorem strong_progress : forall t,
+  value t \/ (exists t', t => t').
+Proof.
+  intros.
+  induction t; try (left; constructor); right.
+  destruct IHt1.
+  - inversion H; subst; [ exists t2 | exists t3 ]; constructor.
+  - destruct H. exists (tif x t2 t3). constructor. assumption.
+Qed.
+
+(* END progress_bool. *)
+
 End Temp4.
