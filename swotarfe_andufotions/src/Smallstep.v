@@ -464,3 +464,53 @@ Proof.
 Qed.
 
 (* END multistep_congr_2. *)
+
+Theorem step_normalizing : normalizing step.
+Proof.
+  unfold normalizing.
+  induction t.
+  - exists (C n).
+    split.
+    + constructor.
+    + intro CONTRA. destruct CONTRA. solve by inversion.
+  - destruct IHt1 as [t' [Ht1 NFt1]]; destruct IHt2 as [t'' [Ht2 NFt2]].
+    apply nf_same_as_value in NFt1. apply nf_same_as_value in NFt2.
+    inversion NFt1; inversion NFt2; subst.
+    exists (C (n + n0)).
+    split.
+    + apply multi_trans with (P (C n) t2).
+        apply multistep_congr_1; assumption.
+      apply multi_trans with (P (C n) (C n0)).
+        apply multistep_congr_2; assumption.
+      apply multi_R.
+      constructor.
+    + apply nf_same_as_value. constructor.
+Qed.
+
+Reserved Notation " t '⇓' n " (at level 50, left associativity).
+
+Inductive eval : tm -> nat -> Prop :=
+  | E_Const : forall n,
+      C n ⇓ n
+  | E_Plus : forall t1 t2 n1 n2,
+      t1 ⇓ n1 ->
+      t2 ⇓ n2 ->
+      P t1 t2 ⇓ (n1 + n2)
+  where " t '⇓' n " := (eval t n).
+
+(* Exercise: 3 stars (eval__multistep) *)
+
+Theorem eval__multistep : forall t n,
+  t ⇓ n -> t =>* C n.
+Proof.
+  intros.
+  induction H.
+  - constructor.
+  - apply multi_trans with (P (C n1) t2).
+      apply multistep_congr_1; assumption.
+    apply multi_trans with (P (C n1) (C n2)).
+      apply multistep_congr_2; try constructor; assumption.
+    apply multi_R. constructor.
+Qed.
+
+(* END eval__multistep. *)
