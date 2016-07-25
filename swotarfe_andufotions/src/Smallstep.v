@@ -406,3 +406,35 @@ Proof.
 Qed.
 
 (* END test_multistep_4. *)
+
+Definition normal_form_of (t t' : tm) :=
+  (t =>* t') /\ (normal_form step t').
+
+(* Exercise: 3 stars, optional (normal_forms_unique) *)
+
+Theorem normal_forms_unique :
+  deterministic normal_form_of.
+Proof.
+  unfold deterministic. unfold normal_form_of.
+  intros x y1 y2 P1 P2.
+  inversion P1 as [P11 P12]; clear P1.
+  inversion P2 as [P21 P22]; clear P2.
+  generalize dependent y2.
+  induction P11; intros.
+  - unfold normal_form in P12.
+    inversion P21; subst; trivial.
+    assert (exists x' : tm, x => x') by (exists y; assumption).
+    contradiction.
+  - apply IHP11 in P22; subst; trivial.
+    clear IHP11.
+    inversion P21; subst.
+    + unfold normal_form in P22.
+      assert (exists x' : tm, y2 => x') by (exists y; assumption).
+      contradiction.
+    + assert (deterministic step) by apply step_deterministic.
+      unfold deterministic in H2.
+      assert (y = y0). { apply H2 with x; assumption. }
+      subst; assumption.
+Qed.
+
+(* END normal_forms_unique. *)
