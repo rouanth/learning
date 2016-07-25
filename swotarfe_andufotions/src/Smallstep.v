@@ -536,3 +536,19 @@ P t1 t2 => C (n1 + n2), which is just ST_PlusConstConst.
 *)
 
 (* END eval__multistep_inf. *)
+
+(* Exercise: 3 stars (step__eval) *)
+
+Lemma step_eval : forall t t' n,
+  t => t' ->
+  t' ⇓ n  ->
+  t  ⇓ n.
+Proof.
+  intros t t' n Hs. generalize dependent n.
+  induction Hs; intros; inversion H; subst.
+  - repeat constructor.
+  - apply IHHs in H2. constructor; assumption.
+  - inversion H0; subst. apply IHHs in H5. constructor; assumption.
+Qed.
+
+(* END step__eval. *)
