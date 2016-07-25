@@ -465,6 +465,21 @@ Qed.
 
 (* END multistep_congr_2. *)
 
+Lemma multistep_congr_ultimate :
+  forall t1 t2 n1 n2,
+    t1 =>* C n1 ->
+    t2 =>* C n2 ->
+    P t1 t2 =>* C (n1 + n2).
+Proof.
+  intros.
+  apply multi_trans with (P (C n1) t2).
+    apply multistep_congr_1; assumption.
+  apply multi_trans with (P (C n1) (C n2)).
+    apply multistep_congr_2; try constructor; assumption.
+  apply multi_R.
+  repeat constructor.
+Qed.
+
 Theorem step_normalizing : normalizing step.
 Proof.
   unfold normalizing.
@@ -478,12 +493,7 @@ Proof.
     inversion NFt1; inversion NFt2; subst.
     exists (C (n + n0)).
     split.
-    + apply multi_trans with (P (C n) t2).
-        apply multistep_congr_1; assumption.
-      apply multi_trans with (P (C n) (C n0)).
-        apply multistep_congr_2; assumption.
-      apply multi_R.
-      constructor.
+    + apply multistep_congr_ultimate; assumption.
     + apply nf_same_as_value. constructor.
 Qed.
 
@@ -506,11 +516,7 @@ Proof.
   intros.
   induction H.
   - constructor.
-  - apply multi_trans with (P (C n1) t2).
-      apply multistep_congr_1; assumption.
-    apply multi_trans with (P (C n1) (C n2)).
-      apply multistep_congr_2; try constructor; assumption.
-    apply multi_R. constructor.
+  - apply multistep_congr_ultimate; assumption.
 Qed.
 
 (* END eval__multistep. *)
@@ -552,3 +558,49 @@ Proof.
 Qed.
 
 (* END step__eval. *)
+
+(* Exercise: 3 stars (multistep__eval) *)
+
+Lemma t_to_num : forall t, exists n, t =>* C n.
+Proof.
+  intros.
+  assert (exists t', t =>* t' /\ normal_form step t')
+    by apply step_normalizing.
+  destruct H as [t' [t_to_t' nf] ].
+  apply nf_same_as_value in nf. inversion nf; subst.
+  exists n. assumption.
+Qed.
+
+Theorem multistep__eval : forall t t',
+  normal_form_of t t' -> exists n, t' = C n /\ t ⇓ n.
+Proof.
+  unfold normal_form_of.
+  intros t t' [t_to_t' nf].
+  generalize dependent t'.
+  induction t; intros.
+  - inversion t_to_t'; subst.
+    + exists n. split.
+      * trivial.
+      * constructor.
+    + inversion H.
+  - assert (exists n', t1 =>* C n') by apply t_to_num.
+    assert (exists n', t2 =>* C n') by apply t_to_num.
+    destruct H; destruct H0.
+    assert (P t1 t2 =>* C (x + x0))
+      by (apply multistep_congr_ultimate; assumption).
+    assert (deterministic normal_form_of) by apply normal_forms_unique.
+    unfold normal_form_of in H2. unfold deterministic in H2.
+    assert (t' = C (x + x0)).
+    { apply H2 with (P t1 t2); split; try assumption.
+      apply nf_same_as_value. constructor. }
+    subst.
+    exists (x + x0).
+    split; trivial.
+    apply IHt1 in H.  destruct H;  destruct H;  inversion H;  subst.
+    apply IHt2 in H0. destruct H0; destruct H0; inversion H0; subst.
+    apply E_Plus; assumption.
+    apply nf_same_as_value; constructor.
+    apply nf_same_as_value; constructor.
+Qed.
+
+(* END multistep_eval. *)
