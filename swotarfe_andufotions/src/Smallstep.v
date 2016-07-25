@@ -438,3 +438,29 @@ Proof.
 Qed.
 
 (* END normal_forms_unique. *)
+
+Definition normalizing { X : Type } (R : relation X) :=
+  forall t, exists t', multi R t t' /\ normal_form R t'.
+
+Lemma multistep_congr_1 : forall t1 t1' t2,
+  t1 =>* t1' ->
+  P t1 t2 =>* P t1' t2.
+Proof.
+  intros. induction H; subst.
+  - constructor.
+  - apply multi_step with (P y t2); try constructor; assumption.
+Qed.
+
+(* Exercise: 2 stars (multistep_congr_2) *)
+
+Lemma multistep_congr_2 : forall t1 t2 t2',
+  value t1 ->
+  t2 =>* t2' ->
+  P t1 t2 =>* P t1 t2'.
+Proof.
+  intros. induction H0.
+  - constructor.
+  - apply multi_step with (P t1 y); try constructor; assumption.
+Qed.
+
+(* END multistep_congr_2. *)
