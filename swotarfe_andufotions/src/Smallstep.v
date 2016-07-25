@@ -514,3 +514,25 @@ Proof.
 Qed.
 
 (* END eval__multistep. *)
+
+(* Exercise: 3 stars, advanced (eval__multistep_inf) *)
+
+(* We shall use induction on "t ⇓ n".
+
+First, it could be produced by E_Const. Then be need to prove that
+(C n) =>* (C n) for all `n`. This is true by the reflexive property of `multi`.
+
+Next, t ⇓ n could be a result of E_Plus. Then it has a form `P t1 t2 ⇓ n`. By
+the induction hypothesis, t1 =>* C n1, t2 =>* C n2, and we have to prove that
+P (C n1) (C n2) =>* C (n1 + n2).
+
+By transitivity of `multi`, we have to prove that P t1 t2 =>* P (C n1) t2,
+P (C n1) t2 =>* P (C n1) (C n2), and P (C n1) (C n2) =>* C (n1 + n2) in order
+to prove that P t1 t2 =>* C (n1 + n2).
+
+The first is true by multistep_congr_1, the second is true by
+multistep_congr_2. P t1 t2 =>* C (n1 + n2) can be transformed by multi_R into
+P t1 t2 => C (n1 + n2), which is just ST_PlusConstConst.
+*)
+
+(* END eval__multistep_inf. *)
