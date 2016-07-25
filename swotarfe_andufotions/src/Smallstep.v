@@ -622,3 +622,68 @@ Proof.
 Qed.
 
 (* END interp_tm. *)
+
+Module Combined.
+
+Inductive tm : Type :=
+  | C      : nat -> tm
+  | P      : tm -> tm -> tm
+  | ttrue  : tm
+  | tfalse : tm
+  | tif    : tm -> tm -> tm -> tm.
+
+Inductive value : tm -> Prop :=
+  | v_const : forall n, value (C n)
+  | v_true  : value ttrue
+  | v_false : value tfalse.
+
+Reserved Notation "t '=>' t'" (at level 40).
+
+Inductive step : tm -> tm -> Prop :=
+  | ST_PlusConstConst : forall n1 n2,
+      P (C n1) (C n2) => C (n1 + n2)
+  | ST_Plus1 : forall t1 t1' t2,
+      t1 => t1' ->
+      P t1 t2 => P t1' t2
+  | ST_Plus2 : forall v1 t2 t2',
+      value v1 ->
+      t2 => t2' ->
+      P v1 t2 => P v1 t2'
+  | ST_IfTrue : forall t1 t2,
+      tif ttrue  t1 t2 => t1
+  | ST_IfFalse : forall t1 t2,
+      tif tfalse t1 t2 => t2
+  | ST_If : forall t t' t1 t2,
+      t => t' ->
+      tif t t1 t2 => tif t' t1 t2
+  where "t '=>' t'" := (step t t').
+
+(* Exercise: 4 stars (combined_properties) *)
+
+Theorem lack_of_strong_progress :
+  ~ (forall t, value t \/ (exists t', t => t')).
+Proof.
+  intro CONTRA.
+  remember (P (C 0) ttrue) as Cex.
+  assert (value Cex \/ (exists t' : tm, Cex => t')) by apply CONTRA.
+  subst. destruct H as [ H | [ t H ]]; solve by inversion 2.
+Qed.
+
+Theorem step_deterministic :
+  deterministic step.
+Proof.
+  unfold deterministic.
+  intros x y1 y2 Hind. generalize dependent y2.
+  induction Hind; intros;
+    try (inversion H; subst; trivial; solve by inversion).
+  - inversion H; subst; try solve by inversion 2.
+    apply IHHind in H3; subst; trivial.
+  - inversion H0; subst; try solve by inversion 2.
+    apply IHHind in H5; subst; trivial.
+  - inversion H; subst; try solve by inversion.
+    apply IHHind in H4; subst; trivial.
+Qed.
+
+(* END combined_properties. *)
+
+End Combined.
