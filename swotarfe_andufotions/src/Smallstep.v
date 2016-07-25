@@ -179,3 +179,73 @@ Qed.
 (* END value_not_same_as_normal_form'. *)
 
 End Temp3.
+
+Module Temp4.
+
+Inductive tm : Type :=
+  | ttrue  : tm
+  | tfalse : tm
+  | tif    : tm -> tm -> tm -> tm.
+
+Inductive value : tm -> Prop :=
+  | v_true  : value ttrue
+  | v_false : value tfalse.
+
+Reserved Notation "t '=>' t'" (at level 40).
+
+Inductive step : tm -> tm -> Prop :=
+  | ST_IfTrue : forall t1 t2,
+      tif ttrue  t1 t2 => t1
+  | ST_IfFalse : forall t1 t2,
+      tif tfalse t1 t2 => t2
+  | ST_If : forall t t' t1 t2,
+      t => t' ->
+      tif t t1 t2 => tif t' t1 t2
+  where "t '=>' t'" := (step t t').
+
+Definition bool_step_prop1 :=
+  tfalse => tfalse.
+
+Definition bool_step_prop2 :=
+  tif ttrue
+    (tif ttrue ttrue ttrue)
+    (tif tfalse tfalse tfalse) =>
+  ttrue.
+
+Definition bool_step_prop3 :=
+  tif
+    (tif ttrue ttrue ttrue)
+    (tif ttrue ttrue ttrue)
+    tfalse
+  =>
+  tif
+    ttrue
+    (tif ttrue ttrue ttrue)
+    tfalse.
+
+(* Exercise: 1 star (smallstep_bools) *)
+
+Lemma bool_step_prop1_false :
+  ~ bool_step_prop1.
+Proof.
+  unfold bool_step_prop1.
+  intros contra. inversion contra.
+Qed.
+
+Lemma bool_step_prop2_false :
+  ~ bool_step_prop2.
+Proof.
+  unfold bool_step_prop2.
+  intros contra. inversion contra.
+Qed.
+
+Lemma bool_step_prop3_true :
+  bool_step_prop3.
+Proof.
+  unfold bool_step_prop3.
+  repeat constructor.
+Qed.
+
+(* END smallstep_bools. *)
+
+End Temp4.
