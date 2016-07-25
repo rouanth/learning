@@ -893,3 +893,38 @@ Proof.
 Qed.
 
 (* END par_body_n__Sn. *)
+
+(* Exercise: 3 stars, optional (par_body_n) *)
+Lemma par_body_n : forall n st,
+  st X = 0 /\ st Y = 0 ->
+  exists st',
+    par_loop / st ==>*  par_loop / st' /\ st' X = n /\ st' Y = 0.
+Proof.
+  intros n st [stX0 stY0].
+  induction n.
+  - exists st. split; constructor; assumption.
+  - destruct IHn as [st' [Hind [st'Xn st'Y0]]].
+    exists (update st' X (n + 1)).
+    assert (X <> Y). { intro CONTRA; inversion CONTRA. }
+    rewrite update_eq. rewrite update_neq; try assumption.
+    split; try split; try assumption; try omega.
+      eapply multi_trans with (par_loop, st'); try assumption.
+      clear stX0 stY0 Hind st H.
+      eapply multi_step. apply CS_Par2. apply CS_While.
+      eapply multi_step. apply CS_Par2. apply CS_IfStep. apply BS_Eq1.
+        apply AS_Id.
+      eapply multi_step. apply CS_Par2. apply CS_IfStep. apply BS_Eq.
+      eapply multi_step. apply CS_Par2. rewrite st'Y0. simpl. apply CS_IfTrue.
+      eapply multi_step. apply CS_Par2. apply CS_SeqStep. apply CS_AssStep.
+        apply AS_Plus1. apply AS_Id.
+      eapply multi_step. apply CS_Par2. apply CS_SeqStep. apply CS_AssStep.
+        apply AS_Plus.
+      eapply multi_step. apply CS_Par2. apply CS_SeqStep. apply CS_Ass.
+      eapply multi_step. apply CS_Par2. apply CS_SeqFinish.
+      rewrite st'Xn. constructor.
+Qed.
+
+(* END par_body_n. *)
+
+End CImp.
+
