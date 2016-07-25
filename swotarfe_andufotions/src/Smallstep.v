@@ -274,4 +274,32 @@ Qed.
 
 (* END step_deterministic. *)
 
+Module Temp5.
+
+(* Exercise: 2 stars (smallstep_bool_shortcut) *)
+
+Reserved Notation "t '=>' t'" (at level 40).
+
+Inductive step : tm -> tm -> Prop :=
+  | ST_IfTrue : forall t1 t2,
+      tif ttrue  t1 t2 => t1
+  | ST_IfFalse : forall t1 t2,
+      tif tfalse t1 t2 => t2
+  | ST_If : forall t t' t1 t2,
+      t => t' ->
+      tif t t1 t2 => tif t' t1 t2
+  | ST_Same : forall t t',
+      tif t t' t' => t'
+  where "t '=>' t'" := (step t t').
+
+Definition bool_step_prop4 :=
+  tif (tif ttrue ttrue ttrue) tfalse tfalse => tfalse.
+
+Example bool_step_prop4_holds :
+  bool_step_prop4.
+Proof. constructor. Qed.
+
+(* END smallstep_bool_shortcut. *)
+
+End Temp5.
 End Temp4.
