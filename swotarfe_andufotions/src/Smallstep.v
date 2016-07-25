@@ -301,5 +301,43 @@ Proof. constructor. Qed.
 
 (* END smallstep_bool_shortcut. *)
 
+(* Exercise: 3 stars, optional (properties_of_altered_step) *)
+
+Theorem tm_dec_eq : forall (t1 t2 : tm), { t1 = t2 } + { t1 <> t2 }.
+Proof.
+  induction t1; induction t2; subst; try (left; reflexivity);
+    try (right; intros contra; solve by inversion).
+  clear IHt2_1 IHt2_2 IHt2_3.
+  destruct IHt1_1 with t2_1; destruct IHt1_2 with t2_2;
+  destruct IHt1_3 with t2_3; subst; try (left; reflexivity);
+    right; intro contra; inversion contra; contradiction.
+Qed.
+
+Theorem strong_progress : forall t,
+  value t \/ (exists t', t => t').
+Proof.
+  induction t; try (left; constructor); right.
+  destruct IHt1; inversion H; subst;
+    [ exists t2 | exists t3 | exists (tif x t2 t3) ];
+    constructor. assumption.
+Qed.
+
+Theorem step_deterministic : ~ deterministic step.
+Proof.
+  unfold deterministic. intros CONTRA.
+  assert (tif (tif ttrue ttrue ttrue) ttrue ttrue => ttrue) by constructor.
+  assert (tif (tif ttrue ttrue ttrue) ttrue ttrue => tif ttrue ttrue ttrue)
+    by repeat constructor.
+  assert (ttrue = tif ttrue ttrue ttrue) by
+   (apply CONTRA with (tif (tif ttrue ttrue ttrue) ttrue ttrue); assumption).
+  solve by inversion.
+Qed.
+
+(* Removing ST_If causes strong progress to fail since `tif` is not a value but
+at the same time `tif i t e` won't, if `t` and `e` don't form a shortcut,
+be able to make a step. *)
+
+(* END properties_of_altered_step. *)
+
 End Temp5.
 End Temp4.
