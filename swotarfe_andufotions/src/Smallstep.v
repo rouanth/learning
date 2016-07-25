@@ -262,4 +262,16 @@ Qed.
 
 (* END progress_bool. *)
 
+(* Exercise: 2 stars, optional (step_deterministic) *)
+
+Theorem step_deterministic : deterministic step.
+Proof.
+  unfold deterministic.
+  intros x y1 y2 Hind. generalize dependent y2.
+  induction Hind; intros; inversion H; subst; trivial; try solve by inversion.
+  apply IHHind in H4; subst; trivial.
+Qed.
+
+(* END step_deterministic. *)
+
 End Temp4.
