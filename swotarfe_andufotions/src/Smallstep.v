@@ -928,3 +928,60 @@ Qed.
 
 End CImp.
 
+Definition stack := list nat.
+Definition prog  := list sinstr.
+
+Inductive stack_step : state -> prog * stack -> prog * stack -> Prop :=
+  | SS_Push : forall st stk n p',
+    stack_step st (SPush n :: p', stk)      (p', n :: stk)
+  | SS_Load : forall st stk i p',
+    stack_step st (SLoad i :: p', stk)      (p', st i :: stk)
+  | SS_Plus : forall st stk n m p',
+    stack_step st (SPlus :: p', n::m::stk)  (p', (m+n)::stk)
+  | SS_Minus : forall st stk n m p',
+    stack_step st (SMinus :: p', n::m::stk) (p', (m-n)::stk)
+  | SS_Mult : forall st stk n m p',
+    stack_step st (SMult :: p', n::m::stk)  (p', (m*n)::stk).
+
+Theorem stack_step_deterministic : forall st,
+  deterministic (stack_step st).
+Proof.
+  unfold deterministic. intros st x y1 y2 H1 H2.
+  induction H1; inversion H2; reflexivity.
+Qed.
+
+Definition stack_multistep st := multi (stack_step st).
+
+(* Exercise: 3 stars, advanced (compiler_is_correct)  *)
+
+Definition compiler_is_correct_statement : Prop :=
+  forall st exp ps xs,
+  stack_multistep st (s_compile exp ++ ps, xs)
+        (ps, aeval st exp :: xs).
+
+Theorem compiler_is_correct : compiler_is_correct_statement.
+Proof.
+  assert (forall st e1 e2 c,
+    (forall ps xs, stack_multistep st (s_compile e1 ++ ps, xs)
+                                      (ps, aeval st e1 ::  xs)) ->
+    (forall ps xs, stack_multistep st (s_compile e2 ++ ps, xs)
+                                      (ps, aeval st e2 ::  xs)) ->
+    (forall ps xs, stack_multistep st
+       ((s_compile e1 ++ s_compile e2 ++ [c]) ++ ps, xs)
+       (c :: ps, aeval st e2 :: aeval st e1 :: xs))
+  ). {
+    intros.
+    apply multi_trans with (s_compile e2 ++ [c] ++ ps, aeval st e1 :: xs).
+    rewrite <- app_assoc. rewrite <- app_assoc.
+    apply H.
+    apply multi_trans with ([c] ++ ps, aeval st e2 :: aeval st e1 :: xs).
+    apply H0.
+    constructor.
+  }
+
+  unfold compiler_is_correct_statement.
+  induction exp; intros; simpl; try (apply multi_R; constructor);
+    eapply multi_trans; try (apply H; assumption); apply multi_R; constructor.
+Qed.
+
+(* END compiler_is_correct. *)
