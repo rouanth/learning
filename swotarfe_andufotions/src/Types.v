@@ -310,3 +310,20 @@ Theorem normalize_ex' : exists e',
 Proof. apply ex_intro with (ANum 6). normalize. Qed.
 
 (* END normalize_ex'. *)
+
+(* Exercise: 2 stars, recommended (subject_expansion) *)
+
+Theorem subject_expansion_not_holds :
+ ~ (forall t t' T,
+    t ==> t' ->
+    |- t' \in T ->
+    |- t  \in T).
+Proof.
+  assert (tif ttrue ttrue tzero ==> ttrue) by auto.
+  assert (|- ttrue \in TBool) by auto.
+  assert (~ |- tif ttrue ttrue tzero \in TBool).
+  { intro contra. solve by inversion 2. }
+  intro contra. apply H1. apply contra with ttrue; auto.
+Qed.
+
+(* END subject_expansion. *)
