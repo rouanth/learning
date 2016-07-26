@@ -424,3 +424,34 @@ Qed.
 correct but stuck. *)
 
 (* END remove_predzero. *)
+
+(* Exercise: 4 stars, advanced (prog_pres_bigstep) *)
+
+(* The analog of progress in big-step evaluation is always having a rule for
+the next big step. For example, suppose we define a language
+
+          -------
+          C n ⇓ n
+
+          t2 ⇓ n2
+ ---------------------
+ P (C n1) t2 ⇓ n1 + n2
+
+This is a big-step notation, but the progress isn't being make in case of
+`P (P (C 0) (C 2)) (C 3)`.
+
+Now, there is no straightforward analog for preservation since there are no
+steps through which the types must be preserved. Nevertheless, we are able to
+define a type property such that all the programs that have it are either
+looped or have a value. For this language, we can have
+
+ ------------------
+ |- (C n) \in Const
+
+ |- c1 \in Const  |- t1 \in Exp
+ ------------------------------
+      |- P c1 t1 \in Exp
+
+*)
+
+(* END prog_pres_bigstep. *)
