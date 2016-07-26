@@ -300,3 +300,13 @@ Theorem normalize_ex : exists e',
 Proof. eapply ex_intro. normalize. Qed.
 
 (* END normalize_ex. *)
+
+Hint Constructors astep aval.
+
+(* Exercise: 1 star, optional (normalize_ex') *)
+
+Theorem normalize_ex' : exists e',
+  multi (astep empty_state) (AMult (ANum 3) (AMult (ANum 2) (ANum 1))) e'.
+Proof. apply ex_intro with (ANum 6). normalize. Qed.
+
+(* END normalize_ex'. *)
