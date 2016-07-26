@@ -68,6 +68,8 @@ Inductive step : tm -> tm -> Prop :=
       tiszero t1 ==> tiszero t2
   where "t1 '==>' t2" := (step t1 t2).
 
+Hint Constructors step.
+
 Notation step_normal_form := (normal_form step).
 
 Definition stuck (t : tm) : Prop :=
@@ -181,3 +183,66 @@ Proof.
 Qed.
 
 (* END succ_hastype_nat__hastype_nat. *)
+
+Lemma bool_canonical : forall t,
+  value t -> (|- t \in TBool <-> bvalue t).
+Proof.
+  split; intros; inversion H0; subst; auto; inversion H; solve by inversion.
+Qed.
+
+Lemma nat_canonical : forall n,
+  value n -> (|- n \in TNat <-> nvalue n).
+Proof.
+  split; intros.
+  - inversion H; try assumption; solve by inversion 2.
+  - induction H0; auto.
+Qed.
+
+(* Exercise: 3 stars (finish_progress) *)
+
+Theorem progress : forall t T,
+  |- t \in T ->
+  value t \/ exists t', t ==> t'.
+Proof.
+  intros.
+  induction H; auto.
+  - right. destruct IHhas_type1.
+    + apply bool_canonical in H; try assumption.
+      inversion H; subst; [ exists t2 | exists t3 ]; auto.
+    + destruct H2. exists (tif x t2 t3). auto.
+  - destruct IHhas_type.
+    + left. right. constructor. apply nat_canonical; auto.
+    + right. destruct H0. exists (tsucc x). auto.
+  - right. destruct IHhas_type.
+    + apply nat_canonical in H; try assumption. clear H0.
+      inversion H; subst; [ exists tzero | exists t0 ]; auto.
+    + destruct H0. exists (tpred x). auto.
+  - right. destruct IHhas_type.
+    + apply nat_canonical in H; try assumption; clear H0.
+      inversion H; subst; [ exists ttrue | exists tfalse ]; auto.
+    + destruct H0. exists (tiszero x). auto.
+Qed.
+
+(* END finish_progress. *)
+
+(* Exercise: 3 stars, advanced (finish_progress_informal) *)
+
+(*
+If the last rule in the derivation is `tsucc t`, then either |- t \in Nat or
+there exists t' such that t ==> t'. In the first case, `tsucc t` is a value by
+nv_succ and the fact that `t` is an nvalue by nat_canonical. In the second,
+there exists a step (t ==> t' -> tsucc t ==> tsucc t').
+
+If the last rule is `tpred t`, then either |- t \in Nat or there exists t' such
+that t ==> t. In all these cases there exists a next step. If |- t \in Nat,
+then it is an nvalue and is thus either an tzero, applicable for
+`tpred tzero ==> tzero`, or tsucc t' for some nvalue t', applicable for
+`tpred (tsucc t') ==> t'`. If `t ==> t'`, then `tpred t ==> tpred t'`.
+
+If the last rule is `tiszero t`, then either |- t \in Nat and t in an nvalue,
+or `t ==> t'` for some t'. In the first case, t can be tzero or tsucc t' for
+some t', the first stepping into ttrue, the second stepping into tfalse. In the
+case where `t ==> t'`, `tzero t ==> tzero t'`.
+*)
+
+(* END finish_progress_informal. *)
