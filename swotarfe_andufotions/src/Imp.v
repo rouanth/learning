@@ -272,7 +272,7 @@ Qed.
 
 (* END neq_id. *)
 
-Definition state := id -> nat.
+Definition state { A : Type } := id -> A.
 
 Definition empty_state : state :=
   fun _ => 0.
@@ -286,12 +286,12 @@ Proof.
   - apply except. apply n. trivial.
 Qed.
 
-Definition update (st : state) (x : id) (n : nat) : state :=
-  fun x' => if eq_id_dec x x' then n else st x'.
+Definition update {A : Type} (st : state) (x : id) (a : A) : state :=
+  fun x' => if eq_id_dec x x' then a else st x'.
 
 (* Exercise: 1 star (update_eq) *)
 
-Theorem update_eq : forall n x st,
+Theorem update_eq : forall X (n : X) x st,
   (update st x n) x = n.
 Proof.
   intros.
@@ -303,7 +303,7 @@ Qed.
 
 (* Exercise: 1 star (update_neq) *)
 
-Theorem update_neq : forall x2 x1 n st,
+Theorem update_neq : forall X x2 x1 (n : X) st,
   x2 <> x1 ->
   (update st x2 n) x1 = (st x1).
 Proof.
@@ -331,7 +331,7 @@ Qed.
 
 (* Exercise: 1 star (update_shadow) *)
 
-Theorem update_shadow : forall n1 n2 x1 x2 (st : state),
+Theorem update_shadow : forall X (n1 n2 : X) x1 x2 (st : state),
   (update (update st x2 n1) x2 n2) x1 = (update st x2 n2) x1.
 Proof.
   intros.
@@ -343,7 +343,7 @@ Qed.
 
 (* Exercise: 2 stars (update_same) *)
 
-Theorem update_same : forall n1 x1 x2 (st : state),
+Theorem update_same : forall X (n1 : X) x1 x2 (st : state),
   st x1 = n1 ->
   (update st x1 n1) x2 = st x2.
 Proof.
@@ -356,7 +356,7 @@ Qed.
 
 (* Exercise: 3 stars (update_permute) *)
 
-Theorem update_permute : forall n1 n2 x1 x2 x3 st,
+Theorem update_permute : forall X (n1 n2 : X) x1 x2 x3 st,
   x2 <> x1 ->
   (update (update st x2 n1) x1 n2) x3 = (update (update st x1 n2) x2 n1) x3.
 Proof.

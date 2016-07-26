@@ -5,7 +5,7 @@ Require Import Coq.omega.Omega.
 Require Import SfLib.
 Require Import Imp.
 
-Definition Assertion := state -> Prop.
+Definition Assertion := @state nat -> Prop.
 
 (* Exercise: 1 star, optional (assertions) *)
 
