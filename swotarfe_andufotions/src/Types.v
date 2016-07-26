@@ -92,6 +92,10 @@ Proof.
   intros t [bval | nval]; intro contra; destruct contra.
   - solve by inversion 2.
   - generalize dependent x.
+(*  induction t; inversion nval; intros; try solve by inversion.
+    inversion H1; subst.
+    apply IHt with t2; assumption.
+Qed. *)
     induction nval; intros; inversion H; subst.
     apply IHnval with t2; assumption.
 Qed.
