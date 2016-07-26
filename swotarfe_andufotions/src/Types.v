@@ -246,3 +246,15 @@ case where `t ==> t'`, `tzero t ==> tzero t'`.
 *)
 
 (* END finish_progress_informal. *)
+
+(* Exercise: 1 star (step_review) *)
+
+(*
+ + Every well-typed normal form is a value.
+ + Every value is a normal form.
+ + The single-step reduction relation is a partial function
+   (i.e., it is deterministic).
+ - The single-step reduction relation is a total function.
+*)
+
+(* END step_review. *)
