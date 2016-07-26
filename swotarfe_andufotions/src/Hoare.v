@@ -461,7 +461,7 @@ Proof.
       simpl in H0.
       assert (forall a b, b <= a -> a = b + (a - b)).
       { intros. omega. }
-      apply H1. apply ble_nat_true. assumption.
+      apply H1. apply Nat.leb_le. assumption.
       intros contra; inversion contra.
       intros contra; inversion contra.
   - eapply hoare_consequence_pre.
@@ -611,7 +611,7 @@ Proof.
     destruct (beq_nat (st Y) 0) eqn: nzY.
     + apply beq_nat_true in nzY. rewrite nzY. rewrite <- plus_n_O.
       trivial.
-    + simpl in H0. apply ex_falso_quodlibet. apply H0. trivial.
+    + simpl in H0. apply except. apply H0. trivial.
 Qed.
 
 End If1.
@@ -850,7 +850,7 @@ Proof.
             unfold bassn in H0. simpl in H0.
             unfold not in H0.
             destruct (st X).
-            - apply ex_falso_quodlibet. apply H0. reflexivity.
+            - apply except. apply H0. reflexivity.
             - omega.
           }
           intros contra; inversion contra.

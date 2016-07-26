@@ -1,4 +1,12 @@
-Require Export SfLib.
+Require Import Coq.Bool.Bool.
+Require Import Coq.Arith.Arith.
+Require Import Coq.Arith.EqNat.
+Require Import Coq.omega.Omega.
+Require Import Coq.Lists.List.
+Require Import Coq.Arith.Peano_dec.
+Import ListNotations.
+(* Require Import PropL. *)
+(* Require Import Maps. *)
 
 (* ((Arithmetic and Boolean Expressions)) *)
 
@@ -32,7 +40,7 @@ Fixpoint beval (b : bexp) : bool :=
     | BTrue    => true
     | BFalse   => false
     | Beq c d  => beq_nat (aeval c) (aeval d)
-    | BLe c d  => ble_nat (aeval c) (aeval d)
+    | BLe c d  => leb (aeval c) (aeval d)
     | BNot k   => negb (beval k)
     | BAnd c d => (beval c) && (beval d)
   end.
@@ -108,7 +116,7 @@ Fixpoint soph_opt_b (b : bexp) : bexp :=
                    | (e, f          ) => Beq e f
                  end
     | BLe c d => match (soph_opt_a c, soph_opt_a d) with
-                   | (ANum n, ANum m) => if ble_nat n m then BTrue else BFalse
+                   | (ANum n, ANum m) => if leb n m then BTrue else BFalse
                    | (e, f          ) => Beq e f
                  end
     | BNot k  => match (soph_opt_b k) with
@@ -143,7 +151,7 @@ Fixpoint soph_opt_b_soft (b : bexp) : bexp :=
   match b with
     | Beq  (ANum n) (ANum m) => if beq_nat n m then BTrue else BFalse
     | Beq  c        d        => Beq (soph_opt_a_soft c) (soph_opt_a_soft d)
-    | BLe  (ANum n) (ANum m) => if ble_nat n m then BTrue else BFalse
+    | BLe  (ANum n) (ANum m) => if leb n m then BTrue else BFalse
     | BLe  c        d        => BLe (soph_opt_a_soft c) (soph_opt_a_soft d)
     | BNot BTrue             => BFalse
     | BNot BFalse            => BTrue
@@ -179,7 +187,7 @@ Proof.
       unfold soph_opt_b_soft; unfold beval;
         repeat (rewrite soph_opt_a_soft_sound); trivial); simpl.
       destruct (beq_nat n n0); reflexivity.
-      destruct (ble_nat n n0); reflexivity.
+      destruct (leb n n0); reflexivity.
     destruct b; simpl; simpl in IHb; try (rewrite IHb); reflexivity.
     destruct b1; destruct b2; simpl;
       try (simpl in IHb1; rewrite IHb1); try (simpl in IHb2; rewrite IHb2);
@@ -218,7 +226,7 @@ Inductive bevalR : bexp -> bool -> Prop :=
   | E_Beq    : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
                  bevalR (Beq e1 e2) (beq_nat n m)
   | E_BLe    : forall e1 e2 n m, aevalR e1 n -> aevalR e2 m ->
-                 bevalR (BLe e1 e2) (ble_nat n m)
+                 bevalR (BLe e1 e2) (leb n m)
   | E_BNot   : forall e b, bevalR e b -> bevalR (BNot e) (negb b)
   | E_BAnd   : forall e1 e2 b1 b2, bevalR e1 b1 -> bevalR e2 b2 ->
                  bevalR (BAnd e1 e2) (b1 && b2).
@@ -238,6 +246,18 @@ Qed.
 
 End AExp.
 
+Inductive id : Type :=
+  | Id : nat -> id.
+
+Theorem eq_id_dec : forall (i1 i2 : id),
+  { i1 = i2 } + { i1 <> i2 }.
+Proof.
+  intros. destruct i1. destruct i2.
+  destruct (eq_nat_dec n n0).
+  - left; subst; trivial.
+  - right; intro CONTRA. inversion CONTRA. contradiction.
+Defined.
+
 (* Exercise: 1 star, optional (neq_id) *)
 
 Lemma neq_id : forall (T : Type) x y (p q:T), x <> y ->
@@ -256,6 +276,15 @@ Definition state := id -> nat.
 
 Definition empty_state : state :=
   fun _ => 0.
+
+Lemma eq_id : forall (T : Type) x (p q : T),
+  (if eq_id_dec x x then p else q) = p.
+Proof.
+  intros.
+  destruct (eq_id_dec x x).
+  - trivial.
+  - apply except. apply n. trivial.
+Qed.
 
 Definition update (st : state) (x : id) (n : nat) : state :=
   fun x' => if eq_id_dec x x' then n else st x'.
@@ -375,7 +404,7 @@ Fixpoint beval (st : state) (b : bexp) : bool :=
     | BTrue    => true
     | BFalse   => false
     | BEq c d  => beq_nat (aeval st c) (aeval st d)
-    | BLe c d  => ble_nat (aeval st c) (aeval st d)
+    | BLe c d  => leb (aeval st c) (aeval st d)
     | BNot k   => negb (beval st k)
     | BAnd c d => (beval st c) && (beval st d)
   end.
@@ -820,36 +849,36 @@ Theorem ceval_deterministic: forall (c: com) st st' st'' s1 s2,
 Proof.
   intros. generalize dependent s2. generalize dependent st''.
   induction H; intros; try (inversion H0; subst; split; reflexivity).
-  Case "E_Seq_C".
+  -(* E_Seq_C *)
     inversion H1; subst.
-    SCase "continue on c1".
+    + (* continue on c1 *)
       apply IHceval1 in H4. destruct H4. subst.
       apply (IHceval2 _ _ H8).
-    SCase "break on c1: contradiction".
+    + (* break on c1: contradiction *)
       apply IHceval1 in H7. destruct H7. inversion H3.
-  Case "E_Seq_B".
+  - (* E_Seq_B *)
     inversion H0; subst.
       apply IHceval in H3. destruct H3. inversion H2.
       apply (IHceval _ _ H6).
-  Case "E_IfTrue".
+  - (* E_IfTrue *)
     inversion H1; subst.
       apply (IHceval _ _ H9).
       rewrite -> H8 in H. inversion H.
-  Case "E_IfFalse".
+  - (* E_IfFalse *)
     inversion H1; subst.
       rewrite -> H8 in H. inversion H.
       apply (IHceval _ _ H9).
-  Case "E_WhileEnd".
+  - (* E_WhileEnd *)
     inversion H0; subst.
       split; trivial.
       rewrite -> H3 in H. inversion H.
       rewrite -> H3 in H. inversion H.
-  Case "E_WhileBreak".
+  - (* E_WhileBreak *)
     inversion H1; subst.
       rewrite -> H7 in H. inversion H.
       apply IHceval in H8; destruct H8; subst; split; trivial.
       apply IHceval in H5; destruct H5. inversion H3.
-  Case "E_WhileLoop".
+  - (* E_WhileLoop *)
     inversion H2; subst.
       rewrite -> H in H8. inversion H8.
       apply IHceval1 in H9. destruct H9. inversion H4.
@@ -868,7 +897,7 @@ Fixpoint beval_sc (st : state) (b : bexp) : bool :=
     | BTrue    => true
     | BFalse   => false
     | BEq c d  => beq_nat (aeval st c) (aeval st d)
-    | BLe c d  => ble_nat (aeval st c) (aeval st d)
+    | BLe c d  => leb     (aeval st c) (aeval st d)
     | BNot k   => negb (beval st k)
     | BAnd c d => if beval st c then beval st d else false
   end.

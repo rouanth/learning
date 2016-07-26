@@ -69,6 +69,11 @@ Inductive step : tm -> tm -> Prop :=
       P v1 t2 ==> P v1 t2'
   where "t '==>' t'" := (step t t').
 
+Definition relation (X : Type) := X -> X -> Prop.
+
+Definition deterministic { X : Type } (R : relation X) :=
+  forall x y1 y2, R x y1 -> R x y2 -> y1 = y2.
+
 (* Exercise: 3 stars, recommended (redo_determinism) *)
 
 Theorem step_deterministic :
@@ -741,7 +746,7 @@ Inductive astep : state -> aexp -> aexp -> Prop :=
       (BEq v1 a2) / st ==>b (BEq v1 a2')
   | BS_LtEq : forall st (n1 n2 : nat),
       (BLe (ANum n1) (ANum n2)) / st ==>b
-               (if (ble_nat n1 n2) then BTrue else BFalse)
+               (if (leb n1 n2) then BTrue else BFalse)
   | BS_LtEq1 : forall st a1 a1' a2,
       a1 / st ==>a a1' ->
       (BLe a1 a2) / st ==>b (BLe a1' a2)

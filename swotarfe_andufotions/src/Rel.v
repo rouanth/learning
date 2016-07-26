@@ -1,9 +1,12 @@
-Require Export SfLib.
+Require Export PropL.
+
+Definition relation (X : Type) := X -> X -> Prop.
 
 (* ((Basic Properties of Relations)) *)
 
 Definition partial_function {X : Type} (R : relation X) :=
   forall x y1 y2 : X, R x y1 -> R x y2 -> y1 = y2.
+
 
 (* Hey! Where are the names? *)
 (* Exercise: 2 stars, optional *)
@@ -74,7 +77,7 @@ Proof.
   intros n m H.
   inversion H.
     apply le_n.
-    apply (le_trans n (S n) m).
+    apply (le_trans (S n) n m).
       apply le_S. apply le_n.
       apply H1.
 Qed.
@@ -165,7 +168,7 @@ Theorem le_step : forall n m p, n < m -> m <= S p -> n <= p.
 Proof.
   unfold lt.
   intros.
-  apply le_trans with (p := S p) in H.
+  apply le_trans with (o := S p) in H.
   apply le_S_n in H.
   apply H.
   apply H0.

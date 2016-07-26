@@ -22,9 +22,9 @@ Theorem skip_right: forall c, cequiv (c ;; SKIP) c.
 Proof.
   intros c st st'.
   split.
-  Case "SKIP -> c".
+  - (* Case "SKIP -> c" *)
     intros. inversion H. inversion H5. subst. assumption.
-  Case "c -> SKIP".
+  - (* Case "c -> SKIP" *)
     intros. apply E_Seq with (st' := st'). assumption. apply E_Skip.
 Qed.
 
@@ -41,14 +41,12 @@ Proof.
   intros.
   intros st st'.
   split.
-  Case "->".
-    intro. inversion H0; subst.
+  - intro. inversion H0; subst.
       unfold bequiv in H.
         assert (beval st b = beval st BFalse) by apply H. rewrite -> H6 in H1.
         inversion H1.
       assumption.
-  Case "<-".
-    intro.
+  - intro.
     apply E_IfFalse.
     unfold bequiv in H.
     rewrite -> H.
@@ -67,12 +65,10 @@ Proof.
   intros.
   intros st st'.
   split.
-  Case "->".
-    intro. inversion H; subst; [apply E_IfFalse | apply E_IfTrue];
+  - intro. inversion H; subst; [apply E_IfFalse | apply E_IfTrue];
       simpl; try (rewrite -> H5; reflexivity);
       apply H6.
-  Case "<-".
-    intro. inversion H; subst; [apply E_IfFalse | apply E_IfTrue];
+  - intro. inversion H; subst; [apply E_IfFalse | apply E_IfTrue];
       simpl in H5; try assumption; destruct (beval st b); simpl in H5; trivial;
         try inversion H5.
 Qed.
@@ -361,7 +357,7 @@ Fixpoint fold_constants_bexp (b : bexp) : bexp :=
                     | (n', m') => BEq n' m'
                   end
     | BLe  a b => match (fold_constants_aexp a, fold_constants_aexp b) with
-                    | (ANum n', ANum m') => if ble_nat n' m'
+                    | (ANum n', ANum m') => if leb n' m'
                          then BTrue else BFalse
                     | (n', m') => BLe n' m'
                   end
@@ -476,13 +472,13 @@ Proof.
       by (subst; rewrite <- fold_constants_aexp_sound; reflexivity).
     destruct (fold_constants_aexp a); destruct (fold_constants_aexp a0);
     rewrite Heqa'; rewrite Heqa0'; simpl; try reflexivity.
-    destruct (ble_nat n n0); reflexivity.
+    destruct (leb n n0); reflexivity.
   - remember (fold_constants_bexp b) as b'.
     rewrite -> IHb.
     destruct (fold_constants_bexp b); rewrite Heqb'; try reflexivity.
   - remember (fold_constants_bexp b1) as b1';
     remember (fold_constants_bexp b2) as b2'.
-    assert (forall b, b && false = false) by (destruct b; reflexivity).
+    assert (forall b, b && false = false)%bool by (destruct b; reflexivity).
     destruct (fold_constants_bexp b1); destruct (fold_constants_bexp b2);
     rewrite IHb1; rewrite IHb2; rewrite Heqb1'; rewrite Heqb2';
     try reflexivity; simpl; try apply H.
@@ -627,7 +623,7 @@ Proof.
     - remember (optimize_0_bexp b1) as b1eq.
       remember (optimize_0_bexp b2) as b2eq.
       destruct b1eq; destruct b2eq; rewrite IHb1; rewrite IHb2; simpl;
-        try apply andb_false_r; try apply andb_true_r;
+        try apply Bool.andb_false_r; try apply Bool.andb_true_r;
         reflexivity.
 Qed.
 
@@ -909,7 +905,7 @@ Proof.
   generalize dependent HXnz.
   induction contra; unfold p1 in Heqc; inversion Heqc; subst; intro.
   - simpl in H.
-    apply false_beq_nat in HXnz. rewrite HXnz in H. inversion H.
+    apply Nat.eqb_neq in HXnz. rewrite HXnz in H. inversion H.
   - clear H. clear Heqc. apply IHcontra2.
     + reflexivity.
     + intro contra.
@@ -929,7 +925,7 @@ Proof.
   generalize dependent HXnz.
   induction contra; unfold p2 in Heqc; inversion Heqc; subst; intro.
   - simpl in H.
-    apply false_beq_nat in HXnz. rewrite HXnz in H. inversion H.
+    apply Nat.eqb_neq in HXnz. rewrite HXnz in H. inversion H.
   - clear H Heqc. apply IHcontra2.
     + reflexivity.
     + intro contra.
@@ -951,7 +947,7 @@ Proof.
     { intro contra. rewrite stX in contra. inversion contra. }
     clear stX.
     split; intro; inversion H0; subst; try (simpl in H5;
-      apply false_beq_nat in H; rewrite H in H5; inversion H5).
+      apply Nat.eqb_neq in H; rewrite H in H5; inversion H5).
     + remember p1_may_diverge as pmd; unfold p1 in pmd.
       apply pmd with (st' := st') in H. contradiction.
     + remember p2_may_diverge as pmd; unfold p2 in pmd.
@@ -1069,7 +1065,7 @@ Proof.
     intros x. symmetry. apply update_same. assumption.
   - unfold p5.
     apply E_WhileLoop with (update st X 1).
-    + apply false_beq_nat in n. simpl. rewrite n. reflexivity.
+    + apply Nat.eqb_neq in n. simpl. rewrite n. reflexivity.
     + apply E_Havoc.
     + apply E_WhileEnd.
       reflexivity.

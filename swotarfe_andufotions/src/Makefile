@@ -10,7 +10,7 @@ SfLib.v:
 	@mv ".tmp/sf/SfLib.v" .
 	@rm -rf ".tmp"
 	@echo "Validating checksum..."
-	@if [ "af6833139121400fb1339577a29b95ab  SfLib.v" \
+	@if [ "5a9725cbfe5e0aecae00c8ca91354fce  SfLib.v" \
 	  != "`md5sum SfLib.v`" ]; \
 	  then rm SfLib.v; echo 'Checksum for SfLib.v does not match'; \
 	  exit 1; fi

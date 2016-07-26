@@ -530,7 +530,7 @@ Theorem factorial_dec_correct : forall n,
   dec_correct (factorial_dec n).
 Proof.
   intros. verify.
-  - destruct (st X). apply ex_falso_quodlibet. apply H0. trivial.
+  - destruct (st X). apply except. apply H0. trivial.
     simpl in *. rewrite <- minus_n_O. assumption.
   - rewrite <- H. rewrite mult_assoc. trivial.
   - rewrite <- H. simpl. rewrite mult_1_r. trivial.

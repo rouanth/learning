@@ -75,33 +75,33 @@ Proof.
   generalize dependent st'.
   generalize dependent c.
   induction i; intros.
-  Case "contradiction".
-    inversion E.
-  Case "at least one level of execution was performed".
-    destruct c; inversion E; subst.
+  (* Case "contradiction" *)
+  - inversion E.
+  (* Case "at least one level of execution was performed" *)
+  - destruct c; inversion E; subst.
       constructor.
       constructor.
-      SCase "c ;; d".
-        destruct (ceval_step st c1 i) eqn: H.
-        SSCase "exists state `s`".
-          apply E_Seq with (st' := s). apply IHi. apply H. apply IHi. apply H0.
-        SSCase "c1 did not execute".
-          inversion H0.
-      SCase "IFB".
-        destruct (beval st b) eqn: H; apply IHi in H0;
+      (* SCase "c ;; d" *)
+      + destruct (ceval_step st c1 i) eqn: H.
+        (* SSCase "exists state `s`" *)
+        * apply E_Seq with (st' := s). apply IHi. apply H. apply IHi. apply H0.
+        (* SSCase "c1 did not execute" *)
+        * inversion H0.
+      (* SCase "IFB" *)
+      + destruct (beval st b) eqn: H; apply IHi in H0;
         [apply E_IfTrue | apply E_IfFalse]; try apply H; try apply H0.
-      SCase "WHILE".
-        destruct (beval st b) eqn: H.
-        SSCase "going on with the loop".
-          destruct (ceval_step st c i) eqn: I.
-          SSSCase "current iteration returned a result".
-            apply E_WhileLoop with (st' := s). apply H.
+      (* SCase "WHILE" *)
+      + destruct (beval st b) eqn: H.
+        (* SSCase "going on with the loop" *)
+        * destruct (ceval_step st c i) eqn: I.
+          (* SSSCase "current iteration returned a result" *)
+          { apply E_WhileLoop with (st' := s). apply H.
             apply (IHi _ _ _ I).
-            apply (IHi _ _ _ H0).
-          SSSCase "current iteration did not return".
-            inversion H0.
-        SSCase "leaving the loop".
-          inversion H0; subst.
+            apply (IHi _ _ _ H0). }
+          (* SSSCase "current iteration did not return" *)
+          { inversion H0. }
+        (* SSCase "leaving the loop" *)
+        * inversion H0; subst.
           apply E_WhileEnd.
           apply H.
 Qed.
@@ -152,24 +152,24 @@ Theorem ceval_step_more : forall i1 i2 st st' c,
   ceval_step st c i2 = Some st'.
 Proof.
   induction i1; intros.
-    Case "returned after 0 steps".
+    - (* Case "returned after 0 steps" *)
       inversion H0.
-    Case "returned after (S i1) steps".
+    - (* Case "returned after (S i1) steps" *)
       destruct i2.
-      SCase "S _ <= 0".
+      + (* SCase "S _ <= 0" *)
         inversion H.
-      SCase "S i1 <= S i2".
+      + (* SCase "S i1 <= S i2" *)
         apply le_S_n in H.
         destruct c; inversion H0; simpl; try reflexivity.
-          SSCase ";;  ".
+          * (* SSCase ";;  " *)
             destruct (ceval_step st c1 i1) eqn: Heq.
               apply (IHi1 i2) in Heq; try assumption. rewrite -> Heq.
                 rewrite -> H2. apply IHi1; try assumption.
               inversion H2.
-          SSCase "IFB ".
+          * (* SSCase "IFB " *)
             destruct (beval st b) eqn: Heq;
               rewrite -> H2; apply IHi1; assumption.
-          SSCase "While".
+          * (* SSCase "While" *)
             destruct (beval st b) eqn: Heq.
               rewrite -> H2.
               destruct (ceval_step st c i1) eqn: Heq'.
@@ -188,20 +188,20 @@ Theorem ceval__ceval_step : forall c st st',
 Proof.
   intros c st st' Hce.
   induction Hce; try (exists 1; reflexivity).
-    Case "c1 ;; c2".
+    - (* Case "c1 ;; c2" *)
       destruct IHHce1. destruct IHHce2.
       exists (S (x + x0)).
         simpl.
         assert (ceval_step st c1 (x + x0) = Some st').
           apply (ceval_step_more x). omega. assumption.
         rewrite -> H1. apply (ceval_step_more x0). omega. assumption.
-    Case "IFB True".
+    - (* Case "IFB True" *)
       destruct IHHce. exists (S x). simpl. rewrite -> H. assumption.
-    Case "IFB False".
+    - (* Case "IFB False" *)
       destruct IHHce. exists (S x). simpl. rewrite -> H. assumption.
-    Case "While False".
+    - (* Case "While False" *)
       exists 1. simpl. rewrite -> H. trivial.
-    Case "While True".
+    - (* Case "While True" *)
       destruct IHHce1. destruct IHHce2.
       exists (S (x + x0)).
       simpl. rewrite -> H.
