@@ -286,3 +286,17 @@ Proof with eauto.
 Qed.
 
 (* END preservation_alternate_proof. *)
+
+Tactic Notation "print_goal" := match goal with |- ?x => idtac x end.
+Tactic Notation "normalize" :=
+   repeat (print_goal; eapply multi_step ;
+             [ (eauto 10; fail) | (instantiate; simpl)]);
+   apply multi_refl.
+
+(* Exercise: 1 star (normalize_ex) *)
+
+Theorem normalize_ex : exists e',
+  multi (astep empty_state) (AMult (ANum 3) (AMult (ANum 2) (ANum 1))) e'.
+Proof. eapply ex_intro. normalize. Qed.
+
+(* END normalize_ex. *)
