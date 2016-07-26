@@ -139,3 +139,45 @@ Proof with eauto.
 Qed.
 
 (* END step_deterministic. *)
+
+Inductive ty : Type :=
+  | TBool : ty
+  | TNat  : ty.
+
+Reserved Notation "'|-' t '\in' S" (at level 40).
+
+Inductive has_type : tm -> ty -> Prop :=
+  | T_True :
+      |- ttrue  \in TBool
+  | T_False :
+      |- tfalse \in TBool
+  | T_If : forall (t1 t2 t3 : tm) (T : ty),
+      |- t1 \in TBool ->
+      |- t2 \in T ->
+      |- t3 \in T ->
+      |- tif t1 t2 t3 \in T
+  | T_Zero :
+      |- tzero \in TNat
+  | T_Succ : forall t,
+      |- t \in TNat ->
+      |- tsucc t \in TNat
+  | T_Pred : forall t,
+      |- t \in TNat ->
+      |- tpred t \in TNat
+  | T_Iszero : forall t,
+      |- t \in TNat ->
+      |- tiszero t \in TBool
+  where "'|-' t '\in' S" := (has_type t S).
+
+Hint Constructors has_type.
+
+(* Exercise: 1 star, optional (succ_hastype_nat__hastype_nat) *)
+
+Example succ_hastype_nat__hastype_nat : forall t,
+  |- tsucc t \in TNat ->
+  |- t \in TNat.
+Proof.
+  intros. inversion H. assumption.
+Qed.
+
+(* END succ_hastype_nat__hastype_nat. *)
