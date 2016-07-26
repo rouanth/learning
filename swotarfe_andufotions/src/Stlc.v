@@ -141,4 +141,55 @@ Proof. normalize. Qed.
 
 (* END step_example3. *)
 
+Definition context := id -> option ty.
+
+Definition pupdate { A : Type } (m : id -> option A) (x : id) (v : A) :=
+  update m x (Some v).
+
+Hint Unfold pupdate.
+
+Reserved Notation "Gamma '|-' t '\in' T" (at level 40).
+
+Inductive has_type : context -> tm -> ty -> Prop :=
+  | T_Var : forall G i T,
+      G i = Some T ->
+      G |- tvar i \in T
+  | T_Abs : forall G i T11 bd T12,
+      pupdate G i T11 |- bd \in T12 ->
+      G |- tabs i T11 bd \in TArrow T11 T12
+  | T_App : forall G a1 a2 T11 T12,
+      G |- a1 \in TArrow T11 T12 ->
+      G |- a2 \in T11 ->
+      G |- tapp a1 a2 \in T12
+  | T_True : forall G,
+      G |- ttrue \in TBool
+  | T_False : forall G,
+      G |- tfalse \in TBool
+  | T_If : forall G c t e T,
+      G |- c \in TBool ->
+      G |- t \in T ->
+      G |- e \in T ->
+      G |- (tif c t e) \in T
+  where "Gamma '|-' t '\in' T" := (has_type Gamma t T).
+
+Hint Constructors has_type.
+
+(* Exercise: 2 stars, optional (typing_example_2_full) *)
+
+Example typing_example_2_full :
+  (fun _ => None) |-
+    (tabs x TBool
+       (tabs y (TArrow TBool TBool)
+          (tapp (tvar y) (tapp (tvar y) (tvar x))))) \in
+    (TArrow TBool (TArrow (TArrow TBool TBool) TBool)).
+Proof.
+  apply T_Abs. apply T_Abs.
+  unfold pupdate.
+  apply T_App with TBool. apply T_Var. reflexivity.
+  apply T_App with TBool. apply T_Var. reflexivity.
+  apply T_Var. reflexivity.
+Qed.
+
+(* END typing_example_2_full. *)
+
 End STLC.
