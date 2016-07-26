@@ -417,3 +417,10 @@ Qed.
 *)
 
 (* END variation6. *)
+
+(* Exercise: 1 star (remove_predzero) *)
+
+(* Doing so would break the progress property since `tpred tzero` would be type
+correct but stuck. *)
+
+(* END remove_predzero. *)
