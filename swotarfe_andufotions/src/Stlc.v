@@ -209,4 +209,27 @@ Qed.
 
 (* END typing_example_3. *)
 
+(* Exercise: 3 stars, optional (typing_nonexample_3) *)
+
+Example typing_nonexample_3 :
+  ~ (exists S, exists T,
+       (fun _ => None) |-
+          (tabs x S
+             (tapp (tvar x) (tvar x))) \in
+     T).
+Proof.
+  intros [S [T H]].
+  inversion H;  subst; clear H.
+  inversion H5; subst; clear H5.
+  inversion H2; subst; clear H2.
+  inversion H4; subst; clear H4.
+  rewrite H2 in H1.
+  inversion H1.
+  clear H1 H2 S.
+  induction T11; inversion H0.
+  apply IHT11_1. rewrite <- H2. assumption.
+Qed.
+
+(* END typing_nonexample_3. *)
+
 End STLC.
