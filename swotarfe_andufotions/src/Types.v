@@ -342,3 +342,78 @@ Qed.
 *)
 
 (* END variation1. *)
+
+(* Exercise: 2 stars (variation2) *)
+
+(* 
+       | ST_Funny1 : ∀t2 t3,
+           (tif ttrue t2 t3) ⇒ t3
+
+  - Determinism of step (`tif ttrue ttrue tfalse`
+      could return both ttrue and tfalse)
+  + Progress
+  + Preservation
+
+*)
+
+(* END variation2. *)
+
+(* Exercise: 2 stars, optional (variation3) *)
+
+(*
+       | ST_Funny2 : ∀t1 t2 t2' t3,
+           t2 ⇒ t2' →
+           (tif t1 t2 t3) ⇒ (tif t1 t2' t3) 
+
+  - Determinism of step (`tif tfalse (tiszero tzero) tfalse`
+      could become `tfalse` or `tif tfalse ttrue tfalse`)
+  + Progress
+  + Preservation
+
+*)
+
+(* END variation3. *)
+
+(* Exercise: 2 stars, optional (variation4) *)
+
+(*
+       | ST_Funny3 :
+          (tpred tfalse) ⇒ (tpred (tpred tfalse)) 
+
+  + Determinism of step
+  + Progress
+  + Preservation
+
+*)
+
+(* END variation4. *)
+
+(* Exercise: 2 stars, optional (variation5) *)
+
+(*
+
+       | T_Funny4 :
+            ⊢ tzero ∈ TBool
+
+  + Determinism of step
+  - Progress (`tif tzero ttrue ttrue` would stall even with a correct type)
+  - Preservation (|- tpred tzero \in TNat ==> |- tzero \in TBool)
+
+*)
+
+(* END variation5. *)
+
+(* Exercise: 2 stars, optional (variation6) *)
+
+(*
+
+       | T_Funny5 :
+            ⊢ tpred tzero ∈ TBool
+
+  + Determinism of step
+  + Progress
+  - Preservation (|- tpred tzero \in TBool ==> |- tzero \in TBool)
+
+*)
+
+(* END variation6. *)
