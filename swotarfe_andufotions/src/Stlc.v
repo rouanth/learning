@@ -192,4 +192,21 @@ Qed.
 
 (* END typing_example_2_full. *)
 
+(* Exercise: 2 stars (typing_example_3) *)
+
+Example typing_example_3 :
+  exists T,
+    (fun _ => None) |-
+      (tabs x (TArrow TBool TBool)
+         (tabs y (TArrow TBool TBool)
+            (tabs z TBool
+               (tapp (tvar y) (tapp (tvar x) (tvar z)))))) \in T.
+Proof with auto.
+  exists (TArrow (TArrow TBool TBool)
+    ((TArrow (TArrow TBool TBool) (TArrow TBool TBool)))).
+  repeat econstructor.
+Qed.
+
+(* END typing_example_3. *)
+
 End STLC.
