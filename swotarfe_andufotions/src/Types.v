@@ -258,3 +258,31 @@ case where `t ==> t'`, `tzero t ==> tzero t'`.
 *)
 
 (* END step_review. *)
+
+(* Exercise: 2 stars (finish_preservation) *)
+
+Theorem preservation : forall t t' T,
+  |- t  \in T ->
+  t ==> t'   ->
+  |- t' \in T.
+Proof with auto.
+  intros t t' T Htt Hst. generalize dependent t'.
+  induction Htt; intros; inversion Hst; subst...
+  inversion Htt...
+Qed.
+
+(* END finish_preservation. *)
+
+(* Exercise: 3 stars (preservation_alternate_proof) *)
+
+Theorem preservation' : forall t t' T,
+  |- t  \in T ->
+  t ==> t'   ->
+  |- t' \in T.
+Proof with eauto.
+  intros t t' T Htt Hst. generalize dependent T.
+  induction Hst; intros; inversion Htt...
+  inversion H1...
+Qed.
+
+(* END preservation_alternate_proof. *)
