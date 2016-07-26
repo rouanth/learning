@@ -83,3 +83,17 @@ Proof.
 Qed.
 
 (* END some_term_is_stuck. *)
+
+(* Exercise: 3 stars, advanced (value_is_nf) *)
+
+Lemma value_is_nf : forall t,
+  value t -> step_normal_form t.
+Proof.
+  intros t [bval | nval]; intro contra; destruct contra.
+  - solve by inversion 2.
+  - generalize dependent x.
+    induction nval; intros; inversion H; subst.
+    apply IHnval with t2; assumption.
+Qed.
+
+(* END value_is_nf. *)
