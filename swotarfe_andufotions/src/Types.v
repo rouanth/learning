@@ -327,3 +327,18 @@ Proof.
 Qed.
 
 (* END subject_expansion. *)
+
+(* Exercise: 2 stars (variation1) *)
+
+(* 
+      | T_SuccBool : ∀t,
+           ⊢ t ∈ TBool →
+           ⊢ tsucc t ∈ TBool
+
+  + Determinism of step (step itself doesn't even change)
+  - Progress (`tsucc ttrue` would have correct type but be stuck)
+  + Preservation
+
+*)
+
+(* END variation1. *)
