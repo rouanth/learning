@@ -53,6 +53,7 @@ Inductive step : tm -> tm -> Prop :=
   | ST_PredZero :
       tpred tzero ==> tzero
   | ST_PredSucc : forall t,
+      nvalue t ->
       tpred (tsucc t) ==> t
   | ST_Pred    : forall t1 t2,
       t1 ==> t2 ->
@@ -60,6 +61,7 @@ Inductive step : tm -> tm -> Prop :=
   | ST_IszeroZero :
       tiszero tzero ==> ttrue
   | ST_IszeroSucc : forall t,
+      nvalue t ->
       tiszero (tsucc t) ==> tfalse
   | ST_Iszero : forall t1 t2,
       t1 ==> t2 ->
@@ -101,3 +103,39 @@ Qed. *)
 Qed.
 
 (* END value_is_nf. *)
+
+(* Exercise: 3 stars, optional (step_deterministic) *)
+
+Lemma n_normal :
+  forall n n', nvalue n -> (n ==> n' -> False).
+Proof.
+  intros. assert (value n) by (right; assumption).
+  apply value_is_nf in H1. unfold normal_form in H1.
+  apply H1. exists n'. assumption.
+Qed.
+
+Ltac nvalue_step :=
+  match goal with
+    H1 : nvalue ?E, H2 : ?E ==> ?F |- _ =>
+        eapply n_normal in H1; eauto; contradiction
+  end.
+
+Ltac deterministic_tac :=
+  match goal with
+    H1 : ?R ?E ?F, H2 : forall e, ?R ?E e -> ?G = e |- _ =>
+      solve [ apply H2 in H1; subst; trivial ]
+  end
+  || fail "is not a deterministic relation".
+
+Theorem step_deterministic:
+  deterministic step.
+Proof with eauto.
+  unfold deterministic.
+  intros.
+  generalize dependent y2.
+  induction H; intros; inversion H0; subst; try solve by inversion;
+    try solve_by_inversion_step (try nvalue_step); trivial;
+    try deterministic_tac.
+Qed.
+
+(* END step_deterministic. *)
