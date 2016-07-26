@@ -81,4 +81,64 @@ Qed.
 
 (* END substi. *)
 
+Inductive value : tm -> Prop :=
+  | v_abs   : forall x T t, value (tabs x T t)
+  | v_true  : value ttrue
+  | v_false : value tfalse.
+
+Hint Constructors value.
+
+Reserved Notation "t1 '==>' t2" (at level 40).
+
+Inductive step : tm -> tm -> Prop :=
+  | ST_AppAbs : forall x T t12 v2,
+      value v2 ->
+      (tapp (tabs x T t12) v2) ==> [x := v2] t12
+  | ST_App1   : forall t1 t1' t2,
+      t1 ==> t1' ->
+      tapp t1 t2 ==> tapp t1' t2
+  | ST_App2   : forall t1 t2 t2',
+      value t1 ->
+      t2 ==> t2' ->
+      tapp t1 t2 ==> tapp t1 t2'
+  | ST_IfTrue  : forall t e,
+      tif ttrue t e ==> t
+  | ST_IfFalse : forall t e,
+      tif tfalse t e ==> e
+  | ST_If : forall c c' t e,
+      c ==> c' ->
+      tif c t e ==> tif c' t e
+  where "t1 '==>' t2" := (step t1 t2).
+
+Hint Constructors step.
+
+Notation multistep := (multi step).
+
+Notation "t1 '==>*' t2" := (multistep t1 t2) (at level 40).
+
+Notation idB    := (tabs x TBool (tvar x)).
+Notation idBB   := (tabs x (TArrow TBool TBool) (tvar x)).
+Notation idBBBB := (tabs x (TArrow (TArrow TBool TBool) (TArrow TBool TBool))
+                           (tvar x)).
+
+(* Exercise: 2 stars (step_example3) *)
+
+Lemma step_example5 :
+       (tapp (tapp idBBBB idBB) idB)
+  ==>* idB.
+Proof.
+  eapply multi_step.
+    apply ST_App1. apply ST_AppAbs. apply v_abs.
+  eapply multi_step.
+    apply ST_AppAbs. apply v_abs.
+  simpl. apply multi_refl.
+Qed.
+
+Lemma step_example5_with_normalize :
+       (tapp (tapp idBBBB idBB) idB)
+  ==>* idB.
+Proof. normalize. Qed.
+
+(* END step_example3. *)
+
 End STLC.
