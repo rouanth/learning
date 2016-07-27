@@ -42,3 +42,54 @@ Proof.
 Qed.
 
 (* END progress_from_term_ind. *)
+
+Inductive appears_free_in : id -> tm -> Prop :=
+  | afi_var : forall x,
+      appears_free_in x (tvar x)
+  | afi_app1 : forall x t1 t2,
+      appears_free_in x t1 ->
+      appears_free_in x (tapp t1 t2)
+  | afi_app2 : forall x t1 t2,
+      appears_free_in x t2 ->
+      appears_free_in x (tapp t1 t2)
+  | afi_abs  : forall x i T t,
+      i <> x ->
+      appears_free_in x t ->
+      appears_free_in x (tabs i T t)
+  | afi_if1 : forall x c t e,
+      appears_free_in x c ->
+      appears_free_in x (tif c t e)
+  | afi_if2 : forall x c t e,
+      appears_free_in x t ->
+      appears_free_in x (tif c t e)
+  | afi_if3 : forall x c t e,
+      appears_free_in x e ->
+      appears_free_in x (tif c t e)
+.
+
+Definition closed (t : tm) :=
+  forall x, ~ appears_free_in x t.
+
+Lemma free_in_context : forall x t T Gamma,
+  appears_free_in x t ->
+  Gamma |- t \in T ->
+  exists T', Gamma x = Some T'.
+Proof.
+  intros x t.
+  induction t; intros; inversion H0; subst; inversion H; subst; eauto.
+  - apply IHt in H6; auto.
+      destruct H6. unfold pupdate in H1. rewrite update_neq in H1; eauto.
+Qed.
+
+(* Exercise: 2 stars, optional (typable_empty__closed) *)
+
+Corollary typable_empty__closed : forall t T,
+  (fun _ => None) |- t \in T ->
+  closed t.
+Proof.
+  unfold closed. intros. intro contra.
+  apply (free_in_context x0 t T (fun _ => None)) in H; eauto.
+  solve by inversion 2.
+Qed.
+
+(* END typable_empty__closed. *)
