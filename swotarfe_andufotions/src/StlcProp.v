@@ -169,3 +169,22 @@ Proof.
 Qed.
 
 (* END type_soundness. *)
+
+(* Exercise: 3 stars (types_unique) *)
+
+Theorem type_unique : forall G t T T',
+  G |- t \in T  ->
+  G |- t \in T' ->
+  T = T'.
+Proof.
+  intros G t. generalize dependent G.
+  induction t; intros; inversion H; subst; inversion H0; subst; eauto;
+    try solve by inversion.
+  - rewrite H4 in H3. inversion H3. trivial.
+  - assert (TArrow T11 T = TArrow T0 T') by eauto.
+    inversion H1; eauto.
+  - assert (T12 = T0) by eauto.
+    subst; eauto.
+Qed.
+
+(* END types_unique. *)
