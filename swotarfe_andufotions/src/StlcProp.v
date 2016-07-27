@@ -205,3 +205,96 @@ Definition preservation_statement:
   (fun _ => None) |- t' \in T.
 
 (* END progress_preservation_statement. *)
+
+(* Exercise: 2 stars (stlc_variation1) *)
+
+(*
+
+  - Determinism of step (`tif ttrue t1 t2` ==> t1 and ==> zap)
+  + Progress (there are no stuck values now, ever)
+  - Preservation
+    (Gamma |- ttrue \in TBool ->
+     ttrue ==> t1 ->
+     Gamma |- zap \in TArrow Bool Bool)
+
+*)
+
+(* END stlc_variation1. *)
+
+(* Exercise: 2 stars (stlc_variation2) *)
+
+(*
+
+  - Determinism of step (`tapp (tabs x T tb) y)` ==> [x := y] tb
+                         and ==> tapp foo y)
+  + Progress
+  - Preservation (`tabs x T tb` "loses" its type after reduction)
+
+*)
+
+(* END stlc_variation2. *)
+
+(* Exercise: 2 stars (stlc_variation3) *)
+
+(*
+
+  + Determinism of step (removing rules can't break it)
+  - Progress (`tapp (tif t1 t2 t3) t4` can't make a step but is not a value)
+  + Preservation
+
+*)
+
+(* END stlc_variation3. *)
+
+(* Exercise: 2 stars, optional (stlc_variation4) *)
+
+(*
+
+  - Determinism of step (`tif ttrue idBB idBB` ==> ttrue and ==> idBB)
+  + Progress
+  - Preservation (`tif ttrue idBB idBB` ==> ttrue and ==> idBB)
+
+*)
+
+(* END stlc_variation4. *)
+
+(* Exercise: 2 stars, optional (stlc_variation5) *)
+
+(*
+
+  + Determinism of step
+  - Progress (`|- t1 \in (TArrow TBool (TArrow TBool TBool)) ->
+               |- t2 \in TBool ->
+               |- t3 \in TBool -> |- t4 \in TBool ->
+               |- tif (tapp t1 t2) t3 t4 \in TBool` but can't make a step).
+  + Preservation
+
+*)
+
+(* END stlc_variation5. *)
+
+(* Exercise: 2 stars, optional (stlc_variation6) *)
+
+(*
+
+  + Determinism of step
+  - Progress (`tapp ttrue ttrue` has a type but won't make a step)
+  + Preservation
+
+*)
+
+(* END stlc_variation6. *)
+
+(* Exercise: 2 stars, optional (stlc_variation7) *)
+
+(*
+
+  + Determinism of step
+  - Progress
+    (`tif (tapp (tabs x TBool (tabs y TBool ttrue) ttrue) ttrue tfalse`
+     would be well-typed but the next step would halt it`)
+  + Preservation
+
+*)
+
+(* END stlc_variation7. *)
