@@ -188,3 +188,20 @@ Proof.
 Qed.
 
 (* END types_unique. *)
+
+(* Exercise: 1 star (progress_preservation_statement) *)
+
+(* This is ridiculous. *)
+
+Definition progress_statement:
+  forall t T,
+  (fun _ => None) |- t \in T ->
+  (~ stuck t).
+
+Definition preservation_statement:
+  forall t t' T,
+  (fun _ => None) |- t \in T ->
+  t ==> t' ->
+  (fun _ => None) |- t' \in T.
+
+(* END progress_preservation_statement. *)
