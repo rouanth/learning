@@ -698,7 +698,7 @@ Inductive aval : aexp -> Prop :=
 
 Reserved Notation " t '/' st '==>a' t' " (at level 40, st at level 39).
 
-Inductive astep : state -> aexp -> aexp -> Prop :=
+Inductive astep : @state nat -> aexp -> aexp -> Prop :=
   | AS_Id : forall st i,
       AId i / st ==>a ANum (st i)
   | AS_Plus : forall st n1 n2,
@@ -733,7 +733,7 @@ Inductive astep : state -> aexp -> aexp -> Prop :=
 
   Reserved Notation " t '/' st '==>b' t' " (at level 40, st at level 39).
 
-  Inductive bstep : state -> bexp -> bexp -> Prop :=
+  Inductive bstep : @state nat -> bexp -> bexp -> Prop :=
   | BS_Eq : forall st n1 n2,
       (BEq (ANum n1) (ANum n2)) / st ==>b
       (if (beq_nat n1 n2) then BTrue else BFalse)
@@ -779,7 +779,7 @@ Inductive astep : state -> aexp -> aexp -> Prop :=
 Reserved Notation " t '/' st '==>' t' '/' st' "
                   (at level 40, st at level 39, t' at level 39).
 
-Inductive cstep : (com * state) -> (com * state) -> Prop :=
+Inductive cstep : (com * @state nat) -> (com * @state nat) -> Prop :=
   | CS_AssStep : forall st i a a',
       a / st ==>a a' ->
       (i ::= a) / st ==> (i ::= a') / st
@@ -827,7 +827,7 @@ Notation "'IFB' b 'THEN' c1 'ELSE' c2 'FI'" :=
 Notation "'PAR' c1 'WITH' c2 'END'" :=
   (CPar c1 c2) (at level 80, right associativity).
 
-Inductive cstep : (com * state)  -> (com * state) -> Prop :=
+Inductive cstep : (com * @state nat)  -> (com * @state nat) -> Prop :=
     (* Old part *)
   | CS_AssStep : forall st i a a',
       a / st ==>a a' ->
@@ -936,7 +936,7 @@ End CImp.
 Definition stack := list nat.
 Definition prog  := list sinstr.
 
-Inductive stack_step : state -> prog * stack -> prog * stack -> Prop :=
+Inductive stack_step : @state nat -> prog * stack -> prog * stack -> Prop :=
   | SS_Push : forall st stk n p',
     stack_step st (SPush n :: p', stk)      (p', n :: stk)
   | SS_Load : forall st stk i p',

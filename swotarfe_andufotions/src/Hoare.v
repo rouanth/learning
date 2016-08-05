@@ -2,6 +2,7 @@ Require Import Coq.Bool.Bool.
 Require Import Coq.Arith.Arith.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.omega.Omega.
+Require Import Coq.Arith.Peano_dec.
 Require Import SfLib.
 Require Import Imp.
 
@@ -461,7 +462,7 @@ Proof.
       simpl in H0.
       assert (forall a b, b <= a -> a = b + (a - b)).
       { intros. omega. }
-      apply H1. apply Nat.leb_le. assumption.
+      apply H1. apply leb_complete. assumption.
       intros contra; inversion contra.
       intros contra; inversion contra.
   - eapply hoare_consequence_pre.
@@ -505,7 +506,7 @@ Notation "'IF1' b 'THEN' c 'FI'" :=
 
 Reserved Notation "c1 '/' st '⇓' st'" (at level 40, st at level 39).
 
-Inductive ceval : com -> state -> state -> Prop :=
+Inductive ceval : com -> @state nat -> @state nat -> Prop :=
   | E_Skip : forall st, SKIP / st ⇓ st
   | E_Ass  : forall st x ae,  (x ::= ae) / st ⇓ (update st x (aeval st ae))
   | E_Seq  : forall st st' st'' c1 c2,
@@ -660,7 +661,7 @@ Notation "'REPEAT' c 'UNTIL' b 'END'" :=
 
 Reserved Notation "c1 '/' st '⇓' st'" (at level 40, st at level 39).
 
-Inductive ceval : com -> state -> state -> Prop :=
+Inductive ceval : com -> @state nat -> @state nat -> Prop :=
   | E_Skip : forall st, SKIP / st ⇓ st
   | E_Ass  : forall st x ae,  (x ::= ae) / st ⇓ (update st x (aeval st ae))
   | E_Seq  : forall st st' st'' c1 c2,
@@ -892,7 +893,7 @@ Notation "'HAVOC' i" :=
 
 Reserved Notation "c1 '/' st '⇓' st'" (at level 40, st at level 39).
 
-Inductive ceval : com -> state -> state -> Prop :=
+Inductive ceval : com -> @state nat -> @state nat -> Prop :=
   | E_Skip : forall st, SKIP / st ⇓ st
   | E_Ass  : forall st x ae,  (x ::= ae) / st ⇓ (update st x (aeval st ae))
   | E_Seq  : forall st st' st'' c1 c2,

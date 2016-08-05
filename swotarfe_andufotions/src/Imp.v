@@ -464,7 +464,7 @@ Definition loop : com :=
 
 Reserved Notation "c1 '/' st '⇓' st'" (at level 40, st at level 39).
 
-Inductive ceval : com -> state -> state -> Prop :=
+Inductive ceval : com -> @state nat -> @state nat -> Prop :=
   | E_Skip : forall st, SKIP / st ⇓ st
   | E_Ass  : forall st x ae,  (x ::= ae) / st ⇓ (update st x (aeval st ae))
   | E_Seq  : forall st st' st'' c1 c2,
@@ -755,7 +755,7 @@ Reserved Notation "c1 '/' st '⇓' s '/' st'"
 
 (* Exercise: 5 stars, advanced (break_imp) *)
 
-Inductive ceval : com -> state -> status -> state -> Prop :=
+Inductive ceval : com -> @state nat -> status -> @state nat -> Prop :=
   | E_Skip : forall st, SKIP / st ⇓ SContinue / st
   | E_Ass  : forall st x ae,
       (x ::= ae) / st ⇓ SContinue / (update st x (aeval st ae))
