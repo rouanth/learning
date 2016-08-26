@@ -77,8 +77,8 @@ Fixpoint subst (x : id) (s : tm) (t : tm) : tm :=
     | tunit  => tunit
 
     | tlet i d b => if eq_id_dec i x
-                    then tlet i (subst x s d) (subst x s b)
-                    else tlet i d b
+                    then tlet i d b
+                    else tlet i (subst x s d) (subst x s b)
 
     | tinl T a => tinl T (subst x s a)
     | tinr T a => tinr T (subst x s a)
@@ -246,7 +246,7 @@ Inductive has_type : context -> tm -> ty -> Prop :=
       Gamma |- tapp t1 t2 \in T2
   | T_Abs : forall Gamma x t T1 T2,
       (pupdate Gamma x T1) |- t \in T2 ->
-      Gamma |- tabs x T1 t \in T2
+      Gamma |- tabs x T1 t \in TArrow T1 T2
   | T_Nat : forall Gamma n,
       Gamma |- tnat n \in TNat
   | T_Succ : forall Gamma tn,
@@ -282,7 +282,7 @@ Inductive has_type : context -> tm -> ty -> Prop :=
       Gamma |- tlet x tl t \in T
   | T_Inl : forall Gamma t T1 T2,
       Gamma |- t \in T1 ->
-      Gamma |- tinr T2 t \in TSum T1 T2
+      Gamma |- tinl T2 t \in TSum T1 T2
   | T_Inr : forall Gamma t T1 T2,
       Gamma |- t \in T2 ->
       Gamma |- tinr T1 t \in TSum T1 T2
@@ -294,7 +294,7 @@ Inductive has_type : context -> tm -> ty -> Prop :=
   | T_Nil : forall Gamma T,
       Gamma |- tnil T \in TList T
   | T_Cons : forall Gamma t1 t2 T,
-      Gamma |- t1 \in TList T ->
+      Gamma |- t1 \in T ->
       Gamma |- t2 \in TList T ->
       Gamma |- tcons t1 t2 \in TList T
   | T_Lcase : forall Gamma tc tn xh xt tht Tl T,
@@ -308,6 +308,330 @@ Inductive has_type : context -> tm -> ty -> Prop :=
   where "Gamma '|-' t '\in' T" := (has_type Gamma t T).
 
 Hint Constructors has_type.
+
+Module Examples.
+
+Notation a := (Id 0).
+Notation f := (Id 1).
+Notation g := (Id 2).
+Notation l := (Id 3).
+Notation k := (Id 6).
+Notation i1 := (Id 7).
+Notation i2 := (Id 8).
+Notation x := (Id 9).
+Notation y := (Id 10).
+Notation processSum := (Id 11).
+Notation n := (Id 12).
+Notation eq := (Id 13).
+Notation m := (Id 14).
+Notation evenodd := (Id 15).
+Notation even := (Id 16).
+Notation odd := (Id 17).
+Notation eo := (Id 18).
+
+Hint Extern 2 (has_type _ (tapp _ _) _) =>
+  eapply T_App; auto.
+(* You'll want to uncomment the following line once
+   you've defined the T_Lcase constructor for the typing
+   relation: *)
+
+Hint Extern 2 (has_type _ (tlcase _ _ _ _ _) _) =>
+  eapply T_Lcase; auto.
+
+Hint Extern 2 (_ = _) => compute; reflexivity.
+
+Module Numtest.
+
+(* if0 (pred (succ (pred (2 * 0))) then 5 else 6 *)
+Definition test :=
+  tif0
+    (tpred
+      (tsucc
+        (tpred
+          (tmult
+            (tnat 2)
+            (tnat 0)))))
+    (tnat 5)
+    (tnat 6).
+
+Example typechecks :
+  (fun r => None) |- test \in TNat.
+Proof.
+  unfold test.
+  (* This typing derivation is quite deep, so we need to increase the
+     max search depth of auto from the default 5 to 10. *)
+  auto 10.
+Qed.
+
+Example numtest_reduces :
+  test ==>* tnat 5.
+Proof.
+  unfold test. normalize.
+Qed.
+
+End Numtest.
+
+
+Module Prodtest.
+
+(* ((5,6),7).fst.snd *)
+Definition test :=
+  tsnd
+    (tfst
+      (tpair
+        (tpair
+          (tnat 5)
+          (tnat 6))
+        (tnat 7))).
+
+Example typechecks :
+  (fun a => None) |- test \in TNat.
+Proof. unfold test. eauto 15. Qed.
+
+Example reduces :
+  test ==>* tnat 6.
+Proof. unfold test. normalize. Qed.
+
+End Prodtest.
+
+Module LetTest.
+
+(* let x = pred 6 in succ x *)
+Definition test :=
+  tlet
+    x
+    (tpred (tnat 6))
+    (tsucc (tvar x)).
+
+Example typechecks :
+  (fun a => None) |- test \in TNat.
+Proof. unfold test. eauto 15. Qed.
+
+Example reduces :
+  test ==>* tnat 6.
+Proof. unfold test. normalize. Qed.
+
+End LetTest.
+
+Module Sumtest1.
+
+(* case (inl Nat 5) of
+     inl x => x
+   | inr y => y *)
+
+Definition test :=
+  tcase (tinl TNat (tnat 5))
+    x (tvar x)
+    y (tvar y).
+
+Example typechecks :
+  (fun a => None) |- test \in TNat.
+Proof. unfold test. eauto 15. Qed.
+
+Example reduces :
+  test ==>* (tnat 5).
+Proof. unfold test. normalize. Qed.
+
+End Sumtest1.
+
+Module Sumtest2.
+
+(* let processSum =
+     \x:Nat+Nat.
+        case x of
+          inl n => n
+          inr n => if0 n then 1 else 0 in
+   (processSum (inl Nat 5), processSum (inr Nat 5))    *)
+
+Definition test :=
+  tlet
+    processSum
+    (tabs x (TSum TNat TNat)
+      (tcase (tvar x)
+         n (tvar n)
+         n (tif0 (tvar n) (tnat 1) (tnat 0))))
+    (tpair
+      (tapp (tvar processSum) (tinl TNat (tnat 5)))
+      (tapp (tvar processSum) (tinr TNat (tnat 5)))).
+
+Example typechecks :
+  (fun a => None) |- test \in (TProd TNat TNat).
+Proof. unfold test. eauto 15. Qed.
+
+Example reduces :
+  test ==>* (tpair (tnat 5) (tnat 0)).
+Proof. unfold test. normalize. Qed.
+
+End Sumtest2.
+
+Module ListTest.
+
+(* let l = cons 5 (cons 6 (nil Nat)) in
+   lcase l of
+     nil => 0
+   | x::y => x*x *)
+
+Definition test :=
+  tlet l
+    (tcons (tnat 5) (tcons (tnat 6) (tnil TNat)))
+    (tlcase (tvar l)
+       (tnat 0)
+       x y (tmult (tvar x) (tvar x))).
+
+Example typechecks :
+  (fun a => None) |- test \in TNat.
+Proof. unfold test. eauto 20. Qed.
+
+Example reduces :
+  test ==>* (tnat 25).
+Proof. unfold test. normalize. Qed.
+
+End ListTest.
+
+Module FixTest1.
+
+(* fact := fix
+             (\f:nat->nat.
+                \a:nat.
+                   if a=0 then 1 else a * (f (pred a))) *)
+Definition fact :=
+  tfix
+    (tabs f (TArrow TNat TNat)
+      (tabs a TNat
+        (tif0
+           (tvar a)
+           (tnat 1)
+           (tmult
+              (tvar a)
+              (tapp (tvar f) (tpred (tvar a))))))).
+
+Example fact_typechecks :
+  (fun a => None) |- fact \in (TArrow TNat TNat).
+Proof. unfold fact. auto 10. Qed.
+
+Example fact_example:
+  (tapp fact (tnat 4)) ==>* (tnat 24).
+Proof. unfold fact. normalize. Qed.
+
+End FixTest1.
+
+Module FixTest2.
+
+(* map :=
+     \g:nat->nat.
+       fix
+         (\f:nat->nat.
+            \l:nat.
+               case l of
+               |  -> 
+               | x::l -> (g x)::(f l)) *)
+Definition map :=
+  tabs g (TArrow TNat TNat)
+    (tfix
+      (tabs f (TArrow (TList TNat) (TList TNat))
+        (tabs l (TList TNat)
+          (tlcase (tvar l)
+            (tnil TNat)
+            a l (tcons (tapp (tvar g) (tvar a))
+                         (tapp (tvar f) (tvar l))))))).
+
+Example map_typechecks :
+  (fun a => None) |- map \in
+    (TArrow (TArrow TNat TNat)
+      (TArrow (TList TNat)
+        (TList TNat))).
+Proof. unfold map. auto 10. Qed.
+
+Example map_example :
+  tapp (tapp map (tabs a TNat (tsucc (tvar a))))
+         (tcons (tnat 1) (tcons (tnat 2) (tnil TNat)))
+  ==>* (tcons (tnat 2) (tcons (tnat 3) (tnil TNat))).
+Proof. unfold map. normalize. Qed.
+
+End FixTest2.
+
+Module FixTest3.
+
+(* equal =
+      fix
+        (\eq:Nat->Nat->Bool.
+           \m:Nat. \n:Nat.
+             if0 m then (if0 n then 1 else 0)
+             else if0 n then 0
+             else eq (pred m) (pred n))   *)
+
+Definition equal :=
+  tfix
+    (tabs eq (TArrow TNat (TArrow TNat TNat))
+      (tabs m TNat
+        (tabs n TNat
+          (tif0 (tvar m)
+            (tif0 (tvar n) (tnat 1) (tnat 0))
+            (tif0 (tvar n)
+              (tnat 0)
+              (tapp (tapp (tvar eq)
+                              (tpred (tvar m)))
+                      (tpred (tvar n)))))))).
+
+Example equal_typechecks :
+  (fun a => None) |- equal \in (TArrow TNat (TArrow TNat TNat)).
+Proof. unfold equal. auto 10.
+Qed.
+
+Example equal_example1:
+  (tapp (tapp equal (tnat 4)) (tnat 4)) ==>* (tnat 1).
+Proof. unfold equal. normalize. Qed.
+
+Example equal_example2:
+  (tapp (tapp equal (tnat 4)) (tnat 5)) ==>* (tnat 0).
+Proof. unfold equal. normalize. Qed.
+
+End FixTest3.
+
+Module FixTest4.
+
+(* let evenodd =
+         fix
+           (\eo: (Nat->Nat * Nat->Nat).
+              let e = \n:Nat. if0 n then 1 else eo.snd (pred n) in
+              let o = \n:Nat. if0 n then 0 else eo.fst (pred n) in
+              (e,o)) in
+    let even = evenodd.fst in
+    let odd  = evenodd.snd in
+    (even 3, even 4)
+*)
+
+Definition eotest :=
+  tlet evenodd
+    (tfix
+      (tabs eo (TProd (TArrow TNat TNat) (TArrow TNat TNat))
+        (tpair
+          (tabs n TNat
+            (tif0 (tvar n)
+              (tnat 1)
+              (tapp (tsnd (tvar eo)) (tpred (tvar n)))))
+          (tabs n TNat
+            (tif0 (tvar n)
+              (tnat 0)
+              (tapp (tfst (tvar eo)) (tpred (tvar n))))))))
+  (tlet even (tfst (tvar evenodd))
+  (tlet odd (tsnd (tvar evenodd))
+  (tpair
+    (tapp (tvar even) (tnat 3))
+    (tapp (tvar even) (tnat 4))))).
+
+Example eotest_typechecks :
+  (fun a => None) |- eotest \in (TProd TNat TNat).
+Proof. unfold eotest. eauto 30.
+Qed.
+
+Example eotest_example1:
+  eotest ==>* (tpair (tnat 0) (tnat 1)).
+Proof. unfold eotest. normalize. Qed.
+
+End FixTest4.
+
+End Examples.
 
 (* END STLC_extensions. *)
 
