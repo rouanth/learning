@@ -215,6 +215,12 @@ Inductive step : tm -> tm -> Prop :=
       value th ->
       value tt ->
       tlcase (tcons th tt) tn xh xt tc ==> [xt := tt] [xh := th] tc
+  | ST_Fix1 : forall t t',
+      t ==> t' ->
+      tfix t ==> tfix t'
+  | ST_Fix : forall F x T t,
+      F = tabs x T t ->
+      tfix F ==> [x := tfix F] t
   where "t1 '==>' t2" := (step t1 t2).
 
 Notation multistep := (multi step).
@@ -224,6 +230,84 @@ Notation "t1 '==>*' t2" := (multistep t1 t2) (at level 40).
 Definition context := id -> option ty.
 
 Reserved Notation "Gamma '|-' t '\in' T" (at level 40).
+
+Definition pupdate { A : Type } (m : id -> option A) (x : id) (v : A) :=
+  update m x (Some v).
+
+Hint Constructors step.
+
+Inductive has_type : context -> tm -> ty -> Prop :=
+  | T_Var : forall Gamma x T,
+      Gamma x = Some T ->
+      Gamma |- tvar x \in T
+  | T_App : forall Gamma t1 t2 T1 T2,
+      Gamma |- t1 \in (TArrow T1 T2) ->
+      Gamma |- t2 \in T1 ->
+      Gamma |- tapp t1 t2 \in T2
+  | T_Abs : forall Gamma x t T1 T2,
+      (pupdate Gamma x T1) |- t \in T2 ->
+      Gamma |- tabs x T1 t \in T2
+  | T_Nat : forall Gamma n,
+      Gamma |- tnat n \in TNat
+  | T_Succ : forall Gamma tn,
+      Gamma |- tn \in TNat ->
+      Gamma |- tsucc tn \in TNat
+  | T_Pred : forall Gamma tn,
+      Gamma |- tn \in TNat ->
+      Gamma |- tpred tn \in TNat
+  | T_Mult : forall Gamma t1 t2,
+      Gamma |- t1 \in TNat ->
+      Gamma |- t2 \in TNat ->
+      Gamma |- tmult t1 t2 \in TNat
+  | T_If0 : forall Gamma T tc tt te,
+      Gamma |- tc \in TNat ->
+      Gamma |- tt \in T ->
+      Gamma |- te \in T ->
+      Gamma |- tif0 tc tt te \in T
+  | T_Pair : forall Gamma t1 T1 t2 T2,
+      Gamma |- t1 \in T1 ->
+      Gamma |- t2 \in T2 ->
+      Gamma |- tpair t1 t2 \in TProd T1 T2
+  | T_Fst : forall Gamma t T1 T2,
+      Gamma |- t \in TProd T1 T2 ->
+      Gamma |- tfst t \in T1
+  | T_Snd : forall Gamma t T1 T2,
+      Gamma |- t \in TProd T1 T2 ->
+      Gamma |- tsnd t \in T2
+  | T_Unit : forall Gamma,
+      Gamma |- tunit \in TUnit
+  | T_Let : forall Gamma x tl Tl t T,
+      Gamma |- tl \in Tl ->
+      (pupdate Gamma x Tl) |- t \in T ->
+      Gamma |- tlet x tl t \in T
+  | T_Inl : forall Gamma t T1 T2,
+      Gamma |- t \in T1 ->
+      Gamma |- tinr T2 t \in TSum T1 T2
+  | T_Inr : forall Gamma t T1 T2,
+      Gamma |- t \in T2 ->
+      Gamma |- tinr T1 t \in TSum T1 T2
+  | T_Case : forall Gamma tc x Tx tx y Ty ty T,
+      Gamma |- tc \in TSum Tx Ty ->
+      (pupdate Gamma x Tx) |- tx \in T ->
+      (pupdate Gamma y Ty) |- ty \in T ->
+      Gamma |- tcase tc x tx y ty \in T
+  | T_Nil : forall Gamma T,
+      Gamma |- tnil T \in TList T
+  | T_Cons : forall Gamma t1 t2 T,
+      Gamma |- t1 \in TList T ->
+      Gamma |- t2 \in TList T ->
+      Gamma |- tcons t1 t2 \in TList T
+  | T_Lcase : forall Gamma tc tn xh xt tht Tl T,
+      Gamma |- tc \in TList Tl ->
+      Gamma |- tn \in T ->
+      (pupdate (pupdate Gamma xh Tl) xt (TList Tl)) |- tht \in T ->
+      Gamma |- tlcase tc tn xh xt tht \in T
+  | T_Fix : forall Gamma t T,
+      Gamma |- t \in TArrow T T ->
+      Gamma |- tfix t \in T
+  where "Gamma '|-' t '\in' T" := (has_type Gamma t T).
+
+Hint Constructors has_type.
 
 (* END STLC_extensions. *)
 
