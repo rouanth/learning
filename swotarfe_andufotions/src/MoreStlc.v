@@ -185,8 +185,45 @@ Inductive step : tm -> tm -> Prop :=
   | ST_Let : forall x tb tc,
       value tb ->
       tlet x tb tc ==> [x := tb] tc
-  
+  | ST_Inl : forall T t t',
+      t ==> t' ->
+      tinl T t ==> tinl T t'
+  | ST_Inr : forall T t t',
+      t ==> t' ->
+      tinr T t ==> tinr T t'
+  | ST_Case : forall c c' x1 b1 x2 b2,
+      c ==> c' ->
+      tcase c x1 b1 x2 b2 ==> tcase c' x1 b1 x2 b2
+  | ST_CaseL : forall T c x1 b1 x2 b2,
+      value c ->
+      tcase (tinl T c) x1 b1 x2 b2 ==> [x1 := c] b1
+  | ST_CaseR : forall T c x1 b1 x2 b2,
+      value c ->
+      tcase (tinr T c) x1 b1 x2 b2 ==> [x2 := c] b2
+  | ST_Cons1 : forall t1 t1' t2,
+      t1 ==> t1' ->
+      tcons t1 t2 ==> tcons t1' t2
+  | ST_Cons2 : forall t1 t2 t2',
+      t2 ==> t2' ->
+      tcons t1 t2 ==> tcons t1 t2'
+  | ST_Lcase1 : forall c c' tn xh xt tc,
+      c ==> c' ->
+      tlcase c tn xh xt tc ==> tlcase c' tn xh xt tc
+  | ST_LcaseNil : forall T tn xh xt tc,
+      tlcase (tnil T) tn xh xt tc ==> tn
+  | ST_LcaseCons : forall th tt tn xh xt tc,
+      value th ->
+      value tt ->
+      tlcase (tcons th tt) tn xh xt tc ==> [xt := tt] [xh := th] tc
   where "t1 '==>' t2" := (step t1 t2).
+
+Notation multistep := (multi step).
+
+Notation "t1 '==>*' t2" := (multistep t1 t2) (at level 40).
+
+Definition context := id -> option ty.
+
+Reserved Notation "Gamma '|-' t '\in' T" (at level 40).
 
 (* END STLC_extensions. *)
 
