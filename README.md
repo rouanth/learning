@@ -16,3 +16,9 @@ Judson's Abstract Algebra
 
 Writing solutions to the exercises from this promising book in LaTeX.
 
+Typeclassopedia
+---------------
+
+Solving Typeclassopedia, an article on usage of structures from category theory
+and algebra in Haskell's standard libraries.
+
