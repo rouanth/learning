@@ -60,9 +60,9 @@ Inductive tm : Type :=
 
 Fixpoint subst (x : id) (s : tm) (t : tm) : tm :=
   match t with
-    | tvar i   => if eq_id_dec i x then s else tvar i
+    | tvar i   => if eq_id_dec x i then s else tvar i
     | tapp a b => tapp (subst x s a) (subst x s b)
-    | tabs i T a => tabs i T (if eq_id_dec i x then a else (subst x s a))
+    | tabs i T a => tabs i T (if eq_id_dec x i then a else (subst x s a))
 
     | tnat n   => tnat n
     | tsucc a  => tsucc (subst x s a)
@@ -77,7 +77,7 @@ Fixpoint subst (x : id) (s : tm) (t : tm) : tm :=
     | tunit  => tunit
 
     | tlet i d b => tlet i (subst x s d)
-        (if eq_id_dec i x then b else subst x s b)
+        (if eq_id_dec x i then b else subst x s b)
 
     | tinl T a => tinl T (subst x s a)
     | tinr T a => tinr T (subst x s a)
@@ -88,7 +88,7 @@ Fixpoint subst (x : id) (s : tm) (t : tm) : tm :=
     | tnil T => tnil T
     | tcons h t => tcons (subst x s h) (subst x s t)
     | tlcase c tn x1 x2 tc => tlcase (subst x s c) (subst x s tn)
-        x1 x2 (if eq_id_dec x1 x then tc else if eq_id_dec x2 x then tc else
+        x1 x2 (if eq_id_dec x x1 then tc else if eq_id_dec x x2 then tc else
                (subst x s tc))
 
     | tfix t => tfix (subst x s t)
@@ -877,6 +877,83 @@ Proof with eauto.
   - destruct IHHtype3 with x as [T' st]...
     unfold pupdate in st.
     repeat (rewrite update_neq in st; eauto).
+Qed.
+
+Lemma substitution_preserves_typing : forall Gamma x U v t S,
+  (pupdate Gamma x U) |- t \in S ->
+  (fun _ => None) |- v \in U ->
+  Gamma |- ([x := v] t) \in S.
+Proof with eauto.
+  intros Gamma x U v t S Hcon Hemp.
+  generalize dependent Gamma. generalize dependent S.
+  induction t; intros; simpl; inversion Hcon; subst...
+  - unfold pupdate in *. unfold update in *.
+    destruct (eq_id_dec x i)... subst.
+    inversion H1; subst...
+    eapply context_invariance...
+    intros.
+    edestruct free_in_context as [t Hc]...
+    inversion Hc.
+  - econstructor.
+    destruct (eq_id_dec x i) as [xeqy | xneqy]; subst.
+    + eapply context_invariance...
+      intros.
+      unfold pupdate, update.
+      destruct (eq_id_dec i x)...
+    + apply IHt.
+      eapply context_invariance... intros.
+      unfold pupdate, update.
+      destruct (eq_id_dec x x0)...
+      subst.
+      destruct (eq_id_dec i x0)...
+      subst. apply except. apply xneqy. trivial.
+  - econstructor...
+    destruct (eq_id_dec x i) as [xeqy | xneqy]; subst.
+    + eapply context_invariance... intros.
+      unfold pupdate. rewrite update_shadow. trivial.
+    + apply IHt2.
+      eapply context_invariance... intros.
+      unfold pupdate.
+      rewrite update_permute...
+  - econstructor...
+    + destruct (eq_id_dec x i).
+      * subst. eapply context_invariance... intros.
+        unfold pupdate.
+        rewrite update_shadow...
+      * apply IHt2. eapply context_invariance... intros.
+        unfold pupdate.
+        rewrite update_permute...
+    + destruct (eq_id_dec x i0); subst.
+      * eapply context_invariance... intros. unfold pupdate.
+        rewrite update_shadow...
+      * apply IHt3. eapply context_invariance... intros. unfold pupdate.
+        rewrite update_permute...
+  - econstructor...
+    destruct (eq_id_dec x i).
+    + eapply context_invariance... intros. subst.
+      unfold pupdate, update.
+      destruct (eq_id_dec i0 x0)...
+      destruct (eq_id_dec i  x0)...
+    + destruct (eq_id_dec x i0).
+      * subst. eapply context_invariance... intros.
+        unfold pupdate.
+        destruct (eq_id_dec i0 x).
+        { subst. repeat rewrite update_eq... }
+        { rewrite update_neq... symmetry. rewrite update_neq...
+          rewrite update_permute... rewrite update_neq... }
+      * eapply IHt3. eapply context_invariance... intros.
+        unfold pupdate.
+        destruct (eq_id_dec x x0); subst.
+        { rewrite update_eq. rewrite update_neq... rewrite update_neq...
+          rewrite update_eq... }
+        { rewrite update_neq...
+          destruct (eq_id_dec x0 i0); subst.
+          { rewrite update_eq... rewrite update_eq... }
+          { rewrite update_neq... symmetry. rewrite update_neq...
+            destruct (eq_id_dec x0 i); subst.
+            { rewrite update_eq. rewrite update_eq... }
+            { rewrite update_neq... rewrite update_neq...
+              rewrite update_neq... } } }
 Qed.
 
 (* END STLC_extensions. *)
