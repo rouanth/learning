@@ -147,6 +147,7 @@ Inductive step : tm -> tm -> Prop :=
       t1 ==> t1' ->
       tmult t1 t2 ==> tmult t1' t2
   | ST_Mult2 : forall t1 t2 t2',
+      value t1 ->
       t2 ==> t2' ->
       tmult t1 t2 ==> tmult t1 t2'
   | ST_MultNats : forall n1 n2,
@@ -224,6 +225,37 @@ Inductive step : tm -> tm -> Prop :=
       tfix F ==> [x := tfix F] t
   where "t1 '==>' t2" := (step t1 t2).
 
+Hint Constructors step.
+
+Theorem value_is_nf : forall t,
+  value t ->
+  normal_form step t.
+Proof with eauto.
+  unfold normal_form.
+  induction t; intros; subst; intros [p CNT]; try solve by inversion.
+  - inversion H; subst. apply IHt1 in H2. apply IHt2 in H3.
+    inversion CNT...
+  - inversion H; subst. apply IHt in H1.
+    inversion CNT...
+  - inversion H; subst. apply IHt in H1.
+    inversion CNT...
+  - inversion H; subst. apply IHt1 in H2. apply IHt2 in H3.
+    inversion CNT...
+Defined.
+
+Ltac value_nf_violation :=
+  match goal with
+    H1 : value ?E, H2 : step ?E _ |- _ =>
+      apply value_is_nf in H1; apply except; apply H1; eauto
+  end.
+
+Ltac determinism :=
+  match goal with
+    H1 : ?E ?F ?G, H2 : ?E ?F ?H,
+    H3 : forall a b, ?E ?F a -> ?E ?F b -> a = b |- _ =>
+      eapply H3 in H1; eauto; subst; reflexivity
+  end.
+
 Notation multistep := (multi step).
 
 Notation "t1 '==>*' t2" := (multistep t1 t2) (at level 40).
@@ -234,8 +266,6 @@ Reserved Notation "Gamma '|-' t '\in' T" (at level 40).
 
 Definition pupdate { A : Type } (m : id -> option A) (x : id) (v : A) :=
   update m x (Some v).
-
-Hint Constructors step.
 
 Inductive has_type : context -> tm -> ty -> Prop :=
   | T_Var : forall Gamma x T,
@@ -695,6 +725,26 @@ Proof with eauto.
   - destruct IHhas_type...
     + inversion H0; subst; try solve by inversion...
     + destruct H0...
+Qed.
+
+Theorem determinism : forall t t' t'2,
+  t ==> t'  ->
+  t ==> t'2 ->
+  t' = t'2.
+Proof with eauto.
+  induction t; intros; inversion H; subst; inversion H0; subst;
+      try solve by inversion; try value_nf_violation; try determinism...
+  - assert (value (tpair t'2 t2)) by eauto. value_nf_violation.
+  - assert (value (tpair t' t2))  by eauto. value_nf_violation.
+  - assert (value (tpair t1 t'2)) by eauto. value_nf_violation.
+  - assert (value (tpair t1 t'))  by eauto. value_nf_violation.
+  - inversion H7. value_nf_violation.
+  - inversion H7. value_nf_violation.
+  - inversion H8. value_nf_violation.
+  - inversion H8. value_nf_violation.
+  - assert (value (tcons th tt)) by eauto. value_nf_violation.
+  - assert (value (tcons th tt)) by eauto. value_nf_violation.
+  - inversion H2; subst. reflexivity.
 Qed.
 
 (* END STLC_extensions. *)
