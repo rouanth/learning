@@ -76,9 +76,8 @@ Fixpoint subst (x : id) (s : tm) (t : tm) : tm :=
 
     | tunit  => tunit
 
-    | tlet i d b => if eq_id_dec i x
-                    then tlet i d b
-                    else tlet i (subst x s d) (subst x s b)
+    | tlet i d b => tlet i (subst x s d)
+        (if eq_id_dec i x then b else subst x s b)
 
     | tinl T a => tinl T (subst x s a)
     | tinr T a => tinr T (subst x s a)
@@ -745,6 +744,119 @@ Proof with eauto.
   - assert (value (tcons th tt)) by eauto. value_nf_violation.
   - assert (value (tcons th tt)) by eauto. value_nf_violation.
   - inversion H2; subst. reflexivity.
+Qed.
+
+Inductive appears_free_in : id -> tm -> Prop :=
+  | afi_var : forall x, appears_free_in x (tvar x)
+  | afi_app1 : forall x t1 t2,
+      appears_free_in x t1 ->
+      appears_free_in x (tapp t1 t2)
+  | afi_app2 : forall x t1 t2,
+      appears_free_in x t2 ->
+      appears_free_in x (tapp t1 t2)
+  | afi_abs : forall x y T t,
+      x <> y ->
+      appears_free_in x t ->
+      appears_free_in x (tabs y T t)
+  | afi_succ : forall x t,
+      appears_free_in x t ->
+      appears_free_in x (tsucc t)
+  | afi_pred : forall x t,
+      appears_free_in x t ->
+      appears_free_in x (tpred t)
+  | afi_mult1 : forall x t1 t2,
+      appears_free_in x t1 ->
+      appears_free_in x (tmult t1 t2)
+  | afi_mult2 : forall x t1 t2,
+      appears_free_in x t2 ->
+      appears_free_in x (tmult t1 t2)
+  | afi_if01 : forall x tc tt te,
+      appears_free_in x tc ->
+      appears_free_in x (tif0 tc tt te)
+  | afi_if02 : forall x tc tt te,
+      appears_free_in x tt ->
+      appears_free_in x (tif0 tc tt te)
+  | afi_if03 : forall x tc tt te,
+      appears_free_in x te ->
+      appears_free_in x (tif0 tc tt te)
+  | afi_pair1 : forall x t1 t2,
+      appears_free_in x t1 ->
+      appears_free_in x (tpair t1 t2)
+  | afi_pair2 : forall x t1 t2,
+      appears_free_in x t2 ->
+      appears_free_in x (tpair t1 t2)
+  | afi_fst : forall x t,
+      appears_free_in x t ->
+      appears_free_in x (tfst t)
+  | afi_snd : forall x t,
+      appears_free_in x t ->
+      appears_free_in x (tsnd t)
+  | afi_let1 : forall x y tb tc,
+      appears_free_in x tb ->
+      appears_free_in x (tlet y tb tc)
+  | afi_let2 : forall x y tb tc,
+      x <> y ->
+      appears_free_in x tc ->
+      appears_free_in x (tlet y tb tc)
+  | afi_inl : forall x T t,
+      appears_free_in x t ->
+      appears_free_in x (tinl T t)
+  | afi_inr : forall x T t,
+      appears_free_in x t ->
+      appears_free_in x (tinr T t)
+  | afi_case1 : forall x tc y ty z tz,
+      appears_free_in x tc ->
+      appears_free_in x (tcase tc y ty z tz)
+  | afi_case2 : forall x tc y ty z tz,
+      x <> y ->
+      appears_free_in x ty ->
+      appears_free_in x (tcase tc y ty z tz)
+  | afi_case3 : forall x tc y ty z tz,
+      x <> z ->
+      appears_free_in x tz ->
+      appears_free_in x (tcase tc y ty z tz)
+  | afi_cons1 : forall x th tt,
+      appears_free_in x th ->
+      appears_free_in x (tcons th tt)
+  | afi_cons2 : forall x th tt,
+      appears_free_in x tt ->
+      appears_free_in x (tcons th tt)
+  | afi_tlcase1 : forall x tc tnil xh xt tcons,
+      appears_free_in x tc ->
+      appears_free_in x (tlcase tc tnil xh xt tcons)
+  | afi_tlcase2 : forall x tc tnil xh xt tcons,
+      appears_free_in x tnil ->
+      appears_free_in x (tlcase tc tnil xh xt tcons)
+  | afi_tlcase3 : forall x tc tnil xh xt tcons,
+      x <> xh ->
+      x <> xt ->
+      appears_free_in x tcons ->
+      appears_free_in x (tlcase tc tnil xh xt tcons)
+  | afi_tfix : forall x t,
+      appears_free_in x t ->
+      appears_free_in x (tfix t)
+.
+
+Hint Constructors appears_free_in.
+
+Lemma context_invariance : forall Gamma Gamma' t S,
+  Gamma |- t \in S ->
+  (forall x, appears_free_in x t -> Gamma' x = Gamma x) ->
+  Gamma' |- t \in S.
+Proof with eauto.
+  intros. generalize dependent Gamma'.
+  induction H; intros; econstructor...
+  - rewrite <- H...
+  - apply IHhas_type;  intros; unfold pupdate; unfold update;
+    destruct (eq_id_dec x x0)...
+  - apply IHhas_type2; intros; unfold pupdate; unfold update;
+    destruct (eq_id_dec x x0)...
+  - apply IHhas_type2; intros; unfold pupdate; unfold update;
+    destruct (eq_id_dec x x0)...
+  - apply IHhas_type3; intros; unfold pupdate; unfold update;
+    destruct (eq_id_dec y x0)...
+  - apply IHhas_type3; intros; unfold pupdate; unfold update;
+    destruct (eq_id_dec xt x); destruct (eq_id_dec xh x)...
 Qed.
 
 (* END STLC_extensions. *)
