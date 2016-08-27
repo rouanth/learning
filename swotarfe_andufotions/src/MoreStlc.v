@@ -330,7 +330,7 @@ Inductive has_type : context -> tm -> ty -> Prop :=
   | T_Lcase : forall Gamma tc tn xh xt tht Tl T,
       Gamma |- tc \in TList Tl ->
       Gamma |- tn \in T ->
-      (pupdate (pupdate Gamma xh Tl) xt (TList Tl)) |- tht \in T ->
+      (pupdate (pupdate Gamma xt (TList Tl)) xh Tl) |- tht \in T ->
       Gamma |- tlcase tc tn xh xt tht \in T
   | T_Fix : forall Gamma t T,
       Gamma |- t \in TArrow T T ->
@@ -938,8 +938,11 @@ Proof with eauto.
       * subst. eapply context_invariance... intros.
         unfold pupdate.
         destruct (eq_id_dec i0 x).
-        { subst. repeat rewrite update_eq... }
-        { rewrite update_neq... symmetry. rewrite update_neq...
+        { subst. rewrite update_neq... rewrite update_eq.
+          rewrite update_neq... rewrite update_eq... }
+        { rewrite update_permute... rewrite update_neq...
+          symmetry.
+          rewrite update_permute... rewrite update_neq...
           rewrite update_permute... rewrite update_neq... }
       * eapply IHt3. eapply context_invariance... intros.
         unfold pupdate.
@@ -947,16 +950,40 @@ Proof with eauto.
         { rewrite update_eq. rewrite update_neq... rewrite update_neq...
           rewrite update_eq... }
         { rewrite update_neq...
-          destruct (eq_id_dec x0 i0); subst.
+          destruct (eq_id_dec x0 i); subst.
           { rewrite update_eq... rewrite update_eq... }
           { rewrite update_neq... symmetry. rewrite update_neq...
-            destruct (eq_id_dec x0 i); subst.
+            destruct (eq_id_dec x0 i0); subst.
             { rewrite update_eq. rewrite update_eq... }
             { rewrite update_neq... rewrite update_neq...
               rewrite update_neq... } } }
 Qed.
 
+Theorem preservation : forall t t' T,
+  (fun _ => None) |- t \in T ->
+  t ==> t' ->
+  (fun _ => None) |- t' \in T.
+Proof with eauto.
+  intros t t' T Holdt.
+  remember (fun _ => None) as Gamma.
+  generalize dependent HeqGamma. generalize dependent t'.
+  induction Holdt; intros t' HeqGamma HE; inversion HE; subst...
+  - apply substitution_preserves_typing with T1...
+    inversion Holdt1...
+  - inversion Holdt...
+  - inversion Holdt...
+  - apply substitution_preserves_typing with Tl...
+  - apply substitution_preserves_typing with Tx...
+    inversion Holdt1; subst. assumption.
+  - apply substitution_preserves_typing with Ty...
+    inversion Holdt1; subst. assumption.
+  - inversion Holdt1; subst.
+    eapply substitution_preserves_typing with (TList Tl)...
+    eapply substitution_preserves_typing with Tl...
+  - inversion Holdt; subst.
+    eapply substitution_preserves_typing...
+Qed.
+
 (* END STLC_extensions. *)
 
 End STLCExtended.
-
